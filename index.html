@@ -78,9 +78,58 @@ tr.sb td::after{content:"";display:inline-block;vertical-align:middle;margin-lef
 .bs button.on{border-color:var(--vio);color:var(--vio);box-shadow:0 0 12px #8b5cf655}
 .r{min-width:118px;text-align:center}
 .leg{color:var(--mut);font-size:12px}
+/* v4 overrides */
+:root{--row:#151a3a;--line:#2a3163;--mut:#9aa3c7}
+body{font-size:17px}
+.sub{font-size:16px}
+.chip{padding:16px 20px;border-color:#3a4390;background:linear-gradient(160deg,#0e1020d0,#0b0d1ad0);backdrop-filter:blur(12px)}
+.chip b{font-size:34px}
+.chip span{font-size:12.5px}
+.tabs{background:#0e1020cc;border-color:#3a4390}
+.tabs a{padding:12px 30px;font-size:15px}
+.top button{padding:12px 20px;font-size:15px;border-radius:12px;border-color:#3a4390;background:#0e1020cc}
+.top button:hover{border-color:var(--blue);box-shadow:0 0 16px #00d4ff66}
+.sec{background:#0e1020c4;backdrop-filter:blur(14px);border-color:#3a4390;box-shadow:0 10px 50px #000a,0 0 40px #8b5cf622}
+.sh{padding:18px 24px;background:linear-gradient(90deg,#00d4ff38,#8b5cf638)}
+.sh h2{font-size:20px}
+.pg{font-size:14px}.pg i{width:160px;height:8px}
+table{min-width:1220px;border-spacing:0 8px}
+th{font-size:13px;padding:10px 18px;color:var(--blue)}
+tbody td{padding:15px 18px;background:#151a3ab8}
+td.n{width:64px}
+.nb{width:36px;height:36px;font-size:14px;background:#8b5cf64a;color:#e0d7ff}
+td.l{font-size:17px;min-width:260px}
+tr.sb td{font-size:14px;padding:18px 8px 4px;color:#b69cff;background:none}
+.r{padding:8px 18px;font-size:15px;min-width:140px}
+.r.f{background:#00d4ff2e;border-color:#00d4ffaa}
+.r.s{background:#8b5cf648;border-color:#a78bfacc;color:#e0d7ff}
+.r.k{background:#34d39930;border-color:#34d399aa}
+.r.o{background:#ff3d7138;border-color:#ff5c8acc}
+.r.p{background:#ffffff12}
+.b{width:34px;height:34px;font-size:16px;border-radius:10px;border-color:#3a4390;background:#ffffff14}
+.pr{font-size:14px;padding:8px 18px;min-width:108px}
+.pr.h{background:#ff3d7138;border-color:#ff5c8add}
+.pr.md{background:#8b5cf648;border-color:#a78bfadd}
+.pr.lo{background:#00d4ff2e;border-color:#00d4ffbb}
+.lr.p2 td:first-child{box-shadow:inset 4px 0 0 #ff5c8a}
+.lr.p1 td:first-child{box-shadow:inset 4px 0 0 var(--vio)}
+.lr.p0 td:first-child{box-shadow:inset 4px 0 0 var(--blue)}
+tr.lr:hover td{background:#1d2350e6}
+.dw .x{font-size:18px}
+.leg{font-size:14px}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.bg i{position:absolute;border-radius:50%;filter:blur(100px);opacity:.42}
+.bg i:nth-child(1){width:48vw;height:48vw;background:#00d4ff;left:-12vw;top:-14vw;animation:f1 24s ease-in-out infinite alternate}
+.bg i:nth-child(2){width:44vw;height:44vw;background:#8b5cf6;right:-14vw;top:8vh;animation:f2 30s ease-in-out infinite alternate}
+.bg i:nth-child(3){width:38vw;height:38vw;background:#4f46e5;left:28vw;bottom:-20vw;animation:f3 27s ease-in-out infinite alternate}
+@keyframes f1{to{transform:translate(22vw,18vh) scale(1.25)}}
+@keyframes f2{to{transform:translate(-26vw,22vh) scale(.85)}}
+@keyframes f3{to{transform:translate(-20vw,-24vh) scale(1.3)}}
+@media(prefers-reduced-motion:reduce){.bg i{animation:none}}
 </style>
 </head>
 <body>
+<div class="bg"><i></i><i></i><i></i></div>
 <main>
 <h1>SPACED REVISION</h1>
 <p class="sub">Set each lesson&rsquo;s priority and the date you plan to study it &mdash; Rev 1 (+1 day), Rev 2 (+7 days), Rev 3 (+21 days) fill in automatically. Tick each revision when done; if missed, move it to the next day.</p>
@@ -96,7 +145,7 @@ tr.sb td::after{content:"";display:inline-block;vertical-align:middle;margin-lef
 <div class="bs"><button id="so">Sort by priority: Off</button><button id="mv">Move all missed &rarr; tomorrow</button></div>
 </div>
 <div id="app"></div>
-<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Saved in this browser. &middot; <b style='color:var(--vio)'>v3: Priority + Maths</b></p>
+<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Saved in this browser. &middot; <b style='color:var(--vio)'>v4: bigger UI + animated bg</b></p>
 </main>
 <script>
 const D={
@@ -121,7 +170,7 @@ const fmt=d=>d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"num
 const cur=()=>({"#physics":"PHYSICS","#maths":"MATHS"})[location.hash]||"CHEMISTRY";
 function row(id,n,t){
   const v=S[id]||"",today=iso(new Date());
-  let h=`<tr class="lr${v?" on":""}"><td class="n"><span class="nb">${n}</span></td><td class="l">${t}</td><td><button class="pr ${["lo","md","h"][pv(id)]}" data-p="${id}" title="Click to change priority">${["Low","Medium","High"][pv(id)]}</button></td><td><span class="dw"><span class="r ${v?"s":"ph"}">${v?fmt(add(v,0)):"Pick date"}</span><input type="date" data-id="${id}" value="${v}">${v?`<button class="x" data-c="${id}" title="Clear date">&times;</button>`:""}</span></td>`;
+  let h=`<tr class="lr p${pv(id)}${v?" on":""}"><td class="n"><span class="nb">${n}</span></td><td class="l">${t}</td><td><button class="pr ${["lo","md","h"][pv(id)]}" data-p="${id}" title="Click to change priority">${["Low","Medium","High"][pv(id)]}</button></td><td><span class="dw"><span class="r ${v?"s":"ph"}">${v?fmt(add(v,0)):"Pick date"}</span><input type="date" data-id="${id}" value="${v}">${v?`<button class="x" data-c="${id}" title="Clear date">&times;</button>`:""}</span></td>`;
   OFF.forEach((o,i)=>{
     if(!v){h+=`<td><span class="r e">&mdash;</span></td>`;return}
     const k=eff(id,i),dn=rv(id,i).d,c=dn?"k":k===today?"d":k<today?"o":"f",key=id+"|"+i;
@@ -133,12 +182,15 @@ function render(){
   const today=iso(new Date());let n1=0,n2=0,n3=0,n4=0,n5=0;
   Object.entries(D).forEach(([s,bl])=>bl.forEach((b,bi)=>b[1].forEach(t=>{const id=s+"|"+bi+"|"+t;if(S[id]){n1++;OFF.forEach((o,i)=>{const k=eff(id,i);if(rv(id,i).d)n5++;else if(k===today)n2++;else if(k>today)n3++;else n4++})}})));
   const c=cur(),bl=D[c];let idx=0,tot=0,done=0,body="";
+  const items=[];
   bl.forEach((b,bi)=>{
-    if(b[0])body+=`<tr class="sb"><td colspan="7">${b[0]}</td></tr>`;
-    const it=b[1].map(t=>[t,++idx]);
-    if(SO)it.sort((a,z)=>pv(c+"|"+bi+"|"+z[0])-pv(c+"|"+bi+"|"+a[0])||a[1]-z[1]);
-    it.forEach(([t,n])=>{tot++;const id=c+"|"+bi+"|"+t;if(S[id])done++;body+=row(id,n,t)});
+    b[1].forEach((t,j)=>items.push({t,n:++idx,bi,id:c+"|"+bi+"|"+t,lab:j?"":b[0]}));
   });
+  if(SO)items.sort((a,z)=>pv(z.id)-pv(a.id)||a.n-z.n);
+  let lp=-1;items.forEach(x=>{tot++;if(S[x.id])done++;
+    if(SO&&pv(x.id)!==lp){lp=pv(x.id);body+=`<tr class="sb"><td colspan="7" style="color:${["#00d4ff","#b69cff","#ff8fb1"][lp]}">${["LOW","MEDIUM","HIGH"][lp]} PRIORITY</td></tr>`}
+    if(!SO&&x.lab)body+=`<tr class="sb"><td colspan="7">${x.lab}</td></tr>`;
+    body+=row(x.id,x.n,x.t)});
   app.innerHTML=`<section class="sec"><div class="sh"><h2>${c}</h2><div class="pg">${done}/${tot} started<i><u style="width:${done/tot*100}%"></u></i></div></div><div class="wrap"><table><thead><tr><th>#</th><th>Lesson</th><th>Priority</th><th>Date to study</th><th>Rev 1</th><th>Rev 2</th><th>Rev 3</th></tr></thead><tbody>${body}</tbody></table></div></section>`;
   document.querySelectorAll(".tabs a").forEach(a=>a.classList.toggle("on",a.dataset.t===c));
   so.textContent="Sort by priority: "+(SO?"On":"Off");so.classList.toggle("on",SO);s1.textContent=n1;s2.textContent=n2;s3.textContent=n3;s4.textContent=n4;s5.textContent=n5;
