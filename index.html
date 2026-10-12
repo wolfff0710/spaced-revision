@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Spaced Revision Tracker</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300d4ff'/%3E%3Cstop offset='1' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%2307080f'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='url%28%23g%29' stroke-width='6' stroke-dasharray='90 24' stroke-linecap='round'/%3E%3Cpath d='M23 33l7 7 12-14' fill='none' stroke='url%28%23g%29' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--bg:#07080f;--card:#0e1020;--row:#12152a;--line:#1d2240;--tx:#e6e9f5;--mut:#7c84a3;--blue:#00d4ff;--vio:#8b5cf6;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
@@ -126,12 +127,13 @@ tr.lr:hover td{background:#1d2350e6}
 @keyframes f2{to{transform:translate(-26vw,22vh) scale(.85)}}
 @keyframes f3{to{transform:translate(-20vw,-24vh) scale(1.3)}}
 @media(prefers-reduced-motion:reduce){.bg i{animation:none}}
+.sync-indicator{font-size:12px;color:var(--blue);float:right;font-weight:600}
 </style>
 </head>
 <body>
 <div class="bg"><i></i><i></i><i></i></div>
 <main>
-<h1>SPACED REVISION</h1>
+<h1>SPACED REVISION <span class="sync-indicator" id="syncStatus">⚡ Connecting...</span></h1>
 <p class="sub">Set each lesson&rsquo;s priority and the date you plan to study it &mdash; Rev 1 (+1 day), Rev 2 (+7 days), Rev 3 (+21 days) fill in automatically. Tick each revision when done; if missed, move it to the next day.</p>
 <div class="stats">
 <div class="chip"><b id="s1">0</b><span>Lessons started</span></div>
@@ -145,21 +147,57 @@ tr.lr:hover td{background:#1d2350e6}
 <div class="bs"><button id="so">Sort by priority: Off</button><button id="mv">Move all missed &rarr; tomorrow</button></div>
 </div>
 <div id="app"></div>
-<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Saved in this browser. &middot; <b style='color:var(--vio)'>v4: bigger UI + animated bg</b></p>
+<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Supabase real-time sync active. &middot; <b style='color:var(--vio)'>v5: Live Sync Edition</b></p>
 </main>
 <script>
+// --- SUPABASE CONFIGURATION ---
+const SUPABASE_URL = "https://mhfqzujwzjxusckhibkr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_7I2mLnN9Uubmq_ssLmg5qg_TdrWTWka";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const D={
 CHEMISTRY:[[null,["Solutions","Chemical Kinetics","Electrochemistry","Co-ordination Compounds","DnF Block"]],["ORGANIC",["Haloalkanes and Haloarenes","Alcohols, Phenols and Esters","Aldehydes, Ketones and Carboxylic Acid","Amines","Biomolecules"]]],
 PHYSICS:[["VOLUME 1",["Electric Charges and Fields","Electrostatic Potential and Capacitance","Current Electricity","Moving Charges and Magnetism","Magnetism and Matter","Electromagnetic Induction","Alternating Current","Electromagnetic Waves"]],["VOLUME 2",["Ray Optics and Optical Instruments","Wave Optics","Dual Nature of Radiation and Matter","Atoms","Nuclei","Semiconductor Electronics"]]],
 MATHS:[["PART 1",["Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability","Application of Derivatives"]],["PART 2",["Integrals","Application of Integrals","Differential Equations","Vector Algebra","Three Dimensional Geometry","Linear Programming","Probability"]]]
 };
 const OFF=[1,7,21],KEY="spaced_revision_v1";
-let S={};try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){S={}}
-let R={};try{R=JSON.parse(localStorage.getItem(KEY+"_r")||"{}")}catch(e){R={}}
-let P={};try{P=JSON.parse(localStorage.getItem(KEY+"_p")||"{}")}catch(e){P={}}
-let SO=false;try{SO=localStorage.getItem(KEY+"_s")==="1"}catch(e){}
+let S={}, R={}, P={}, SO=false;
+
+// Fetch data from Supabase on load
+async function initCloudData() {
+  syncStatus.textContent = "🔄 Syncing...";
+  const { data, error } = await sb.from('revision_tracker').select('*').eq('id', 1).single();
+  if (data && data.data) {
+    S = data.data.S || {};
+    R = data.data.R || {};
+    P = data.data.P || {};
+    SO = data.data.SO || false;
+  }
+  syncStatus.textContent = "🟢 Live Synced";
+  render();
+}
+
+// Save data to Supabase and update state
+const save = async () => {
+  render();
+  syncStatus.textContent = "⏳ Saving...";
+  const fullData = { S, R, P, SO };
+  await sb.from('revision_tracker').upsert({ id: 1, data: fullData });
+  syncStatus.textContent = "🟢 Live Synced";
+};
+
+// Real-time listener for incoming changes from your other device
+sb.channel('db-changes').on('postgres_changes', { event: '*', schema: 'public', table: 'revision_tracker' }, payload => {
+  if (payload.new && payload.new.data) {
+    S = payload.new.data.S || {};
+    R = payload.new.data.R || {};
+    P = payload.new.data.P || {};
+    SO = payload.new.data.SO || false;
+    render();
+  }
+}).subscribe();
+
 const pv=id=>P[id]??1;
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));localStorage.setItem(KEY+"_r",JSON.stringify(R));localStorage.setItem(KEY+"_p",JSON.stringify(P));localStorage.setItem(KEY+"_s",SO?"1":"0")}catch(e){}};
 const rv=(id,i)=>(R[id]||[])[i]||{};
 const eff=(id,i)=>rv(id,i).o||iso(add(S[id],OFF[i]));
 const setR=(id,i,p)=>{R[id]=R[id]||[{},{},{}];Object.assign(R[id][i],p)};
@@ -168,6 +206,7 @@ const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+Stri
 const add=(s,n)=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d+n)};
 const fmt=d=>d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 const cur=()=>({"#physics":"PHYSICS","#maths":"MATHS"})[location.hash]||"CHEMISTRY";
+
 function row(id,n,t){
   const v=S[id]||"",today=iso(new Date());
   let h=`<tr class="lr p${pv(id)}${v?" on":""}"><td class="n"><span class="nb">${n}</span></td><td class="l">${t}</td><td><button class="pr ${["lo","md","h"][pv(id)]}" data-p="${id}" title="Click to change priority">${["Low","Medium","High"][pv(id)]}</button></td><td><span class="dw"><span class="r ${v?"s":"ph"}">${v?fmt(add(v,0)):"Pick date"}</span><input type="date" data-id="${id}" value="${v}">${v?`<button class="x" data-c="${id}" title="Clear date">&times;</button>`:""}</span></td>`;
@@ -195,18 +234,20 @@ function render(){
   document.querySelectorAll(".tabs a").forEach(a=>a.classList.toggle("on",a.dataset.t===c));
   so.textContent="Sort by priority: "+(SO?"On":"Off");so.classList.toggle("on",SO);s1.textContent=n1;s2.textContent=n2;s3.textContent=n3;s4.textContent=n4;s5.textContent=n5;
 }
-document.addEventListener("change",e=>{const i=e.target.dataset&&e.target.dataset.id;if(!i)return;e.target.value?S[i]=e.target.value:delete S[i];delete R[i];save();render()});
+document.addEventListener("change",e=>{const i=e.target.dataset&&e.target.dataset.id;if(!i)return;e.target.value?S[i]=e.target.value:delete S[i];delete R[i];save()});
 document.addEventListener("click",e=>{
   const d=e.target.dataset||{};if(e.target.type==="date"&&e.target.showPicker){try{e.target.showPicker()}catch(_){}}
   if(d.c){delete S[d.c];delete R[d.c]}
   else if(d.p){P[d.p]=(pv(d.p)+1)%3}
   else{const x=d.m||d.u||d.r;if(!x)return;const p=x.lastIndexOf("|"),id=x.slice(0,p),i=+x.slice(p+1);
     if(d.m)setR(id,i,{d:true});else if(d.u)setR(id,i,{d:false});else setR(id,i,{o:tmr(),d:false})}
-  save();render()});
-so.onclick=()=>{SO=!SO;save();render()};
-mv.onclick=()=>{const t=iso(new Date());Object.keys(S).forEach(id=>OFF.forEach((o,i)=>{if(!rv(id,i).d&&eff(id,i)<t)setR(id,i,{o:tmr()})}));save();render()};
+  save()});
+so.onclick=()=>{SO=!SO;save()};
+mv.onclick=()=>{const t=iso(new Date());Object.keys(S).forEach(id=>OFF.forEach((o,i)=>{if(!rv(id,i).d&&eff(id,i)<t)setR(id,i,{o:tmr()})}));save()};
 addEventListener("hashchange",render);
-render();
+
+// Initialize data from cloud
+initCloudData();
 </script>
 </body>
 </html>
