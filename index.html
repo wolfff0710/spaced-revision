@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spaced Revision Tracker</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300d4ff'/%3E%3Cstop offset='1' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%2307080f'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='url%28%23g%29' stroke-width='6' stroke-dasharray='90 24' stroke-linecap='round'/%3E%3Cpath d='M23 33l7 7 12-14' fill='none' stroke='url%28%23g%29' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#07080f;--card:#0e1020;--row:#12152a;--line:#1d2240;--tx:#e6e9f5;--mut:#7c84a3;--blue:#00d4ff;--vio:#8b5cf6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:radial-gradient(900px 500px at 90% -10%,#8b5cf627,transparent),radial-gradient(800px 500px at -10% 0,#00d4ff1c,transparent),var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+main{width:100%;max-width:1600px;margin:0 auto;padding:28px clamp(12px,2.5vw,40px) 48px}
+h1{margin:0;font-size:clamp(26px,4.5vw,38px);letter-spacing:2px;background:linear-gradient(90deg,var(--blue),var(--vio));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);margin:4px 0 20px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:22px}
+.chip{background:linear-gradient(160deg,var(--card),#0b0d1a);border:1px solid var(--line);border-radius:14px;padding:12px 16px;position:relative;overflow:hidden}
+.chip::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue);box-shadow:0 0 12px var(--blue)}
+.chip.t::before{background:var(--vio);box-shadow:0 0 12px var(--vio)}
+.chip b{display:block;font-size:26px;line-height:1.2;color:var(--blue)}
+.chip.t b{color:var(--vio)}
+.chip span{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:1.5px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px}
+.tabs a{padding:8px 22px;border-radius:999px;color:var(--mut);text-decoration:none;font-weight:600;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;transition:.2s}
+.tabs a:hover{color:var(--tx)}
+.tabs a.on{color:#05101a;background:linear-gradient(90deg,var(--blue),var(--vio));box-shadow:0 0 18px #00d4ff77}
+.top button{background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;font:inherit;font-size:13px;transition:.2s}
+.top button:hover{border-color:var(--vio);box-shadow:0 0 12px #8b5cf655}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:18px;margin-bottom:22px;overflow:hidden;box-shadow:0 10px 40px #0009,0 0 0 1px #00d4ff0a}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 20px;background:linear-gradient(90deg,#00d4ff1a,#8b5cf61a);border-bottom:1px solid var(--line)}
+.sh h2{margin:0;font-size:15px;letter-spacing:3px;color:var(--blue);text-shadow:0 0 14px #00d4ff88}
+.pg{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--mut)}
+.pg i{display:block;width:120px;height:6px;border-radius:9px;background:#ffffff12;overflow:hidden}
+.pg i u{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--blue),var(--vio));box-shadow:0 0 10px var(--blue);transition:width .4s}
+.wrap{overflow-x:auto;padding:6px 12px 14px}
+table{width:100%;border-collapse:separate;border-spacing:0 6px;min-width:1040px}
+th{position:sticky;top:0;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);text-align:left;padding:8px 14px;font-weight:600}
+tbody td{background:var(--row);padding:10px 14px;white-space:nowrap;border-top:1px solid transparent;border-bottom:1px solid transparent;transition:.2s}
+tbody td:first-child{border-radius:12px 0 0 12px}
+tbody td:last-child{border-radius:0 12px 12px 0}
+tr.lr:hover td{background:#171b36;border-color:#8b5cf644}
+td.n{width:56px}
+.nb{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;background:#8b5cf620;color:var(--vio);font-weight:700;font-size:12px}
+.lr.on .nb{background:linear-gradient(135deg,var(--blue),var(--vio));color:#05101a;box-shadow:0 0 12px #00d4ff77}
+td.l{white-space:normal;min-width:210px;font-weight:600}
+tr.sb td{background:none;padding:14px 8px 2px;color:var(--vio);font-weight:700;letter-spacing:3px;font-size:11px;text-transform:uppercase}
+tr.sb td::after{content:"";display:inline-block;vertical-align:middle;margin-left:12px;width:60px;height:1px;background:linear-gradient(90deg,var(--vio),transparent)}
+.x{background:none;border:0;color:var(--mut);cursor:pointer;font-size:17px;margin-left:4px;vertical-align:middle}
+.x:hover{color:var(--vio)}
+.r{display:inline-block;padding:4px 12px;border-radius:999px;font-size:13px;font-variant-numeric:tabular-nums;border:1px solid transparent}
+.r.e{color:#2b3157}
+.r.p{color:var(--mut);background:#ffffff08;text-decoration:line-through;text-decoration-color:#7c84a366}
+.r.f{color:var(--blue);background:#00d4ff12;border-color:#00d4ff33}
+.r.d{color:#05101a;font-weight:700;background:linear-gradient(90deg,var(--blue),var(--vio));box-shadow:0 0 16px #00d4ffaa;animation:pl 2s ease-in-out infinite}
+.r.o{color:#ff8fb1;background:#ff3d7114;border-color:#ff3d7155}
+.r.k{color:#34d399;background:#34d39914;border-color:#34d39944}
+.rc{display:inline-flex;align-items:center;gap:4px}
+.b{background:#ffffff0d;border:1px solid var(--line);color:var(--tx);border-radius:8px;width:26px;height:26px;cursor:pointer;font-size:13px;line-height:1;transition:.2s;padding:0}
+.b:hover{border-color:var(--blue);color:var(--blue);box-shadow:0 0 10px #00d4ff55}
+.b.m:hover{border-color:var(--vio);color:var(--vio);box-shadow:0 0 10px #8b5cf655}
+.bs{display:flex;gap:8px;flex-wrap:wrap}
+@keyframes pl{50%{box-shadow:0 0 6px #00d4ff66}}
+.dw{position:relative;display:inline-block;vertical-align:middle}
+.dw input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0;color-scheme:dark}
+.dw .r{cursor:pointer;transition:.2s}
+.dw:hover .r{border-color:var(--blue);box-shadow:0 0 12px #00d4ff44}
+.r.s{color:#c4b5fd;background:#8b5cf61c;border-color:#8b5cf655}
+.r.ph{color:var(--mut);background:none;border:1px dashed #7c84a355}
+.dw .x{position:absolute;left:100%;top:50%;transform:translateY(-50%);margin:0 0 0 2px;font-size:15px;opacity:0;transition:.2s}
+.lr:hover .dw .x{opacity:1}
+.pr{border-radius:999px;padding:4px 12px;font:inherit;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid;min-width:88px;transition:.2s}
+.pr:hover{filter:brightness(1.3)}
+.pr.h{color:#ff8fb1;background:#ff3d7116;border-color:#ff3d7166}
+.pr.md{color:#c4b5fd;background:#8b5cf61a;border-color:#8b5cf666}
+.pr.lo{color:var(--blue);background:#00d4ff12;border-color:#00d4ff44}
+.bs button.on{border-color:var(--vio);color:var(--vio);box-shadow:0 0 12px #8b5cf655}
+.r{min-width:118px;text-align:center}
+.leg{color:var(--mut);font-size:12px}
+</style>
+</head>
+<body>
+<main>
+<h1>SPACED REVISION</h1>
+<p class="sub">Set each lesson&rsquo;s priority and the date you plan to study it &mdash; Rev 1 (+1 day), Rev 2 (+7 days), Rev 3 (+21 days) fill in automatically. Tick each revision when done; if missed, move it to the next day.</p>
+<div class="stats">
+<div class="chip"><b id="s1">0</b><span>Lessons started</span></div>
+<div class="chip t"><b id="s2">0</b><span>Due today</span></div>
+<div class="chip"><b id="s4" style="color:#ff8fb1">0</b><span>Overdue</span></div>
+<div class="chip"><b id="s3">0</b><span>Upcoming</span></div>
+<div class="chip t"><b id="s5" style="color:#34d399">0</b><span>Revised</span></div>
+</div>
+<div class="top">
+<nav class="tabs"><a href="#chemistry" data-t="CHEMISTRY">Chemistry</a><a href="#physics" data-t="PHYSICS">Physics</a><a href="#maths" data-t="MATHS">Maths</a></nav>
+<div class="bs"><button id="so">Sort by priority: Off</button><button id="mv">Move all missed &rarr; tomorrow</button></div>
+</div>
+<div id="app"></div>
+<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Saved in this browser. &middot; <b style='color:var(--vio)'>v3: Priority + Maths</b></p>
+</main>
+<script>
+const D={
+CHEMISTRY:[[null,["Solutions","Chemical Kinetics","Electrochemistry","Co-ordination Compounds","DnF Block"]],["ORGANIC",["Haloalkanes and Haloarenes","Alcohols, Phenols and Esters","Aldehydes, Ketones and Carboxylic Acid","Amines","Biomolecules"]]],
+PHYSICS:[["VOLUME 1",["Electric Charges and Fields","Electrostatic Potential and Capacitance","Current Electricity","Moving Charges and Magnetism","Magnetism and Matter","Electromagnetic Induction","Alternating Current","Electromagnetic Waves"]],["VOLUME 2",["Ray Optics and Optical Instruments","Wave Optics","Dual Nature of Radiation and Matter","Atoms","Nuclei","Semiconductor Electronics"]]],
+MATHS:[["PART 1",["Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability","Application of Derivatives"]],["PART 2",["Integrals","Application of Integrals","Differential Equations","Vector Algebra","Three Dimensional Geometry","Linear Programming","Probability"]]]
+};
+const OFF=[1,7,21],KEY="spaced_revision_v1";
+let S={};try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){S={}}
+let R={};try{R=JSON.parse(localStorage.getItem(KEY+"_r")||"{}")}catch(e){R={}}
+let P={};try{P=JSON.parse(localStorage.getItem(KEY+"_p")||"{}")}catch(e){P={}}
+let SO=false;try{SO=localStorage.getItem(KEY+"_s")==="1"}catch(e){}
+const pv=id=>P[id]??1;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));localStorage.setItem(KEY+"_r",JSON.stringify(R));localStorage.setItem(KEY+"_p",JSON.stringify(P));localStorage.setItem(KEY+"_s",SO?"1":"0")}catch(e){}};
+const rv=(id,i)=>(R[id]||[])[i]||{};
+const eff=(id,i)=>rv(id,i).o||iso(add(S[id],OFF[i]));
+const setR=(id,i,p)=>{R[id]=R[id]||[{},{},{}];Object.assign(R[id][i],p)};
+const tmr=()=>iso(add(iso(new Date()),1));
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const add=(s,n)=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d+n)};
+const fmt=d=>d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+const cur=()=>({"#physics":"PHYSICS","#maths":"MATHS"})[location.hash]||"CHEMISTRY";
+function row(id,n,t){
+  const v=S[id]||"",today=iso(new Date());
+  let h=`<tr class="lr${v?" on":""}"><td class="n"><span class="nb">${n}</span></td><td class="l">${t}</td><td><button class="pr ${["lo","md","h"][pv(id)]}" data-p="${id}" title="Click to change priority">${["Low","Medium","High"][pv(id)]}</button></td><td><span class="dw"><span class="r ${v?"s":"ph"}">${v?fmt(add(v,0)):"Pick date"}</span><input type="date" data-id="${id}" value="${v}">${v?`<button class="x" data-c="${id}" title="Clear date">&times;</button>`:""}</span></td>`;
+  OFF.forEach((o,i)=>{
+    if(!v){h+=`<td><span class="r e">&mdash;</span></td>`;return}
+    const k=eff(id,i),dn=rv(id,i).d,c=dn?"k":k===today?"d":k<today?"o":"f",key=id+"|"+i;
+    h+=`<td><span class="rc"><span class="r ${c}">${dn?"&check; ":""}${fmt(add(k,0))}</span>`+(dn?`<button class="b" data-u="${key}" title="Undo">&#8630;</button>`:`<button class="b" data-m="${key}" title="Mark revised">&check;</button>`+(k<=today?`<button class="b m" data-r="${key}" title="Not revised: move to tomorrow">&#8635;</button>`:""))+`</span></td>`;
+  });
+  return h+"</tr>";
+}
+function render(){
+  const today=iso(new Date());let n1=0,n2=0,n3=0,n4=0,n5=0;
+  Object.entries(D).forEach(([s,bl])=>bl.forEach((b,bi)=>b[1].forEach(t=>{const id=s+"|"+bi+"|"+t;if(S[id]){n1++;OFF.forEach((o,i)=>{const k=eff(id,i);if(rv(id,i).d)n5++;else if(k===today)n2++;else if(k>today)n3++;else n4++})}})));
+  const c=cur(),bl=D[c];let idx=0,tot=0,done=0,body="";
+  bl.forEach((b,bi)=>{
+    if(b[0])body+=`<tr class="sb"><td colspan="7">${b[0]}</td></tr>`;
+    const it=b[1].map(t=>[t,++idx]);
+    if(SO)it.sort((a,z)=>pv(c+"|"+bi+"|"+z[0])-pv(c+"|"+bi+"|"+a[0])||a[1]-z[1]);
+    it.forEach(([t,n])=>{tot++;const id=c+"|"+bi+"|"+t;if(S[id])done++;body+=row(id,n,t)});
+  });
+  app.innerHTML=`<section class="sec"><div class="sh"><h2>${c}</h2><div class="pg">${done}/${tot} started<i><u style="width:${done/tot*100}%"></u></i></div></div><div class="wrap"><table><thead><tr><th>#</th><th>Lesson</th><th>Priority</th><th>Date to study</th><th>Rev 1</th><th>Rev 2</th><th>Rev 3</th></tr></thead><tbody>${body}</tbody></table></div></section>`;
+  document.querySelectorAll(".tabs a").forEach(a=>a.classList.toggle("on",a.dataset.t===c));
+  so.textContent="Sort by priority: "+(SO?"On":"Off");so.classList.toggle("on",SO);s1.textContent=n1;s2.textContent=n2;s3.textContent=n3;s4.textContent=n4;s5.textContent=n5;
+}
+document.addEventListener("change",e=>{const i=e.target.dataset&&e.target.dataset.id;if(!i)return;e.target.value?S[i]=e.target.value:delete S[i];delete R[i];save();render()});
+document.addEventListener("click",e=>{
+  const d=e.target.dataset||{};if(e.target.type==="date"&&e.target.showPicker){try{e.target.showPicker()}catch(_){}}
+  if(d.c){delete S[d.c];delete R[d.c]}
+  else if(d.p){P[d.p]=(pv(d.p)+1)%3}
+  else{const x=d.m||d.u||d.r;if(!x)return;const p=x.lastIndexOf("|"),id=x.slice(0,p),i=+x.slice(p+1);
+    if(d.m)setR(id,i,{d:true});else if(d.u)setR(id,i,{d:false});else setR(id,i,{o:tmr(),d:false})}
+  save();render()});
+so.onclick=()=>{SO=!SO;save();render()};
+mv.onclick=()=>{const t=iso(new Date());Object.keys(S).forEach(id=>OFF.forEach((o,i)=>{if(!rv(id,i).d&&eff(id,i)<t)setR(id,i,{o:tmr()})}));save();render()};
+addEventListener("hashchange",render);
+render();
+</script>
+</body>
+</html>
