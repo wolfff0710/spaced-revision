@@ -127,7 +127,7 @@ tr.lr:hover td{background:#1d2350e6}
 @keyframes f2{to{transform:translate(-26vw,22vh) scale(.85)}}
 @keyframes f3{to{transform:translate(-20vw,-24vh) scale(1.3)}}
 @media(prefers-reduced-motion:reduce){.bg i{animation:none}}
-.sync-indicator{font-size:12px;color:var(--blue);float:right;font-weight:600}
+.sync-indicator{font-size:12px;color:var(--blue);float:right;font-weight:600;-webkit-text-fill-color:var(--blue);max-width:60%;text-align:right}
 </style>
 </head>
 <body>
@@ -147,7 +147,7 @@ tr.lr:hover td{background:#1d2350e6}
 <div class="bs"><button id="so">Sort by priority: Off</button><button id="mv">Move all missed &rarr; tomorrow</button></div>
 </div>
 <div id="app"></div>
-<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Supabase real-time sync active. &middot; <b style='color:var(--vio)'>v5: Live Sync Edition</b></p>
+<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Cloud sync active (auto-refresh every 15s). &middot; <b style='color:var(--vio)'>v5.1: Live Sync Fixed</b></p>
 </main>
 <script>
 // --- SUPABASE CONFIGURATION ---
@@ -162,40 +162,44 @@ MATHS:[["PART 1",["Relations and Functions","Inverse Trigonometric Functions","M
 };
 const OFF=[1,7,21],KEY="spaced_revision_v1";
 let S={}, R={}, P={}, SO=false;
+let pending=0, loaded=false;
 
-// Fetch data from Supabase on load
-async function initCloudData() {
-  syncStatus.textContent = "🔄 Syncing...";
-  const { data, error } = await sb.from('revision_tracker').select('*').eq('id', 1).single();
-  if (data && data.data) {
-    S = data.data.S || {};
-    R = data.data.R || {};
-    P = data.data.P || {};
-    SO = data.data.SO || false;
-  }
-  syncStatus.textContent = "🟢 Live Synced";
-  render();
+const setStatus=(t)=>{syncStatus.textContent=t};
+const apply=d=>{S=d.S||{};R=d.R||{};P=d.P||{};SO=!!d.SO};
+
+// Pull latest data from cloud (skipped while a save is in progress)
+async function pull(quiet){
+  if(pending>0)return;
+  if(!quiet)setStatus("🔄 Syncing...");
+  const {data,error}=await sb.from('revision_tracker').select('*').eq('id',1).maybeSingle();
+  if(error){setStatus("🔴 "+error.message);return}
+  if(pending>0)return;
+  if(data&&data.data){
+    apply(data.data);loaded=true;
+    setStatus("🟢 Live Synced");render();
+  }else if(!loaded){
+    // First run: no cloud row yet -> import old local progress if any, then upload
+    try{const o=JSON.parse(localStorage.getItem(KEY)||"{}");apply(o)}catch(_){}
+    loaded=true;render();await save();
+  }else setStatus("🟢 Live Synced");
 }
 
-// Save data to Supabase and update state
-const save = async () => {
+// Save to cloud, show real status
+async function save(){
   render();
-  syncStatus.textContent = "⏳ Saving...";
-  const fullData = { S, R, P, SO };
-  await sb.from('revision_tracker').upsert({ id: 1, data: fullData });
-  syncStatus.textContent = "🟢 Live Synced";
-};
+  pending++;setStatus("⏳ Saving...");
+  const {error}=await sb.from('revision_tracker').upsert({id:1,data:{S,R,P,SO}});
+  pending--;
+  setStatus(error?"🔴 Save failed: "+error.message:"🟢 Live Synced");
+}
 
-// Real-time listener for incoming changes from your other device
-sb.channel('db-changes').on('postgres_changes', { event: '*', schema: 'public', table: 'revision_tracker' }, payload => {
-  if (payload.new && payload.new.data) {
-    S = payload.new.data.S || {};
-    R = payload.new.data.R || {};
-    P = payload.new.data.P || {};
-    SO = payload.new.data.SO || false;
-    render();
-  }
+// Realtime (instant) + polling/visibility (backup)
+sb.channel('db-changes').on('postgres_changes',{event:'*',schema:'public',table:'revision_tracker'},payload=>{
+  if(pending>0||!payload.new||!payload.new.data)return;
+  apply(payload.new.data);render();setStatus("🟢 Live Synced");
 }).subscribe();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull(true)});
+setInterval(()=>{if(!document.hidden)pull(true)},15000);
 
 const pv=id=>P[id]??1;
 const rv=(id,i)=>(R[id]||[])[i]||{};
@@ -246,8 +250,8 @@ so.onclick=()=>{SO=!SO;save()};
 mv.onclick=()=>{const t=iso(new Date());Object.keys(S).forEach(id=>OFF.forEach((o,i)=>{if(!rv(id,i).d&&eff(id,i)<t)setR(id,i,{o:tmr()})}));save()};
 addEventListener("hashchange",render);
 
-// Initialize data from cloud
-initCloudData();
+render();
+pull(false);
 </script>
 </body>
 </html>
