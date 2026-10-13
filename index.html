@@ -127,7 +127,32 @@ tr.lr:hover td{background:#1d2350e6}
 @keyframes f2{to{transform:translate(-26vw,22vh) scale(.85)}}
 @keyframes f3{to{transform:translate(-20vw,-24vh) scale(1.3)}}
 @media(prefers-reduced-motion:reduce){.bg i{animation:none}}
-.sync-indicator{font-size:12px;color:var(--blue);float:right;font-weight:600;-webkit-text-fill-color:var(--blue);max-width:60%;text-align:right}
+.nv{background:#0e1020cc;color:var(--tx);border:1px solid #3a4390;border-radius:12px;padding:9px 16px;cursor:pointer;font:inherit;font-size:15px;transition:.2s}
+.nv:hover{border-color:var(--blue);box-shadow:0 0 14px #00d4ff66}
+.cal{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,1fr);gap:22px;align-items:start}
+.cal .sec{margin-bottom:0}
+@media(max-width:1000px){.cal{grid-template-columns:1fr}}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;padding:16px}
+.wk{text-align:center;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);font-weight:700;padding:4px 0}
+.cd{min-height:96px;border-radius:14px;background:#151a3ab8;border:1px solid var(--line);color:var(--tx);cursor:pointer;font:inherit;padding:8px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:4px;transition:.2s}
+.cd:hover{border-color:var(--blue);box-shadow:0 0 14px #00d4ff55}
+.cd b{font-size:17px}
+.cd em{font-style:normal;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;border:1px solid}
+.g1{color:#e0d7ff;background:#8b5cf648;border-color:#a78bfacc}
+.g2{color:var(--blue);background:#00d4ff2e;border-color:#00d4ffaa}
+.g3{color:#34d399;background:#34d39930;border-color:#34d399aa}
+.g4{color:#ff8fb1;background:#ff3d7138;border-color:#ff5c8acc}
+.g5{color:#05101a;background:linear-gradient(90deg,var(--blue),var(--vio));border-color:transparent;box-shadow:0 0 12px #00d4ffaa}
+.cd.td b{color:var(--blue);text-shadow:0 0 10px var(--blue)}
+.cd.sl{border-color:var(--vio);box-shadow:0 0 0 2px #8b5cf6aa,0 0 20px #8b5cf666;background:#1d2350}
+.dt{padding:8px 16px 18px;display:flex;flex-direction:column;gap:10px}
+.dr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#151a3ab8;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.dr .dn{flex:1 1 180px;font-weight:600;font-size:16px}
+.tg{font-size:11px;letter-spacing:1.5px;font-weight:700;color:#b69cff;background:#8b5cf624;border:1px solid #8b5cf655;border-radius:8px;padding:3px 8px}
+.em0{padding:30px 16px;text-align:center;color:var(--mut)}
+.sm{padding:12px 20px 0;color:var(--mut);font-size:15px}
+@media(max-width:640px){.cg{gap:4px;padding:8px}.cd{min-height:66px;padding:5px}.cd b{font-size:14px}.cd em{font-size:10px;padding:1px 6px}.w{display:none}}
+.sync-indicator{font-size:12px;float:right;font-weight:600;letter-spacing:0;-webkit-text-fill-color:var(--blue);color:var(--blue);max-width:60%;text-align:right}
 </style>
 </head>
 <body>
@@ -143,17 +168,17 @@ tr.lr:hover td{background:#1d2350e6}
 <div class="chip t"><b id="s5" style="color:#34d399">0</b><span>Revised</span></div>
 </div>
 <div class="top">
-<nav class="tabs"><a href="#chemistry" data-t="CHEMISTRY">Chemistry</a><a href="#physics" data-t="PHYSICS">Physics</a><a href="#maths" data-t="MATHS">Maths</a></nav>
-<div class="bs"><button id="so">Sort by priority: Off</button><button id="mv">Move all missed &rarr; tomorrow</button></div>
+<nav class="tabs"><a href="#chemistry" data-t="CHEMISTRY">Chemistry</a><a href="#physics" data-t="PHYSICS">Physics</a><a href="#maths" data-t="MATHS">Maths</a><a href="#calendar" data-t="CALENDAR">Calendar</a></nav>
+<div class="bs"><button id="so">Sort by priority: Off</button><button id="sd">Sort by date: Off</button><button id="mv">Move all missed &rarr; tomorrow</button></div>
 </div>
 <div id="app"></div>
-<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Cloud sync active (auto-refresh every 15s). &middot; <b style='color:var(--vio)'>v5.1: Live Sync Fixed</b></p>
+<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Cloud sync on (auto-refresh 15s). &middot; <b style='color:var(--vio)'>v6.1: Calendar + Sort by date + Cloud Sync</b></p>
 </main>
 <script>
-// --- SUPABASE CONFIGURATION ---
-const SUPABASE_URL = "https://mhfqzujwzjxusckhibkr.supabase.co";
-const SUPABASE_KEY = "sb_publishable_7I2mLnN9Uubmq_ssLmg5qg_TdrWTWka";
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// --- SUPABASE ---
+const SUPABASE_URL="https://mhfqzujwzjxusckhibkr.supabase.co";
+const SUPABASE_KEY="sb_publishable_7I2mLnN9Uubmq_ssLmg5qg_TdrWTWka";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 const D={
 CHEMISTRY:[[null,["Solutions","Chemical Kinetics","Electrochemistry","Co-ordination Compounds","DnF Block"]],["ORGANIC",["Haloalkanes and Haloarenes","Alcohols, Phenols and Esters","Aldehydes, Ketones and Carboxylic Acid","Amines","Biomolecules"]]],
@@ -161,42 +186,36 @@ PHYSICS:[["VOLUME 1",["Electric Charges and Fields","Electrostatic Potential and
 MATHS:[["PART 1",["Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability","Application of Derivatives"]],["PART 2",["Integrals","Application of Integrals","Differential Equations","Vector Algebra","Three Dimensional Geometry","Linear Programming","Probability"]]]
 };
 const OFF=[1,7,21],KEY="spaced_revision_v1";
-let S={}, R={}, P={}, SO=false;
-let pending=0, loaded=false;
+let S={},R={},P={},pending=0,loaded=false;
+let SM="";try{SM=({"1":"pri","pri":"pri","date":"date"})[localStorage.getItem(KEY+"_s")]||""}catch(e){}
+const setStatus=t=>{syncStatus.textContent=t};
+const apply=d=>{S=d.S||{};R=d.R||{};P=d.P||{}};
 
-const setStatus=(t)=>{syncStatus.textContent=t};
-const apply=d=>{S=d.S||{};R=d.R||{};P=d.P||{};SO=!!d.SO};
-
-// Pull latest data from cloud (skipped while a save is in progress)
+// Cloud: pull latest (skipped while saving)
 async function pull(quiet){
   if(pending>0)return;
   if(!quiet)setStatus("🔄 Syncing...");
   const {data,error}=await sb.from('revision_tracker').select('*').eq('id',1).maybeSingle();
   if(error){setStatus("🔴 "+error.message);return}
   if(pending>0)return;
-  if(data&&data.data){
-    apply(data.data);loaded=true;
-    setStatus("🟢 Live Synced");render();
-  }else if(!loaded){
-    // First run: no cloud row yet -> import old local progress if any, then upload
-    try{const o=JSON.parse(localStorage.getItem(KEY)||"{}");apply(o)}catch(_){}
-    loaded=true;render();await save();
+  if(data&&data.data){apply(data.data);loaded=true;setStatus("🟢 Live Synced");render()}
+  else if(!loaded){ // first run: import old local data, then upload
+    try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+    try{R=JSON.parse(localStorage.getItem(KEY+"_r")||"{}")}catch(e){}
+    try{P=JSON.parse(localStorage.getItem(KEY+"_p")||"{}")}catch(e){}
+    loaded=true;render();push();
   }else setStatus("🟢 Live Synced");
 }
-
-// Save to cloud, show real status
-async function save(){
-  render();
+async function push(){
   pending++;setStatus("⏳ Saving...");
-  const {error}=await sb.from('revision_tracker').upsert({id:1,data:{S,R,P,SO}});
+  const {error}=await sb.from('revision_tracker').upsert({id:1,data:{S,R,P}});
   pending--;
   setStatus(error?"🔴 Save failed: "+error.message:"🟢 Live Synced");
 }
-
-// Realtime (instant) + polling/visibility (backup)
-sb.channel('db-changes').on('postgres_changes',{event:'*',schema:'public',table:'revision_tracker'},payload=>{
-  if(pending>0||!payload.new||!payload.new.data)return;
-  apply(payload.new.data);render();setStatus("🟢 Live Synced");
+const save=()=>{try{localStorage.setItem(KEY+"_s",SM)}catch(e){}push()};
+sb.channel('db-changes').on('postgres_changes',{event:'*',schema:'public',table:'revision_tracker'},p=>{
+  if(pending>0||!p.new||!p.new.data)return;
+  apply(p.new.data);render();setStatus("🟢 Live Synced");
 }).subscribe();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull(true)});
 setInterval(()=>{if(!document.hidden)pull(true)},15000);
@@ -209,8 +228,36 @@ const tmr=()=>iso(add(iso(new Date()),1));
 const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const add=(s,n)=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d+n)};
 const fmt=d=>d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
-const cur=()=>({"#physics":"PHYSICS","#maths":"MATHS"})[location.hash]||"CHEMISTRY";
-
+const cur=()=>({"#physics":"PHYSICS","#maths":"MATHS","#calendar":"CALENDAR"})[location.hash]||"CHEMISTRY";
+let SEL=iso(new Date()),CM=SEL.slice(0,7);
+const SJ=["CHEMISTRY","PHYSICS","MATHS"];
+function calHTML(today){
+  const by={};
+  Object.entries(D).forEach(([sj,bl])=>bl.forEach((b,bi)=>b[1].forEach(t=>{const id=sj+"|"+bi+"|"+t;if(!S[id])return;
+    (by[S[id]]=by[S[id]]||[]).push({ty:-1,sj,t,id,k:S[id]});
+    OFF.forEach((o,i)=>{const k=eff(id,i);(by[k]=by[k]||[]).push({ty:i,sj,t,id,k,dn:!!rv(id,i).d})})})));
+  const[y,m]=CM.split("-").map(Number),lead=(new Date(y,m-1,1).getDay()+6)%7,dim=new Date(y,m,0).getDate();
+  let cells=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(w=>`<div class="wk">${w}</div>`).join("")+'<i></i>'.repeat(lead);
+  for(let d=1;d<=dim;d++){
+    const k=y+"-"+String(m).padStart(2,"0")+"-"+String(d).padStart(2,"0"),L=by[k]||[],st=L.filter(x=>x.ty<0).length,rl=L.filter(x=>x.ty>=0),pend=rl.filter(x=>!x.dn).length;
+    let tag="";
+    if(st)tag+=`<em class="g1">${st}<span class="w"> study</span></em>`;
+    if(rl.length)tag+=`<em class="${!pend?"g3":k<today?"g4":k===today?"g5":"g2"}">${rl.length}<span class="w"> rev</span></em>`;
+    cells+=`<button class="cd${k===today?" td":""}${k===SEL?" sl":""}" data-d="${k}"><b>${d}</b>${tag}</button>`;
+  }
+  const L=(by[SEL]||[]).slice().sort((a,z)=>(a.ty<0?-1:0)-(z.ty<0?-1:0)||pv(z.id)-pv(a.id));
+  const rows=L.map(x=>{
+    let st,btn="";
+    if(x.ty<0)st='<span class="r s">To study</span>';
+    else{const key=x.id+"|"+x.ty,c=x.dn?"k":x.k===today?"d":x.k<today?"o":"f";
+      st=`<span class="r ${c}">${x.dn?"&check; ":""}Rev ${x.ty+1}</span>`;
+      btn=x.dn?`<button class="b" data-u="${key}" title="Undo">&#8630;</button>`:`<button class="b" data-m="${key}" title="Mark revised">&check;</button>`+(x.k<=today?`<button class="b m" data-r="${key}" title="Not revised: move to tomorrow">&#8635;</button>`:"");}
+    return `<div class="dr"><span class="tg">${x.sj}</span><span class="dn">${x.t}</span><button class="pr ${["lo","md","h"][pv(x.id)]}" data-p="${x.id}" title="Click to change priority">${["Low","Medium","High"][pv(x.id)]}</button>${st}<span class="rc">${btn}</span></div>`}).join("");
+  const ns=L.filter(x=>x.ty<0).length,nr=L.length-ns;
+  const mt=new Date(y,m-1,1).toLocaleDateString("en-GB",{month:"long",year:"numeric"}).toUpperCase();
+  const dt=add(SEL,0).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  return `<div class="cal"><section class="sec"><div class="sh"><h2>${mt}</h2><div class="bs"><button class="nv" data-nav="-1">&lsaquo;</button><button class="nv" data-nav="0">Today</button><button class="nv" data-nav="1">&rsaquo;</button></div></div><div class="cg">${cells}</div></section><section class="sec"><div class="sh"><h2>${dt}</h2></div>${L.length?`<div class="sm">${ns} to study &middot; ${nr} revision${nr===1?"":"s"}</div><div class="dt">${rows}</div>`:'<div class="em0">Nothing due on this day.</div>'}</section></div>`;
+}
 function row(id,n,t){
   const v=S[id]||"",today=iso(new Date());
   let h=`<tr class="lr p${pv(id)}${v?" on":""}"><td class="n"><span class="nb">${n}</span></td><td class="l">${t}</td><td><button class="pr ${["lo","md","h"][pv(id)]}" data-p="${id}" title="Click to change priority">${["Low","Medium","High"][pv(id)]}</button></td><td><span class="dw"><span class="r ${v?"s":"ph"}">${v?fmt(add(v,0)):"Pick date"}</span><input type="date" data-id="${id}" value="${v}">${v?`<button class="x" data-c="${id}" title="Clear date">&times;</button>`:""}</span></td>`;
@@ -224,32 +271,39 @@ function row(id,n,t){
 function render(){
   const today=iso(new Date());let n1=0,n2=0,n3=0,n4=0,n5=0;
   Object.entries(D).forEach(([s,bl])=>bl.forEach((b,bi)=>b[1].forEach(t=>{const id=s+"|"+bi+"|"+t;if(S[id]){n1++;OFF.forEach((o,i)=>{const k=eff(id,i);if(rv(id,i).d)n5++;else if(k===today)n2++;else if(k>today)n3++;else n4++})}})));
-  const c=cur(),bl=D[c];let idx=0,tot=0,done=0,body="";
+  const c=cur();
+  const fin=()=>{document.querySelectorAll(".tabs a").forEach(a=>a.classList.toggle("on",a.dataset.t===c));so.style.display=sd.style.display=c==="CALENDAR"?"none":"";so.textContent="Sort by priority: "+(SM==="pri"?"On":"Off");so.classList.toggle("on",SM==="pri");sd.textContent="Sort by date: "+(SM==="date"?"On":"Off");sd.classList.toggle("on",SM==="date");s1.textContent=n1;s2.textContent=n2;s3.textContent=n3;s4.textContent=n4;s5.textContent=n5};
+  if(c==="CALENDAR"){app.innerHTML=calHTML(today);fin();return}
+  const bl=D[c];let idx=0,tot=0,done=0,body="";
   const items=[];
   bl.forEach((b,bi)=>{
     b[1].forEach((t,j)=>items.push({t,n:++idx,bi,id:c+"|"+bi+"|"+t,lab:j?"":b[0]}));
   });
-  if(SO)items.sort((a,z)=>pv(z.id)-pv(a.id)||a.n-z.n);
+  if(SM==="pri")items.sort((a,z)=>pv(z.id)-pv(a.id)||a.n-z.n);
+  if(SM==="date")items.sort((a,z)=>(S[a.id]||"9999").localeCompare(S[z.id]||"9999")||pv(z.id)-pv(a.id)||a.n-z.n);
+  let sn=0;
   let lp=-1;items.forEach(x=>{tot++;if(S[x.id])done++;
-    if(SO&&pv(x.id)!==lp){lp=pv(x.id);body+=`<tr class="sb"><td colspan="7" style="color:${["#00d4ff","#b69cff","#ff8fb1"][lp]}">${["LOW","MEDIUM","HIGH"][lp]} PRIORITY</td></tr>`}
-    if(!SO&&x.lab)body+=`<tr class="sb"><td colspan="7">${x.lab}</td></tr>`;
-    body+=row(x.id,x.n,x.t)});
+    if(SM==="pri"&&pv(x.id)!==lp){lp=pv(x.id);body+=`<tr class="sb"><td colspan="7" style="color:${["#00d4ff","#b69cff","#ff8fb1"][lp]}">${["LOW","MEDIUM","HIGH"][lp]} PRIORITY</td></tr>`}
+    if(!SM&&x.lab)body+=`<tr class="sb"><td colspan="7">${x.lab}</td></tr>`;
+    body+=row(x.id,SM?++sn:x.n,x.t)});
   app.innerHTML=`<section class="sec"><div class="sh"><h2>${c}</h2><div class="pg">${done}/${tot} started<i><u style="width:${done/tot*100}%"></u></i></div></div><div class="wrap"><table><thead><tr><th>#</th><th>Lesson</th><th>Priority</th><th>Date to study</th><th>Rev 1</th><th>Rev 2</th><th>Rev 3</th></tr></thead><tbody>${body}</tbody></table></div></section>`;
-  document.querySelectorAll(".tabs a").forEach(a=>a.classList.toggle("on",a.dataset.t===c));
-  so.textContent="Sort by priority: "+(SO?"On":"Off");so.classList.toggle("on",SO);s1.textContent=n1;s2.textContent=n2;s3.textContent=n3;s4.textContent=n4;s5.textContent=n5;
+  fin();
 }
-document.addEventListener("change",e=>{const i=e.target.dataset&&e.target.dataset.id;if(!i)return;e.target.value?S[i]=e.target.value:delete S[i];delete R[i];save()});
+document.addEventListener("change",e=>{const i=e.target.dataset&&e.target.dataset.id;if(!i)return;e.target.value?S[i]=e.target.value:delete S[i];delete R[i];save();render()});
 document.addEventListener("click",e=>{
-  const d=e.target.dataset||{};if(e.target.type==="date"&&e.target.showPicker){try{e.target.showPicker()}catch(_){}}
+  const el=e.target.closest&&e.target.closest("[data-c],[data-m],[data-u],[data-r],[data-p],[data-d],[data-nav]"),d=el?el.dataset:{};
+  if(e.target.type==="date"&&e.target.showPicker){try{e.target.showPicker()}catch(_){}}
   if(d.c){delete S[d.c];delete R[d.c]}
   else if(d.p){P[d.p]=(pv(d.p)+1)%3}
+  else if(d.d){SEL=d.d;render();return}
+  else if(d.nav!==undefined){if(d.nav==="0"){SEL=iso(new Date());CM=SEL.slice(0,7)}else{const[y,m]=CM.split("-").map(Number),n=new Date(y,m-1+(+d.nav),1);CM=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")}render();return}
   else{const x=d.m||d.u||d.r;if(!x)return;const p=x.lastIndexOf("|"),id=x.slice(0,p),i=+x.slice(p+1);
     if(d.m)setR(id,i,{d:true});else if(d.u)setR(id,i,{d:false});else setR(id,i,{o:tmr(),d:false})}
-  save()});
-so.onclick=()=>{SO=!SO;save()};
-mv.onclick=()=>{const t=iso(new Date());Object.keys(S).forEach(id=>OFF.forEach((o,i)=>{if(!rv(id,i).d&&eff(id,i)<t)setR(id,i,{o:tmr()})}));save()};
+  save();render()});
+so.onclick=()=>{SM=SM==="pri"?"":"pri";try{localStorage.setItem(KEY+"_s",SM)}catch(e){}render()};
+sd.onclick=()=>{SM=SM==="date"?"":"date";try{localStorage.setItem(KEY+"_s",SM)}catch(e){}render()};
+mv.onclick=()=>{const t=iso(new Date());Object.keys(S).forEach(id=>OFF.forEach((o,i)=>{if(!rv(id,i).d&&eff(id,i)<t)setR(id,i,{o:tmr()})}));save();render()};
 addEventListener("hashchange",render);
-
 render();
 pull(false);
 </script>
