@@ -152,6 +152,118 @@ tr.lr:hover td{background:#1d2350e6}
 .em0{padding:30px 16px;text-align:center;color:var(--mut)}
 .sm{padding:12px 20px 0;color:var(--mut);font-size:15px}
 @media(max-width:640px){.cg{gap:4px;padding:8px}.cd{min-height:66px;padding:5px}.cd b{font-size:14px}.cd em{font-size:10px;padding:1px 6px}.w{display:none}}
+.mks{display:flex;gap:4px;flex-wrap:wrap}
+.mk{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--c);color:#06101a;font-size:12px;font-weight:800;box-shadow:0 0 10px var(--c)}
+.dr{border-left:4px solid var(--c)}
+.tg{color:var(--c);background:color-mix(in srgb,var(--c) 18%,transparent);border-color:color-mix(in srgb,var(--c) 55%,transparent)}
+.dr[draggable=true]{cursor:grab}
+.dr.dg{opacity:.4}
+.gp{color:var(--mut);font-size:18px;letter-spacing:-3px;user-select:none}
+.cd.ov{border-color:var(--blue);background:#00d4ff22;box-shadow:0 0 0 2px var(--blue),0 0 24px #00d4ff88}
+.lgd{display:flex;gap:18px;flex-wrap:wrap;padding:0 18px 16px;color:var(--mut);font-size:14px}
+.lgd span{display:inline-flex;align-items:center;gap:7px}
+.lgd i{width:13px;height:13px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c)}
+.ml{align-self:center;color:var(--mut);font-size:15px;margin-left:6px}
+.pkb{display:inline-block;padding:12px 20px;font-size:15px;border:1px solid #3a4390;border-radius:12px;background:#0e1020cc;transition:.2s}
+.dw:hover .pkb{border-color:var(--blue);box-shadow:0 0 16px #00d4ff66}
+.dw .b{display:block}
+@media(max-width:640px){.cd em{display:none}.mk{min-width:17px;height:17px;font-size:10px;padding:0 4px}}
+.sync-indicator{font-size:12px;float:right;font-weight:600;letter-spacing:0;-webkit-text-fill-color:var(--blue);color:var(--blue);max-width:60%;text-align:right}
+.tabs{flex-wrap:wrap;border-radius:24px}
+.tabs a{padding:10px 18px;font-size:13px}
+.gr{padding:14px 18px 18px}
+.gr svg{width:100%;height:auto;display:block}
+.cap{color:var(--mut);font-size:13px;padding:0 20px 16px}
+.rb{display:flex;align-items:center;gap:12px;padding:8px 12px;background:#151a3ab8;border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:.2s}
+.rb:hover{border-color:var(--blue);transform:translateX(3px)}
+.rb .n{flex:0 0 min(230px,40%);font-weight:600;font-size:15px}
+.rb i{flex:1;height:10px;background:#ffffff12;border-radius:9px;overflow:hidden}
+.rb u{display:block;height:100%;border-radius:9px;transition:width .5s}
+.rb b{width:52px;text-align:right}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:22px}
+.pl{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:22px;margin-bottom:22px}
+.pl .sec{margin-bottom:0}
+.wgr{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px}
+.wgr label{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:var(--mut);background:#ffffff08;border-radius:8px;padding:4px 10px}
+.pc input,.pc select,.sh select,.hl input{background:#0e1020cc;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font:inherit;font-size:15px;outline:0;color-scheme:dark}
+.wgr input{width:64px}
+.hl{display:flex;gap:10px;flex-wrap:wrap;padding:14px 20px;align-items:center}
+.sh select{max-width:100%}
+.sub2{color:var(--mut);font-size:14px;padding:12px 20px 0}
+.tm{display:flex;flex-direction:column;align-items:center;gap:18px;padding:26px 16px 30px}
+.tmodes,.tmrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.nv.on{background:linear-gradient(90deg,var(--blue),var(--vio));color:#05101a;border-color:transparent;font-weight:700;box-shadow:0 0 18px #00d4ff77}
+.ring{position:relative;width:min(340px,78vw);aspect-ratio:1}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .t{position:absolute;inset:0;display:grid;place-items:center;font-size:clamp(52px,13vw,84px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:2px;text-shadow:0 0 24px #00d4ff66}
+.tml{color:var(--mut);font-size:17px;letter-spacing:1px}
+.go{padding:14px 44px;font-size:20px;font-weight:800;background:linear-gradient(90deg,var(--blue),var(--vio));color:#05101a;border-color:transparent;box-shadow:0 0 22px #00d4ff77}
+.go:hover{filter:brightness(1.15)}
+.dots{display:flex;gap:10px}.dots i{width:14px;height:14px;border-radius:50%;transition:.3s}
+.tmc{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.wgr.tmc{display:grid}
+.wgr input[type=checkbox]{width:22px;height:22px;accent-color:#8b5cf6}
+</style>
+</head>
+<body>
+<div class="bg"><i></i><i></i><i></i></div>
+<main>
+<h1>SPACED REVISION <span class="sync-indicator" id="syncStatus">⚡ Connecting...</span></h1>
+<p class="sub">Set each lesson&rsquo;s priority and the date you plan to study it &mdash; Rev 1 (+1 day), Rev 2 (+7 days), Rev 3 (+21 days) fill in automatically. Tick each revision when done; if missed, move it to the next day.</p>
+<div class="stats">
+<div class="chip"><b id="s1">0</b><span>Lessons started</span></div>
+<div class="chip t"><b id="s2">0</b><span>Due today</span></div>
+<div class="chip"><b id="s4" style="color:#ff8fb1">0</b><span>Overdue</span></div>
+<div class="chip"><b id="s3">0</b><span>Upcoming</span></div>
+<div class="chip t"><b id="s5" style="color:#34d399">0</b><span>Revised</span></div>
+</div>
+<div class="top">
+<nav class="tabs"><a href="#today" data-t="TODAY">Today</a><a href="#chemistry" data-t="CHEMISTRY">Chemistry</a><a href="#physics" data-t="PHYSICS">Physics</a><a href="#maths" data-t="MATHS">Maths</a><a href="#calendar" data-t="CALENDAR">Calendar</a><a href="#curve" data-t="CURVE">Curve</a><a href="#planner" data-t="PLANNER">Planner</a><a href="#stats" data-t="STATS">Stats</a><a href="#timer" data-t="TIMER">Timer</a></nav>
+<div class="bs"><button id="so">Sort by priority: Off</button><button id="sd">Sort by date: Off</button><span class="ml">Move all missed to:</span><button data-mm="0">Today</button><button data-mm="1">Tomorrow</button><span class="dw"><span class="pkb">Pick date</span><input type="date" id="mmd"></span></div>
+</div>
+<div id="app"></div>
+<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Cloud sync on (auto-refresh 15s). &middot; <b style='color:var(--vio)'>v9: Pomodoro Timer</b></p>
+</main>
+<script>
+const SUPABASE_URL="https://mhfqzujwzjxusckhibkr.supabase.co";
+const SUPABASE_KEY="sb_publishable_7I2mLnN9Uubmq_ssLmg5qg_TdrWTWka";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const D={
+CHEMISTRY:[[null,["Solutions","Chemical Kinetics","Electrochemistry","Co-ordination Compounds","DnF Block"]],["ORGANIC",["Haloalkanes and Haloarenes","Alcohols, Phenols and Esters","Aldehydes, Ketones and Carboxylic Acid","Amines","Biomolecules"]]],
+PHYSICS:[["VOLUME 1",["Electric Charges and Fields","Electrostatic Potential and Capacitance","Current Electricity","Moving Charges and Magnetism","Magnetism and Matter","Electromagnetic Induction","Alternating Current","Electromagnetic Waves"]],["VOLUME 2",["Ray Optics and Optical Instruments","Wave Optics","Dual Nature of Radiation and Matter","Atoms","Nuclei","Semiconductor Electronics"]]],
+MATHS:[["PART 1",["Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability","Application of Deri:48vw;background:#00d4ff;left:-12vw;top:-14vw;animation:f1 24s ease-in-out infinite alternate}
+.bg i:nth-child(2){width:44vw;height:44vw;background:#8b5cf6;right:-14vw;top:8vh;animation:f2 30s ease-in-out infinite alternate}
+.bg i:nth-child(3){width:38vw;height:38vw;background:#4f46e5;left:28vw;bottom:-20vw;animation:f3 27s ease-in-out infinite alternate}
+@keyframes f1{to{transform:translate(22vw,18vh) scale(1.25)}}
+@keyframes f2{to{transform:translate(-26vw,22vh) scale(.85)}}
+@keyframes f3{to{transform:translate(-20vw,-24vh) scale(1.3)}}
+@media(prefers-reduced-motion:reduce){.bg i{animation:none}}
+.nv{background:#0e1020cc;color:var(--tx);border:1px solid #3a4390;border-radius:12px;padding:9px 16px;cursor:pointer;font:inherit;font-size:15px;transition:.2s}
+.nv:hover{border-color:var(--blue);box-shadow:0 0 14px #00d4ff66}
+.cal{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,1fr);gap:22px;align-items:start}
+.cal .sec{margin-bottom:0}
+@media(max-width:1000px){.cal{grid-template-columns:1fr}}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;padding:16px}
+.wk{text-align:center;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);font-weight:700;padding:4px 0}
+.cd{min-height:96px;border-radius:14px;background:#151a3ab8;border:1px solid var(--line);color:var(--tx);cursor:pointer;font:inherit;padding:8px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:4px;transition:.2s}
+.cd:hover{border-color:var(--blue);box-shadow:0 0 14px #00d4ff55}
+.cd b{font-size:17px}
+.cd em{font-style:normal;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;border:1px solid}
+.g1{color:#e0d7ff;background:#8b5cf648;border-color:#a78bfacc}
+.g2{color:var(--blue);background:#00d4ff2e;border-color:#00d4ffaa}
+.g3{color:#34d399;background:#34d39930;border-color:#34d399aa}
+.g4{color:#ff8fb1;background:#ff3d7138;border-color:#ff5c8acc}
+.g5{color:#05101a;background:linear-gradient(90deg,var(--blue),var(--vio));border-color:transparent;box-shadow:0 0 12px #00d4ffaa}
+.cd.td b{color:var(--blue);text-shadow:0 0 10px var(--blue)}
+.cd.sl{border-color:var(--vio);box-shadow:0 0 0 2px #8b5cf6aa,0 0 20px #8b5cf666;background:#1d2350}
+.dt{padding:8px 16px 18px;display:flex;flex-direction:column;gap:10px}
+.dr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#151a3ab8;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.dr .dn{flex:1 1 180px;font-weight:600;font-size:16px}
+.tg{font-size:11px;letter-spacing:1.5px;font-weight:700;color:#b69cff;background:#8b5cf624;border:1px solid #8b5cf655;border-radius:8px;padding:3px 8px}
+.em0{padding:30px 16px;text-align:center;color:var(--mut)}
+.sm{padding:12px 20px 0;color:var(--mut);font-size:15px}
+@media(max-width:640px){.cg{gap:4px;padding:8px}.cd{min-height:66px;padding:5px}.cd b{font-size:14px}.cd em{font-size:10px;padding:1px 6px}.w{display:none}}
 .sync-indicator{font-size:12px;float:right;font-weight:600;letter-spacing:0;-webkit-text-fill-color:var(--blue);color:var(--blue);max-width:60%;text-align:right}
 .tabs{flex-wrap:wrap;border-radius:24px}
 .tabs a{padding:10px 18px;font-size:13px}
