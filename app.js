@@ -305,3 +305,7 @@ let LASTH="";if(location.hash!=="#timer")LASTH=location.hash;
 addEventListener("hashchange",function(){if(location.hash!=="#timer")LASTH=location.hash});
 addEventListener("message",function(e){if(e.data==="tracker-exit")location.hash=LASTH||"#today"});
 document.getElementById("ver").textContent="v18: new timer page";
+
+window.getTasks=()=>{const t=iso(new Date());return[...queue(t).map(x=>({id:x.id,i:x.i,type:'rev',sub:subOf(x.id).slice(0,4),name:nameOf(x.id),lbl:(x.od>0?'Overdue '+x.od+'d':'Due today')+' · Rev '+(x.i+1)})),...started().filter(id=>S[id]===t).map(id=>({id,type:'study',sub:subOf(id).slice(0,4),name:nameOf(id),lbl:'To study'}))]};
+window.markDone=(id,i)=>{setR(id,i,{d:true,c:iso(new Date())});save();render()};
+window.addHours=(k,h)=>{H[k]=Math.round(((H[k]||0)+h)*100)/100;save()};
