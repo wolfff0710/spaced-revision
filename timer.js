@@ -41,6 +41,11 @@ function renderStr(){
 /* ---------- timer ---------- */
 const mm=s=>String(Math.floor(s/60)).padStart(2,'0'),ss=s=>String(s%60).padStart(2,'0');
 const LBL={focus:'Focus session',short:'Short Break session',long:'Long Break session'};
+let wl;
+function wake(){
+  if(run&&!wl&&navigator.wakeLock){wl=1;navigator.wakeLock.request('screen').then(l=>{wl=l;l.onrelease=()=>wl=null}).catch(()=>wl=null)}
+  else if(!run&&wl&&wl.release)wl.release();
+}
 function draw(){
   $('#time').innerHTML=mm(left)+'<em>:</em>'+ss(left);
   $('#pill').textContent=LBL[mode];
