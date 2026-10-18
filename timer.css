@@ -172,3 +172,6 @@ button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .prow small{color:var(--mute);margin-right:6px}
 #bg{transition:filter .4s,transform .4s}
 #bg::after{background:rgba(0,0,0,var(--dim,.45))}
+
+#ringw svg{display:block}
+#tabs{position:absolute;left:0;right:0;margin:auto;width:max-content;bottom:calc(50% + clamp(130px,19vw,195px) + 36px)}
