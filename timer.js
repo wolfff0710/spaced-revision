@@ -75,9 +75,10 @@ function done(){
   if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.n++;d.s=Math.max(d.s,900);sv('k_h',HS)}
   sv('k_t',T);beep();const nx=mode==='focus'?'short':'focus';pick(nx);if(nx==='focus'?S.auto.f:S.auto.b)start();
 }
+let tk=0;
 function start(){
   run=true;end=Date.now()+left*1000;let lt=Date.now();
-  iv=setInterval(()=>{const nw=Date.now(),dt=(nw-lt)/1000;lt=nw;if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.s+=dt;acc+=dt;if(acc>=60)flush();if(Math.floor(d.s)%5===0)sv('k_h',HS)}left=Math.max(0,Math.round((end-Date.now())/1000));draw();if(!left){clearInterval(iv);run=false;done()}},250);draw();
+  iv=setInterval(()=>{const nw=Date.now(),dt=(nw-lt)/1000;lt=nw;if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.s+=dt;acc+=dt;if(acc>=60)flush();if(++tk%20===0)sv('k_h',HS)}left=Math.max(0,Math.round((end-Date.now())/1000));draw();if(!left){clearInterval(iv);run=false;done()}},250);draw();
 }
 $('#go').onclick=()=>{
   try{ac=ac||new(window.AudioContext||window.webkitAudioContext)()}catch(e){}
@@ -232,5 +233,5 @@ save();pick('focus');
 
 try{const K=parent.getTimer();
 if(K&&K.s){S={...DEF,...K.s};S.d={...DEF.d,...S.d};S.auto={...DEF.auto,...S.auto};S.al={...DEF.al,...S.al};T=K.t||T;
-Object.entries(K.h||{}).forEach(([d,b])=>{const a=HS[d]||{s:0,n:0};HS[d]={s:Math.max(a.s,b.s),n:Math.max(a.n,b.n)}});renderSet()}
+Object.entries(K.h||{}).forEach(([d,b])=>{const a=HS[d]||{s:0,n:0};HS[d]={s:Math.max(a.s,b.s),n:Math.max(a.n,b.n)}});left=S.d[mode]*60;save();left=S.d[mode]*60;save();left=S.d[mode]*60;save();renderSet()}
 else if(K)sync()}catch(e){}
