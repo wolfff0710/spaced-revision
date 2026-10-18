@@ -44,7 +44,7 @@
 <script>
 addEventListener("hashchange",render);
 render();
-pull(false);
+login().then(()=>pull(false));
 </script>
 </body>
 </html>
