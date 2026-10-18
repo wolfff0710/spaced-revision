@@ -19,6 +19,16 @@ const snap=()=>sg({S,R,P,E,W,H,A,K});
 const busy=()=>{const a=document.activeElement;return !!a&&/INPUT|SELECT/.test(a.tagName)&&app.contains(a)};
 const rd=()=>{if(!busy())render()};
 
+async function login(){
+  if(!sb)return false;
+  const{data}=await sb.auth.getSession();
+  if(data.session)return true;
+  const email=prompt("Email:"),password=prompt("Password:");
+  if(!email||!password)return false;
+  const{error}=await sb.auth.signInWithPassword({email,password});
+  if(error){alert(error.message);return false}
+  return true;
+}
 async function pull(quiet){
   if(!sb){loaded=true;setStatus("🟠 Offline · saved on this device");return}
   if(pending>0)return;
