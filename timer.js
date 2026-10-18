@@ -56,6 +56,16 @@ function draw(){
   $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.m===mode));
   document.title=run?mm(left)+':'+ss(left)+' · Krtk':'Krtk';
 }
+let acc=0;
+function flush(){if(acc>=1&&parent!==window){try{parent.addHours(key(),acc/3600)}catch(e){}acc=0}}
+addEventListener('pagehide',flush);
+function renderTk(){
+  let L=[];try{L=parent.getTasks()}catch(e){}
+  $('#tkl').innerHTML=L.length?L.map(x=>'<div class="set"><span>'+x.sub+' · '+x.name+'<small style="display:block;color:var(--mute)">'+x.lbl+'</small></span>'+(x.type==='rev'?'<button class="pbtn" style="flex:none" data-id="'+x.id+'" data-i="'+x.i+'">✓</button>':'')+'</div>').join(''):'<p class="note">Nothing due today 🎉</p>';
+}
+$('#tkl').onclick=e=>{const b=e.target.closest('button');if(!b)return;parent.markDone(b.dataset.id,+b.dataset.i);renderTk()};
+$('#b-tk').onclick=()=>openP('tk');
+
 function pick(m){sv('k_h',HS);clearInterval(iv);run=false;mode=m;left=S.d[m]*60;draw()}
 function done(){
   T[mode]++;
