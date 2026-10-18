@@ -1,6 +1,8 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
-const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}};
+let st=0;
+function sync(){if(st)return;st=setTimeout(()=>{st=0;try{parent.setTimer({s:S,t:T,h:HS})}catch(e){}},10000)}
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){return false}if(k!=='k_p')sync();return true};
 const PRE={fantasy:['Fantasy','radial-gradient(circle at 50% 40%,#33454f,#0a0e13 70%)'],pastel:['Pastel','linear-gradient(180deg,#5c6fd6,#e07aa8 55%,#f6b48a)'],lofi:['Lofi','linear-gradient(160deg,#171335,#3b2a6b 55%,#c26a8f)'],cyber:['Cyberpunk','linear-gradient(160deg,#0a0620,#3a0f6b 50%,#0aa5c4)']};
 const ACC=['#5b9bff','#a98bff','#2dd4bf','#a3e635','#ff6b81','#f2c46d'];
 const FX=['off','motes','drift','stars','rain','bubbles'];
@@ -55,6 +57,7 @@ function draw(){
   $('#streak').textContent=streak().cur;if(panel.classList.contains('open')&&!$('#p-str').hidden)renderStr();
   $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.m===mode));
   document.title=run?mm(left)+':'+ss(left)+' · Krtk':'Krtk';
+  wake();
 }
 let acc=0;
 function flush(){if(acc>=1&&parent!==window){try{parent.addHours(key(),acc/3600)}catch(e){}acc=0}}
@@ -74,7 +77,7 @@ function done(){
 }
 function start(){
   run=true;end=Date.now()+left*1000;let lt=Date.now();
-  iv=setInterval(()=>{const nw=Date.now(),dt=(nw-lt)/1000;lt=nw;if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.s+=dt;acc+=dt;if(acc>=60)flush();acc+=dt;if(acc>=60)flush();acc+=dt;if(acc>=60)flush();acc+=dt;if(acc>=60)flush();acc+=dt;if(acc>=60)flush();if(Math.floor(d.s)%5===0)sv('k_h',HS)}left=Math.max(0,Math.round((end-Date.now())/1000));draw();if(!left){clearInterval(iv);run=false;done()}},250);draw();
+  iv=setInterval(()=>{const nw=Date.now(),dt=(nw-lt)/1000;lt=nw;if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.s+=dt;acc+=dt;if(acc>=60)flush();if(Math.floor(d.s)%5===0)sv('k_h',HS)}left=Math.max(0,Math.round((end-Date.now())/1000));draw();if(!left){clearInterval(iv);run=false;done()}},250);draw();
 }
 $('#go').onclick=()=>{
   try{ac=ac||new(window.AudioContext||window.webkitAudioContext)()}catch(e){}
