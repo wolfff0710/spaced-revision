@@ -14,14 +14,19 @@ let SM="";try{SM=({"1":"pri","pri":"pri","date":"date"})[localStorage.getItem(KE
 const setStatus=t=>{syncStatus.textContent=t};
 const apply=d=>{K=d.K||{};S=d.S||{};R=d.R||{};P=d.P||{};E=d.E||{};W=d.W||{};H=d.H||{};A=d.A!==false};
 try{const L0=JSON.parse(localStorage.getItem(KEY+"_all")||"null");if(L0)apply(L0)}catch(e){}
+const sg=o=>JSON.stringify(o,(k,v)=>v&&typeof v==="object"&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(x=>[x,v[x]])):v);
+const snap=()=>sg({S,R,P,E,W,H,A,K});
+const busy=()=>{const a=document.activeElement;return !!a&&/INPUT|SELECT/.test(a.tagName)&&app.contains(a)};
+const rd=()=>{if(!busy())render()};
+
 async function pull(quiet){
-  if(!sb){setStatus("🟠 Offline · saved on this device");return}
+  if(!sb){loaded=true;setStatus("🟠 Offline · saved on this device");return}
   if(pending>0)return;
   if(!quiet)setStatus("🔄 Syncing...");
   let data,error;try{({data,error}=await sb.from('revision_tracker').select('*').eq('id',1).maybeSingle())}catch(e){setStatus("🟠 Offline · saved on this device");return}
   if(error){setStatus("🔴 "+error.message);return}
   if(pending>0)return;
-  if(data&&data.data){apply(data.data);loaded=true;setStatus("🟢 Live Synced");render()}
+  if(data&&data.data){const b=snap();apply(data.data);loaded=true;setStatus("🟢 Live Synced");if(b!==snap())rd()}
   else if(!loaded){
     try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
     try{R=JSON.parse(localStorage.getItem(KEY+"_r")||"{}")}catch(e){}
@@ -40,7 +45,7 @@ async function push(){
 const save=()=>{try{localStorage.setItem(KEY+"_s",SM)}catch(e){}push()};
 if(sb)try{sb.channel('db-changes').on('postgres_changes',{event:'*',schema:'public',table:'revision_tracker'},p=>{
   if(pending>0||!p.new||!p.new.data)return;
-  apply(p.new.data);render();setStatus("🟢 Live Synced");
+  const b=snap();apply(p.new.data);setStatus("🟢 Live Synced");if(b!==snap())rd();
 }).subscribe()}catch(e){}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull(true)});
 setInterval(()=>{if(!document.hidden)pull(true)},15000);
@@ -157,6 +162,7 @@ const pct=v=>Math.round(v*100)+"%";
 const col=v=>v>=.7?"#34d399":v>=.4?"#fbbf24":"#ff5c8a";
 const allIds=()=>{const a=[];Object.entries(D).forEach(([s,bl])=>bl.forEach((b,bi)=>b[1].forEach(t=>a.push(s+"|"+bi+"|"+t))));return a};
 const started=()=>allIds().filter(id=>S[id]);
+const live=t=>started().filter(id=>S[id]<=t);
 function offFor(sd,ex){
   const base=[1,7,21];if(!A||!ex||!sd)return base;
   const av=dayN(sd,ex)-1;if(av>=21||av<1)return base;
@@ -229,8 +235,8 @@ function todayTab(today){
 function curveTab(today){
   const ids=started();
   if(!ids.length)return `<section class="sec"><div class="sh"><h2>FORGETTING CURVE</h2></div><div class="em0">Pick a study date for any lesson to see its curve.</div></section>`;
-  const rs=ids.map(id=>({id,r:ret(id,today)})).sort((a,b)=>a.r-b.r);
-  if(!CT||!S[CT])CT=rs[0].id;
+  const rs=live(today).map(id=>({id,r:ret(id,today)})).sort((a,b)=>a.r-b.r);
+  if(!CT||!S[CT])CT=(rs[0]||{id:ids[0]}).id;
   const opts=ids.map(id=>`<option value="${id}"${id===CT?" selected":""}>${subOf(id).slice(0,4)} &middot; ${nameOf(id)}</option>`).join("");
   return `<section class="sec"><div class="sh"><h2>FORGETTING CURVE</h2><select data-sel>${opts}</select></div><div class="gr">${curveSVG(CT,today)}</div><div class="cap">Solid = so far &middot; dashed = predicted decay if you skip further revision &middot; filled dot = revised &middot; hollow dot = scheduled revision &middot; pink = exam. Each revision makes memory about 2.6&times; more durable.</div></section><section class="sec"><div class="sh"><h2>ALL TOPICS &middot; RETENTION NOW</h2></div><div class="dt">${retRows(rs)}</div></section>`;
 }
@@ -246,7 +252,7 @@ function plannerTab(today){
   return `<section class="sec" style="margin-bottom:22px"><div class="sh"><h2>EXAM COUNTDOWN PLANNER</h2><button class="nv${A?" on":""}" data-ac="1">Auto-compress intervals: ${A?"On":"Off"}</button></div><div class="sub2">When an exam date is set, Rev 1/2/3 intervals shrink automatically so Rev 3 lands before exam day (default 1 / 7 / 21 days). Manually moved dates stay as you set them.</div><div class="gr">${barsSVG(load,"#38e1ff",v=>Math.round(v))}</div><div class="cap">Revisions due over the next 7 days</div></section><div class="pl">${cards}</div>`;
 }
 function statsTab(today){
-  const ids=started(),rets=ids.map(id=>({id,r:ret(id,today)})),ws=wkStart(today);
+  const ids=live(today),rets=ids.map(id=>({id,r:ret(id,today)})),ws=wkStart(today);
   const avg=rets.length?rets.reduce((a,x)=>a+x.r,0)/rets.length:null;
   let done=0,ot=0,od=0,wd=0;
   ids.forEach(id=>OFF.forEach((o,i)=>{const r=rv(id,i),k=eff(id,i);if(r.d){done++;if((r.c||k)<=k)ot++;if(r.c&&r.c>=ws)wd++}else if(k<today)od++}));
