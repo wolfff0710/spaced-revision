@@ -104,7 +104,7 @@ function render(){
   const c=cur();
   const fin=()=>{document.querySelectorAll(".tabs a").forEach(a=>a.classList.toggle("on",a.dataset.t===c));so.style.display=sd.style.display=SJ.includes(c)?"":"none";so.textContent="Sort by priority: "+(SM==="pri"?"On":"Off");so.classList.toggle("on",SM==="pri");sd.textContent="Sort by date: "+(SM==="date"?"On":"Off");sd.classList.toggle("on",SM==="date");cnt(s1,n1);cnt(s2,n2);cnt(s3,n3);cnt(s4,n4);cnt(s5,n5)};
   document.body.classList.toggle("tm-on",c==="TIMER");
-  if(c==="TIMER"){tmvRender();fin();return}
+  if(c==="TIMER"){tmOpen();fin();return}
   if(c==="CALENDAR"){app.innerHTML=calHTML(today);fin();return}
   if(EXTRA.includes(c)){app.innerHTML=extraHTML(c,today);fin();return}
   const bl=D[c];let idx=0,tot=0,done=0,body="";
@@ -259,7 +259,7 @@ function statsTab(today){
   return `<div class="kp">${kp}</div><section class="sec" style="margin-bottom:22px"><div class="sh"><h2>LOG STUDY HOURS</h2></div><div class="hl"><input type="date" id="hd" value="${today}"><input type="number" id="hh" step="0.25" min="0" max="24" placeholder="hours (0 = clear)"><button class="nv" data-lh="1">Log</button></div></section>
 <div class="pl"><section class="sec"><div class="sh"><h2>WEEKLY STUDY HOURS</h2></div><div class="gr">${barsSVG(wk,"#00d4ff",v=>(Math.round(v*10)/10)+"h")}</div></section><section class="sec"><div class="sh"><h2>RETENTION TREND &middot; 30 DAYS</h2></div><div class="gr">${lineSVG(tr,"#7ee8ff")}</div></section><section class="sec"><div class="sh"><h2>RETENTION BY SUBJECT</h2></div><div class="gr">${barsSVG(sub,"#34d399",v=>Math.round(v)+"%")}</div></section><section class="sec"><div class="sh"><h2>WEAKEST TOPICS</h2></div><div class="dt">${weak.length?retRows(weak):'<div class="em0">No topics started yet.</div>'}</div></section></div>`;
 }
-function extraHTML(c,today){return c==="TIMER"?timerTab(today):c==="TODAY"?todayTab(today):c==="CURVE"?curveTab(today):c==="PLANNER"?plannerTab(today):statsTab(today)}
+function extraHTML(c,today){return c==="TODAY"?todayTab(today):c==="CURVE"?curveTab(today):c==="PLANNER"?plannerTab(today):statsTab(today)}
 document.addEventListener("change",e=>{
   const t=e.target,d=t.dataset||{};
   if(d.ex!==undefined){t.value?E[d.ex]=t.value:delete E[d.ex];save()}
@@ -299,4 +299,9 @@ function enter(){
 addEventListener("hashchange",enter);
 dpill.textContent=new Date().toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});
 fxLoop();enter();
-document.getElementById("ver").textContent="v17: split into files";
+/* ---------- focus timer page (timer.html shown full-screen) ---------- */
+function tmOpen(){const f=document.getElementById("tmf");if(f&&!f.getAttribute("src"))f.setAttribute("src","timer.html")}
+let LASTH="";if(location.hash!=="#timer")LASTH=location.hash;
+addEventListener("hashchange",function(){if(location.hash!=="#timer")LASTH=location.hash});
+addEventListener("message",function(e){if(e.data==="tracker-exit")location.hash=LASTH||"#today"});
+document.getElementById("ver").textContent="v18: new timer page";

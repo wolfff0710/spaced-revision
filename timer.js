@@ -1,194 +1,203 @@
-// ===== timer =====
-let TS={f:25,s:5,l:15,n:4,auto:false};try{Object.assign(TS,JSON.parse(localStorage.getItem(KEY+"_t")||"{}"))}catch(e){}
-const MC={f:"#00d4ff",s:"#34d399",l:"#fbbf24"},ML={f:"Time to focus",s:"Take a short break",l:"Take a long break"};
-const tmLen=m=>TS[m]*60,CIRC=2*Math.PI*130;
-let TM={mode:"f",left:TS.f*60,run:false,end:0,cnt:0,fid:""};
-const tmLeft=()=>TM.run?Math.max(0,Math.ceil((TM.end-Date.now())/1000)):TM.left;
-const fmtT=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
-const tsSave=()=>{try{localStorage.setItem(KEY+"_t",JSON.stringify(TS))}catch(e){}};
-function beep(){if(TS.snd===false)return;try{const c=new(window.AudioContext||window.webkitAudioContext)();[0,.25,.5].forEach(t=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=880;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.25,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+t+.2);o.start(c.currentTime+t);o.stop(c.currentTime+t+.22)})}catch(e){}}
-function tmDone(){
-  const was=TM.mode;TM.run=false;tcInc(was);
-  if(was==="f"){TM.cnt++;const dt=iso(new Date());H[dt]=Math.round(((H[dt]||0)+TS.f/60)*100)/100;save()}
-  beep();
-  try{if("Notification"in window&&Notification.permission==="granted")new Notification(was==="f"?"Focus session done — take a break":"Break over — back to focus")}catch(e){}
-  TM.mode=was==="f"?(TM.cnt%TS.n===0?"l":"s"):"f";TM.left=tmLen(TM.mode);
-  if(TS.auto){TM.run=true;TM.end=Date.now()+TM.left*1000}
-  render();
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}};
+const PRE={fantasy:['Fantasy','radial-gradient(circle at 50% 40%,#33454f,#0a0e13 70%)'],pastel:['Pastel','linear-gradient(180deg,#5c6fd6,#e07aa8 55%,#f6b48a)'],lofi:['Lofi','linear-gradient(160deg,#171335,#3b2a6b 55%,#c26a8f)'],cyber:['Cyberpunk','linear-gradient(160deg,#0a0620,#3a0f6b 50%,#0aa5c4)']};
+const ACC=['#5b9bff','#a98bff','#2dd4bf','#a3e635','#ff6b81','#f2c46d'];
+const FX=['off','motes','stars','rain','bubbles'];
+const DEF={bg:'fantasy',acc:'#2dd4bf',fx:'motes',dim:45,blur:0,d:{focus:45,short:10,long:20},auto:{b:false,f:false},al:{on:true,t:'digital',v:1}};let S=ld('k_s',{});S={...DEF,...S};S.d={...DEF.d,...S.d};S.auto={...DEF.auto,...S.auto};S.al={...DEF.al,...S.al};let P=ld('k_p',[]),T=ld('k_t',{focus:0,short:0,long:0,streak:0,last:''});
+let mode='focus',left=S.d.focus*60,run=false,end=0,iv;
+const R=186,C=2*Math.PI*R;$('#arc').style.strokeDasharray=C;
+
+/* ---------- dialog ---------- */
+function ask(t,x,y,danger,cb){
+  $('#dt').textContent=t;$('#dx').textContent=x;$('#dy').textContent=y;$('#dy').className=danger?'danger':'';
+  $('#dlg').classList.add('open');
+  $('#dy').onclick=()=>{$('#dlg').classList.remove('open');cb()};
+  $('#dn').onclick=()=>$('#dlg').classList.remove('open');
 }
-function tmTick(){
-  if(TM.run&&TM.end-Date.now()<=0)tmDone();
-  const l=tmLeft(),tot=tmLen(TM.mode),tx=document.getElementById("tmt"),rg=document.getElementById("tmr");
-  if(tx)tx.innerHTML=fmtT(l).replace(":",'<span class="tv-c">:</span>');
-  if(rg)rg.setAttribute("stroke-dashoffset",CIRC*(1-l/tot));
-  document.title=TM.run?fmtT(l)+" · "+(TM.mode==="f"?"Focus":"Break"):"Spaced Revision Tracker";
+$('#dlg').onclick=e=>{if(e.target.id==='dlg')$('#dlg').classList.remove('open')};
+addEventListener('keydown',e=>{if(e.key==='Escape')$('#dlg').classList.remove('open')});
+
+/* ---------- stats ---------- */
+const key=d=>{d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+let HS=ld('k_h',{});
+const ok=k=>HS[k]&&(HS[k].s>=900||HS[k].n>0);
+const fm=s=>s>=3600?Math.floor(s/3600)+'h'+(Math.floor(s%3600/60)?' '+Math.floor(s%3600/60)+'m':''):Math.floor(s/60)+'m';
+function streak(){
+  const ks=Object.keys(HS).filter(ok).sort();let best=0,c=0,prev=null;
+  ks.forEach(k=>{const d=new Date(k+'T00:00');c=prev&&Math.round((d-prev)/864e5)===1?c+1:1;prev=d;best=Math.max(best,c)});
+  let cur=0,d=new Date();if(!ok(key(d)))d.setDate(d.getDate()-1);
+  while(ok(key(d))){cur++;d.setDate(d.getDate()-1)}
+  return{cur,best,days:ks.length};
 }
-setInterval(tmTick,250);
-function timerTab(today){
-  const q=queue(today);if(TM.fid&&!q.some(x=>x.id+"|"+x.i===TM.fid))TM.fid="";
-  const c=MC[TM.mode],l=tmLeft(),tot=tmLen(TM.mode);
-  const modes=[["f","Focus"],["s","Short break"],["l","Long break"]].map(([k,n])=>`<button class="nv${TM.mode===k?" on":""}" data-tm="${k}">${n}</button>`).join("");
-  const k=TM.cnt%TS.n,dots=Array.from({length:TS.n},(_,i)=>`<i style="background:${i<k?c:"#ffffff1f"};box-shadow:${i<k?"0 0 8px "+c:"none"}"></i>`).join("");
-  const opts='<option value="">General study</option>'+q.map(x=>{const key=x.id+"|"+x.i;return `<option value="${key}"${key===TM.fid?" selected":""}>${subOf(x.id).slice(0,4)} &middot; ${nameOf(x.id)} &middot; Rev ${x.i+1}</option>`}).join("");
-  const cu=TM.fid?`<button class="nv" data-m="${TM.fid}">&check; Mark revised</button>`:"";
-  const hrs=Math.round((H[today]||0)*100)/100;
-  const inp=(k,n,mn,mx)=>`<label>${n}<input type="number" min="${mn}" max="${mx}" data-ts="${k}" value="${TS[k]}"></label>`;
-  return `<div class="cal"><section class="sec"><div class="sh"><h2>POMODORO TIMER</h2><div class="pg">${hrs}h focused today</div></div><div class="tm"><div class="tmodes">${modes}</div><div class="ring${TM.run?" run":""}"><svg viewBox="0 0 300 300"><circle cx="150" cy="150" r="130" fill="none" stroke="#ffffff14" stroke-width="12"/><circle id="tmr" cx="150" cy="150" r="130" fill="none" stroke="${c}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC*(1-l/tot)}" style="filter:drop-shadow(0 0 10px ${c})"/></svg><div class="t" id="tmt">${fmtT(l)}</div></div><div class="tml">${ML[TM.mode]}</div><div class="tmrow"><button class="nv go" data-tgo="1">${TM.run?"Pause":"Start"}</button><button class="nv" data-trs="1">Reset</button><button class="nv" data-tsk="1">Skip</button></div><div class="dots">${dots}</div></div></section><section class="sec"><div class="sh"><h2>FOCUS ON</h2></div><div class="pc tmc"><select data-tf="1">${opts}</select>${cu}<div class="sm" style="padding:0">Finished focus sessions are added to Stats &rarr; study hours automatically.</div></div><div class="sh" style="border-top:1px solid var(--line)"><h2>SETTINGS (MINUTES)</h2></div><div class="wgr tmc">${inp("f","Focus",1,180)}${inp("s","Short break",1,60)}${inp("l","Long break",1,90)}${inp("n","Sessions before long break",2,10)}<label>Auto-start next<input type="checkbox" data-ta="1"${TS.auto?" checked":""}></label></div></section></div>`;
+function renderStr(){
+  const st=streak(),all=Object.values(HS),tot=all.reduce((a,v)=>a+v.s,0),n=all.reduce((a,v)=>a+v.n,0);
+  $('#s-n').textContent=st.cur;$('#s-t').textContent=fm((HS[key()]||{s:0}).s);
+  $('#s-b').textContent=st.best+(st.best===1?' day':' days');$('#s-h').textContent=fm(tot);$('#s-d').textContent=st.days;$('#s-s').textContent=n;
+  const now=new Date(),dow=(now.getDay()+6)%7,mon=new Date(now);mon.setDate(now.getDate()-dow);
+  $('#wk').innerHTML='MTWTFSS'.split('').map((l,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return'<div class="'+(ok(key(d))?'f ':'')+(i===dow?'t':'')+'"><i></i>'+l+'</div>'}).join('');
 }
-document.addEventListener("click",e=>{
-  const el=e.target.closest&&e.target.closest("[data-tm],[data-tgo],[data-trs],[data-tsk]");if(!el)return;const d=el.dataset;
-  if(d.tm){TM.mode=d.tm;TM.run=false;TM.left=tmLen(d.tm)}
-  else if(d.tgo!==undefined){if(TM.run){TM.left=tmLeft();TM.run=false}else{TM.end=Date.now()+TM.left*1000;TM.run=true;try{if("Notification"in window&&Notification.permission==="default")Notification.requestPermission()}catch(_){}}}
-  else if(d.trs!==undefined){TM.run=false;TM.left=tmLen(TM.mode)}
-  else if(d.tsk!==undefined){TM.run=false;TM.mode=TM.mode==="f"?"s":"f";TM.left=tmLen(TM.mode)}
-  render();
-});
-document.addEventListener("change",e=>{
-  const t=e.target,d=t.dataset||{};
-  if(d.ts){const mx=d.ts==="n"?10:180;TS[d.ts]=Math.max(d.ts==="n"?2:1,Math.min(mx,Math.round(+t.value)||TS[d.ts]));tsSave();if(!TM.run)TM.left=tmLen(TM.mode);render()}
-  else if(d.ta!==undefined){TS.auto=t.checked;tsSave()}
-  else if(d.tf!==undefined){TM.fid=t.value;render()}
-});
-// ===== focus timer page =====
-const SW=[{a:"#2dd4bf",b:"#c6fff1",d:"#1fb09d"},{a:"#22d3ee",b:"#cffafe",d:"#0aa5c4"},{a:"#a78bfa",b:"#ede9fe",d:"#7c5cf0"},{a:"#f472b6",b:"#fce7f3",d:"#e0529c"},{a:"#fbbf24",b:"#fef3c7",d:"#d99a0b"}];
-const QU=["Either you run the day or the day runs you.","Small steps every day add up to big results.","Discipline is choosing what you want most over what you want now.","The expert in anything was once a beginner.","Don\u2019t watch the clock; do what it does. Keep going.","Success is the sum of small efforts repeated day in and day out.","Focus on the process, not the outcome.","It always seems impossible until it\u2019s done.","You don\u2019t have to be great to start, but you have to start to be great.","One focused hour beats five distracted ones."];
-let TV={ac:0,sh:.45,name:"Krtk"};try{Object.assign(TV,JSON.parse(localStorage.getItem(KEY+"_tv")||"{}"))}catch(e){}
-const tvSave=()=>{try{localStorage.setItem(KEY+"_tv",JSON.stringify(TV))}catch(e){}};
-let TC={d:"",f:0,s:0,l:0};try{const t0=JSON.parse(localStorage.getItem(KEY+"_tc")||"null");if(t0)TC=t0}catch(e){}
-let TQ=Math.floor(Math.random()*QU.length),TP="",LASTH="",TVURL="",NZ=null,TVMU=false;
-const tcGet=m=>TC.d===iso(new Date())?TC[m]:0;
-function tcInc(m){const d=iso(new Date());if(TC.d!==d)TC={d:d,f:0,s:0,l:0};TC[m]++;try{localStorage.setItem(KEY+"_tc",JSON.stringify(TC))}catch(e){}if(m==="f")TQ=(TQ+1)%QU.length}
-const IC={
- trophy:'<svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
- flame:'<svg viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
- palette:'<svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".6"/><circle cx="17.5" cy="10.5" r=".6"/><circle cx="8.5" cy="7.5" r=".6"/><circle cx="6.5" cy="12.5" r=".6"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>',
- gear:'<svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
- back:'<svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>',
- music:'<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
- pip:'<svg viewBox="0 0 24 24"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4"/><rect x="12" y="13" width="10" height="7" rx="2"/></svg>',
- tasks:'<svg viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>',
- play:'<svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg>',
- pause:'<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>'
+
+/* ---------- timer ---------- */
+const mm=s=>String(Math.floor(s/60)).padStart(2,'0'),ss=s=>String(s%60).padStart(2,'0');
+const LBL={focus:'Focus session',short:'Short Break session',long:'Long Break session'};
+function draw(){
+  $('#time').innerHTML=mm(left)+'<em>:</em>'+ss(left);
+  $('#pill').textContent=LBL[mode];
+  $('#go').textContent=run?'❚❚ Pause':'▶ Start';$('#ringw').classList.toggle('run',run);
+  $('#arc').style.strokeDashoffset=C*(1-left/(S.d[mode]*60));
+  ['focus','short','long'].forEach(k=>$('#c-'+k).textContent=T[k]);
+  $('#streak').textContent=streak().cur;if(panel.classList.contains('open')&&!$('#p-str').hidden)renderStr();
+  $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.m===mode));
+  document.title=run?mm(left)+':'+ss(left)+' · Krtk':'Krtk';
+}
+function pick(m){sv('k_h',HS);clearInterval(iv);run=false;mode=m;left=S.d[m]*60;draw()}
+function done(){
+  T[mode]++;
+  if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.n++;d.s=Math.max(d.s,900);sv('k_h',HS)}
+  sv('k_t',T);beep();const nx=mode==='focus'?'short':'focus';pick(nx);if(nx==='focus'?S.auto.f:S.auto.b)start();
+}
+function start(){
+  run=true;end=Date.now()+left*1000;let lt=Date.now();
+  iv=setInterval(()=>{const nw=Date.now(),dt=(nw-lt)/1000;lt=nw;if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.s+=dt;if(Math.floor(d.s)%5===0)sv('k_h',HS)}left=Math.max(0,Math.round((end-Date.now())/1000));draw();if(!left){clearInterval(iv);run=false;done()}},250);draw();
+}
+$('#go').onclick=()=>{
+  try{ac=ac||new(window.AudioContext||window.webkitAudioContext)()}catch(e){}
+  if(run){const ps_=()=>{clearInterval(iv);run=false;sv('k_h',HS);draw()};if(mode==='focus')ask('Pause the timer?','A pause breaks your flow.','Pause',false,ps_);else ps_();return}
+  start();
 };
-/* tiny key-value store (IndexedDB) so the uploaded background survives reloads */
-function tvDB(){return new Promise(function(res,rej){var r=indexedDB.open("revtracker",1);r.onupgradeneeded=function(){r.result.createObjectStore("kv")};r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}})}
-async function kvGet(k){try{const d=await tvDB();return await new Promise(function(res){const q=d.transaction("kv").objectStore("kv").get(k);q.onsuccess=function(){res(q.result||null)};q.onerror=function(){res(null)}})}catch(e){return null}}
-async function kvSet(k,v){try{const d=await tvDB();await new Promise(function(res){const t=d.transaction("kv","readwrite");if(v===null)t.objectStore("kv").delete(k);else t.objectStore("kv").put(v,k);t.oncomplete=res;t.onerror=res})}catch(e){}}
-async function tvLoadBg(){
-  const b=await kvGet("tvbg"),el=document.getElementById("tvimg");
-  if(TVURL){URL.revokeObjectURL(TVURL);TVURL=""}
-  if(b){TVURL=URL.createObjectURL(b);el.style.backgroundImage='url("'+TVURL+'")';el.classList.remove("def")}
-  else{el.style.backgroundImage="";el.classList.add("def")}
-  tmvRender(true);
+$('#rs').onclick=()=>{if(mode==='focus'&&(run||left<S.d.focus*60))ask('Stop the session?','Your focused minutes are saved to today’s total — but this won’t count as a session.','Stop',true,()=>pick(mode));else pick(mode)};
+$$('.tab').forEach(t=>t.onclick=()=>pick(t.dataset.m));
+
+/* ---------- panel ---------- */
+const panel=$('#panel');
+function openP(w){
+  const all=['aes','set','str','ph'],cur=all.find(k=>!$('#p-'+k).hidden),base=w==='ph'?'aes':w;
+  const same=panel.classList.contains('open')&&(cur===w||(cur==='ph'&&w==='aes'));
+  panel.classList.toggle('open',!same);panel.style.width=w==='str'?'290px':'';
+  all.forEach(k=>$('#p-'+k).hidden=k!==w);
+  ['aes','set','str'].forEach(k=>$('#b-'+k).classList.toggle('on',!same&&k===base));
+  if(w==='str')renderStr();
 }
-async function tvSetBg(file){
-  try{
-    const url=URL.createObjectURL(file);
-    const im=await new Promise(function(res,rej){const i=new Image();i.onload=function(){res(i)};i.onerror=rej;i.src=url});
-    const k=Math.min(1,2200/Math.max(im.naturalWidth,im.naturalHeight)),cv=document.createElement("canvas");
-    cv.width=Math.round(im.naturalWidth*k);cv.height=Math.round(im.naturalHeight*k);
-    cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);
-    const blob=await new Promise(function(r){cv.toBlob(r,"image/jpeg",.88)});
-    URL.revokeObjectURL(url);
-    await kvSet("tvbg",blob||file);
-  }catch(e){await kvSet("tvbg",file)}
-  tvLoadBg();
+$('#b-aes').onclick=()=>openP('aes');$('#b-set').onclick=()=>openP('set');$('#b-str').onclick=()=>openP('str');
+$('#b-ph').onclick=()=>openP('ph');
+$('#back').onclick=()=>{$('#p-ph').hidden=true;$('#p-aes').hidden=false};
+$('#dim').oninput=e=>{S.dim=+e.target.value;$('#dimv').textContent=S.dim+'%';sv('k_s',S);applyBg()};
+$('#blur').oninput=e=>{S.blur=+e.target.value;$('#blurv').textContent=S.blur+'px';sv('k_s',S);applyBg()};
+$$('[data-close]').forEach(b=>b.onclick=()=>{panel.classList.remove('open');$$('.ic').forEach(i=>i.classList.remove('on'))});
+
+/* ---------- background ---------- */
+function applyBg(){
+  const el=$('#bg');el.style.background='';el.style.backgroundImage='';el.style.setProperty('--dim',S.dim/100);el.style.filter=S.blur?'blur('+S.blur+'px)':'';el.style.transform=S.blur?'scale(1.08)':'';
+  if(PRE[S.bg])el.style.background=PRE[S.bg][1];
+  else{const s=P[+S.bg.slice(1)];if(s){el.style.backgroundImage='url("'+s+'")';el.style.backgroundSize='cover';el.style.backgroundPosition='center'}else el.style.background=PRE.fantasy[1]}
 }
-function noiseOn(){
+function tile(bg,label,sel,onclick,del){
+  const b=document.createElement('div');b.className='tile'+(sel?' sel':'');b.style.background=bg;b.style.backgroundSize='cover';b.style.backgroundPosition='center';
+  if(label){const s=document.createElement('span');s.textContent=label;b.appendChild(s)}
+  b.onclick=onclick;
+  if(del){const d=document.createElement('i');d.textContent='✕';d.onclick=e=>{e.stopPropagation();del()};b.appendChild(d)}
+  return b;
+}
+function renderPanel(){
+  const pr=$('#presets');pr.innerHTML='';
+  Object.entries(PRE).forEach(([k,v])=>pr.appendChild(tile(v[1],v[0],S.bg===k,()=>{S.bg=k;save()})));
+  const ph=$('#photos');ph.innerHTML='';
+  P.forEach((src,i)=>{
+    const w=document.createElement('div');w.className='pw';
+    const t=tile('url("'+src+'") center/cover','',S.bg==='p'+i,()=>{S.bg='p'+i;save()});
+    if(S.bg==='p'+i){const c=document.createElement('i');c.className='ck';c.textContent='✓';t.appendChild(c)}
+    const d=document.createElement('button');d.className='tr';d.setAttribute('aria-label','Delete photo');d.textContent='🗑';
+    d.onclick=()=>{P.splice(i,1);if(S.bg==='p'+i)S.bg='fantasy';else if(S.bg.startsWith('p')&&+S.bg.slice(1)>i)S.bg='p'+(+S.bg.slice(1)-1);sv('k_p',P);save()};
+    w.append(t,d);ph.appendChild(w);
+  });
+  const ad=document.createElement('label');ad.className='tile add';ad.htmlFor='file';ad.textContent='+';ph.appendChild(ad);
+  $('#pcount').textContent=P.length?P.length+(P.length>1?' photos':' photo')+' ':'';
+  $('#dim').value=S.dim;$('#dimv').textContent=S.dim+'%';$('#blur').value=S.blur;$('#blurv').textContent=S.blur+'px';
+  $('#sw').innerHTML='';ACC.forEach(c=>{const b=document.createElement('button');b.style.background=c;b.className=S.acc===c?'sel':'';b.onclick=()=>{S.acc=c;save()};$('#sw').appendChild(b)});
+  $('#fxg').innerHTML='';FX.forEach(f=>{const b=document.createElement('button');b.className='pbtn'+(S.fx===f?' sel':'');b.textContent=f[0].toUpperCase()+f.slice(1);b.onclick=()=>{S.fx=f;save()};$('#fxg').appendChild(b)});
+}
+function save(){
+  sv('k_s',S);document.documentElement.style.setProperty('--acc',S.acc);applyBg();renderPanel();draw();
+}
+const msg=t=>$('#msg').textContent=t||'';
+function addPhoto(src){
+  P.push(src);
+  if(!sv('k_p',P)){P.pop();msg('Storage full — remove a photo first.');return}
+  S.bg='p'+(P.length-1);msg('');save();
+}
+$('#file').onchange=e=>{
+  [...e.target.files].forEach(f=>{
+    if(!f.type.startsWith('image/'))return;if(f.size>20*1048576){msg('Max 20 MB per photo.');return}
+    const r=new FileReader();
+    r.onload=()=>{const im=new Image();im.onload=()=>{
+      const k=Math.min(1,1920/Math.max(im.width,im.height)),c=document.createElement('canvas');
+      c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+      addPhoto(c.toDataURL('image/jpeg',.8))};im.src=r.result};
+    r.readAsDataURL(f);
+  });e.target.value='';
+};
+$('#addurl').onclick=()=>{
+  const u=$('#url').value.trim();
+  if(!/^https?:\/\//i.test(u)){msg('Enter a valid https link.');return}
+  const safe=u.replace(/"/g,'%22').replace(/'/g,'%27').replace(/\)/g,'%29').replace(/\(/g,'%28'),im=new Image();
+  im.onload=()=>{$('#url').value='';addPhoto(safe)};
+  im.onerror=()=>msg('Could not load that link. Use a direct image URL.');
+  im.src=safe;
+};
+
+/* ---------- settings ---------- */
+let ac;
+function renderSet(){
+  const N={focus:'Focus',short:'Short break',long:'Long break'};
+  $('#steps').innerHTML=['focus','short','long'].map(k=>'<div>'+N[k]+'<div class="stp"><button data-k="'+k+'" data-n="-1">−</button><div>'+S.d[k]+'<small>min</small></div><button data-k="'+k+'" data-n="1">+</button></div></div>').join('');
+  $('#tg-b').classList.toggle('on',S.auto.b);$('#tg-f').classList.toggle('on',S.auto.f);$('#tg-a').classList.toggle('on',S.al.on);
+  $('#al').innerHTML='';
+  ['chime','bell','digital'].forEach(t=>{const b=document.createElement('button');b.className='pbtn'+(S.al.t===t?' sel':'');b.textContent=(S.al.t===t?'✓ ':'')+t[0].toUpperCase()+t.slice(1);b.onclick=()=>{S.al.t=t;sv('k_s',S);renderSet();beep()};$('#al').appendChild(b)});
+  $('#vol').value=Math.round(S.al.v*100);$('#volv').textContent=Math.round(S.al.v*100)+'%';
+}
+$('#steps').onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.k;S.d[k]=Math.max(1,Math.min(180,S.d[k]+ +b.dataset.n));sv('k_s',S);if(!run&&mode===k)left=S.d[k]*60;renderSet();draw()};
+$('#tg-b').onclick=()=>{S.auto.b=!S.auto.b;sv('k_s',S);renderSet()};
+$('#tg-f').onclick=()=>{S.auto.f=!S.auto.f;sv('k_s',S);renderSet()};
+$('#tg-a').onclick=()=>{S.al.on=!S.al.on;sv('k_s',S);renderSet()};
+$('#vol').oninput=e=>{S.al.v=e.target.value/100;$('#volv').textContent=e.target.value+'%';sv('k_s',S)};
+$('#vol').onchange=()=>beep();
+$('#rst').onclick=()=>{T.focus=T.short=T.long=0;sv('k_t',T);draw()};
+function beep(){
+  if(!S.al.on)return;
   try{
-    const C=window.AudioContext||window.webkitAudioContext,ctx=new C(),len=ctx.sampleRate*3,buf=ctx.createBuffer(1,len,ctx.sampleRate),d=buf.getChannelData(0);
-    let last=0;for(let i=0;i<len;i++){const w=Math.random()*2-1;last=(last+.02*w)/1.02;d[i]=last*3.2}
-    const src=ctx.createBufferSource();src.buffer=buf;src.loop=true;const g=ctx.createGain();g.gain.value=.22;src.connect(g);g.connect(ctx.destination);src.start();NZ={ctx:ctx,src:src};
+    ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();
+    const n=(f,t0,d,ty)=>{const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+t0;o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.3*S.al.v+.0001,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d+.05)};
+    if(S.al.t==='chime'){n(880,0,.8,'sine');n(1320,.25,1,'sine')}
+    else if(S.al.t==='bell'){n(660,0,1.8,'sine');n(1320,0,1,'triangle')}
+    else[0,.2,.4].forEach(x=>n(1000,x,.12,'square'));
   }catch(e){}
 }
-function noiseOff(){try{if(NZ){NZ.src.stop();NZ.ctx.close();NZ=null}}catch(e){}}
-function streak(){let n=0;const d=new Date();if(!(H[iso(d)]>0))d.setDate(d.getDate()-1);while(H[iso(d)]>0){n++;d.setDate(d.getDate()-1)}return n}
-function tvStats(today){
-  const r2=function(x){return Math.round(x*100)/100};let wk=0,tot=0;
-  for(let i=0;i<7;i++)wk+=H[iso(add(today,-i))]||0;
-  Object.keys(H).forEach(function(k){tot+=H[k]||0});
-  return '<h3>Your focus</h3><div class="tv-g"><div class="tv-s"><b>'+r2(H[today]||0)+'h</b><span>Today</span></div><div class="tv-s"><b>'+r2(wk)+'h</b><span>Last 7 days</span></div><div class="tv-s"><b>'+tcGet("f")+'</b><span>Sessions today</span></div><div class="tv-s"><b>'+streak()+'</b><span>Day streak</span></div></div><p>Total focused: '+r2(tot)+'h. Finished focus sessions are added to your study hours automatically.</p>';
+renderSet();
+
+/* ---------- ambient fx ---------- */
+const cv=$('#fx'),cx=cv.getContext('2d');let W,H,ps=[],raf;
+function size(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+addEventListener('resize',size);size();
+for(let i=0;i<140;i++)ps.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()+.4,v:Math.random()*.25+.08,dx:(Math.random()-.5)*.25,p:Math.random()*6.28});
+function loop(t){
+  cx.clearRect(0,0,W,H);
+  if(S.fx!=='off'){
+    ps.forEach(p=>{
+      cx.shadowBlur=0;
+      if(S.fx==='motes'){p.y-=p.v;p.x+=p.dx+Math.sin(t/2500+p.p)*.15;cx.shadowBlur=5;cx.shadowColor=S.acc;cx.fillStyle=S.acc;cx.globalAlpha=.4;cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.28);cx.fill()}
+      else if(S.fx==='stars'){cx.fillStyle='#fff';cx.globalAlpha=.1+.45*Math.abs(Math.sin(t/1600+p.p));cx.beginPath();cx.arc(p.x,p.y,p.r*.8,0,6.28);cx.fill()}
+      else if(S.fx==='rain'){p.y+=p.v*28;p.x-=1;cx.strokeStyle='#fff';cx.globalAlpha=.12;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(p.x+1,p.y-10);cx.stroke()}
+      else{p.y-=p.v;p.x+=p.dx*.5+Math.sin(t/2000+p.p)*.2;cx.strokeStyle='#fff';cx.globalAlpha=.14;cx.beginPath();cx.arc(p.x,p.y,p.r*4,0,6.28);cx.stroke()}
+      if(p.y<-20)p.y=H+10;if(p.y>H+20)p.y=-10;if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;
+    });cx.globalAlpha=1;cx.shadowBlur=0;
+  }
+  raf=requestAnimationFrame(loop);
 }
-function tvPalette(){
-  return '<h3>Background</h3><button class="tv-btn p" data-tvbg="1">Upload from your device</button>'+(TVURL?'<button class="tv-btn" data-tvrm="1">Remove image</button>':'')+'<label>Darkness<span id="tvshl">'+Math.round(TV.sh*100)+'%</span></label><input type="range" min="0" max="85" value="'+Math.round(TV.sh*100)+'" data-tvsh="1"><h3 style="margin-top:18px">Accent colour</h3><div class="tv-sw">'+SW.map(function(s,i){return '<button class="'+(i===TV.ac?"on":"")+'" style="--c:'+s.a+'" data-tvac="'+i+'"></button>'}).join("")+'</div>';
-}
-function tvSettings(){
-  const inp=function(k,n,mn,mx){return '<label>'+n+'<input type="number" min="'+mn+'" max="'+mx+'" data-tvs="'+k+'" value="'+TS[k]+'"></label>'};
-  return '<h3>Timer</h3>'+inp("f","Focus (min)",1,180)+inp("s","Short break (min)",1,60)+inp("l","Long break (min)",1,90)+inp("n","Focus sessions before a long break",2,10)+'<label>Auto-start next session<input type="checkbox" data-tvt="auto"'+(TS.auto?" checked":"")+'></label><label>Sound when a session ends<input type="checkbox" data-tvt="snd"'+(TS.snd!==false?" checked":"")+'></label><button class="tv-btn" data-trs="1">Reset timer</button><button class="tv-btn" data-tsk="1">Skip to next</button>';
-}
-function tvTasks(today){
-  const q=queue(today),st=started().filter(function(id){return S[id]===today});let h='<h3>Tasks &middot; due today</h3>';
-  q.forEach(function(x){const key=x.id+"|"+x.i;h+='<div class="tv-row'+(key===TM.fid?" sel":"")+'" data-tvfocus="'+key+'"><span class="tv-tag" style="--c:'+SC[subOf(x.id)]+'">'+subOf(x.id).slice(0,4)+'</span><span class="tv-rn">'+nameOf(x.id)+'<small>'+(x.od>0?"Overdue "+x.od+"d":"Due today")+' &middot; Rev '+(x.i+1)+'</small></span><button class="tv-ok" data-m="'+key+'" title="Mark revised">&check;</button></div>'});
-  st.forEach(function(id){h+='<div class="tv-row"><span class="tv-tag" style="--c:'+SC[subOf(id)]+'">'+subOf(id).slice(0,4)+'</span><span class="tv-rn">'+nameOf(id)+'<small>To study today</small></span></div>'});
-  h+=(q.length||st.length)?'<p>Tap a task to focus on it. Tick &check; when you have revised it.</p>':'<p>Nothing due &mdash; you are all caught up. 🎉</p>';
-  return h;
-}
-function tmvRender(force){
-  const ui=document.getElementById("tvui"),root=document.getElementById("tmv"),ae=document.activeElement;
-  if(!force&&ae&&ui.contains(ae)&&/^(INPUT|SELECT)$/.test(ae.tagName))return;
-  const today=iso(new Date()),sw=SW[TV.ac]||SW[0],l=tmLeft(),tot=tmLen(TM.mode);
-  root.style.setProperty("--ac",sw.a);root.style.setProperty("--ac2",sw.b);root.style.setProperty("--acd",sw.d);root.style.setProperty("--sh",TV.sh);
-  const q=queue(today);if(TM.fid&&!q.some(function(x){return x.id+"|"+x.i===TM.fid}))TM.fid="";
-  const fx=TM.fid?nameOf(TM.fid.slice(0,TM.fid.lastIndexOf("|"))):"";
-  const pill=TM.mode==="f"?(fx||"Focus session"):TM.mode==="s"?"Short break":"Long break";
-  const tm=fmtT(l).replace(":",'<span class="tv-c">:</span>');
-  const lab=TM.run?"Pause":(l<tot?"Resume":"Start");
-  const tabs=[["f","Focus"],["s","Short Break"],["l","Long Break"]].map(function(a){return '<button class="'+(TM.mode===a[0]?"on":"")+'" data-tm="'+a[0]+'">'+a[1]+'<b>'+tcGet(a[0])+'</b></button>'}).join("");
-  let pop="";
-  if(TP==="tasks")pop='<div class="tv-pop B">'+tvTasks(today)+'</div>';
-  else if(TP==="stats")pop='<div class="tv-pop L">'+tvStats(today)+'</div>';
-  else if(TP==="palette")pop='<div class="tv-pop L">'+tvPalette()+'</div>';
-  else if(TP==="settings")pop='<div class="tv-pop L">'+tvSettings()+'</div>';
-  else if(TP==="about")pop='<div class="tv-pop L"><h3>About</h3><p>A distraction-free focus timer for your revision. Finished focus sessions are added to your study hours in Stats.</p><p><b>Space</b> start / pause &middot; <b>Esc</b> close panels</p><p>Use the palette button to upload your own background from your device.</p></div>';
-  const bt=function(k,ic,t){return '<button data-tv="'+k+'" class="'+(TP===k?"on":"")+'" title="'+t+'">'+ic+'</button>'};
-  ui.innerHTML='<button class="tv-logo" data-tvnm="1" title="Click to rename">'+TV.name+'</button>'+
-  '<div class="tv-bar">'+bt("stats",IC.trophy,"Your focus")+'<button data-tv="stats" title="Day streak"><span class="tv-fl">'+IC.flame+'<span>'+streak()+'</span></span></button><div class="tv-sep"></div>'+bt("palette",IC.palette,"Background and colours")+bt("settings",IC.gear,"Timer settings")+'<button data-tvx="1" title="Back to tracker">'+IC.back+'</button></div>'+
-  '<div class="tv-c0"><div class="tv-tabs">'+tabs+'</div><div class="tv-ring"><svg viewBox="0 0 300 300"><defs><linearGradient id="tvg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+sw.a+'"/><stop offset="1" stop-color="'+sw.b+'"/></linearGradient></defs><circle cx="150" cy="150" r="130" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="9"/><circle id="tmr" cx="150" cy="150" r="130" fill="none" stroke="url(#tvg)" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+CIRC+'" stroke-dashoffset="'+(CIRC*(1-l/tot))+'" transform="rotate(-90 150 150)" style="filter:drop-shadow(0 0 7px '+sw.a+')"/></svg><div class="tv-t"><div class="tv-time" id="tmt">'+tm+'</div><div class="tv-pill"><i></i>'+pill+'</div></div></div><div class="tv-q">\u201c'+QU[TQ]+'\u201d</div></div>'+
-  '<div class="tv-dock"><button class="tv-d tv-stop" data-trs="1" title="Stop and reset timer"><span class="tv-sq"></span></button><button class="tv-start" data-tgo="1">'+(TM.run?IC.pause:IC.play)+lab+'</button><button class="tv-d" data-tvfs="1" title="Fullscreen">'+IC.pip+'</button><button class="tv-d" data-tv="tasks" title="Tasks due today">'+IC.tasks+'<span class="tv-dl">Tasks</span></button></div>'+
-  '<button class="tv-about" data-tv="about">ABOUT</button>'+pop;
-}
-function tvInit(){
-  const p=document.getElementById("tvparts");let h="";
-  for(let i=0;i<48;i++){h+='<i style="left:'+(Math.random()*100).toFixed(1)+'%;top:'+(Math.random()*100).toFixed(1)+'%;--w:'+(Math.random()*2.2+1.4).toFixed(1)+'px;--d:'+(7+Math.random()*9).toFixed(1)+'s;--dl:-'+(Math.random()*12).toFixed(1)+'s"></i>'}
-  p.innerHTML=h;tvLoadBg();
-}
-function tvGo(){
-  if(TM.run){TM.left=tmLeft();TM.run=false}
-  else{TM.end=Date.now()+TM.left*1000;TM.run=true;try{if("Notification"in window&&Notification.permission==="default")Notification.requestPermission()}catch(_){}}
-  render();
-}
-document.addEventListener("click",function(e){
-  if(!document.body.classList.contains("tm-on"))return;
-  const T=e.target;if(!T.closest||T.id==="tvfile"||T.closest("[data-m]"))return;
-  const el=T.closest("[data-tv],[data-tvx],[data-tvfs],[data-tvmu],[data-tvbg],[data-tvrm],[data-tvac],[data-tvfocus],[data-tvnm]");
-  if(!el){if(TP&&!T.closest(".tv-pop")){TP="";tmvRender(true)}return}
-  const d=el.dataset;
-  if(d.tv){TP=TP===d.tv?"":d.tv}
-  else if(d.tvx){location.hash=LASTH||"#today";return}
-  else if(d.tvfs){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(_){}return}
-  else if(d.tvmu){TVMU=!TVMU;TVMU?noiseOn():noiseOff()}
-  else if(d.tvbg){document.getElementById("tvfile").click();return}
-  else if(d.tvrm){kvSet("tvbg",null).then(tvLoadBg);return}
-  else if(d.tvac!==undefined){TV.ac=+d.tvac;tvSave()}
-  else if(d.tvfocus){TM.fid=TM.fid===d.tvfocus?"":d.tvfocus}
-  else if(d.tvnm){const n=prompt("Your name",TV.name);if(n&&n.trim()){TV.name=n.trim().slice(0,20);tvSave()}}
-  tmvRender(true);
-});
-document.addEventListener("change",function(e){
-  const t=e.target,d=t.dataset||{};
-  if(d.tvs){const k=d.tvs,mx=k==="n"?10:k==="s"?60:k==="l"?90:180,mn=k==="n"?2:1;TS[k]=Math.max(mn,Math.min(mx,Math.round(+t.value)||TS[k]));tsSave();if(!TM.run&&k===TM.mode)TM.left=tmLen(TM.mode);tmvRender(true)}
-  else if(d.tvt){TS[d.tvt]=t.checked;tsSave();tmvRender(true)}
-  else if(t.id==="tvfile"&&t.files&&t.files[0]){tvSetBg(t.files[0]);t.value=""}
-});
-document.addEventListener("input",function(e){
-  const t=e.target;if(t.dataset&&t.dataset.tvsh){TV.sh=t.value/100;document.getElementById("tmv").style.setProperty("--sh",TV.sh);const l=document.getElementById("tvshl");if(l)l.textContent=t.value+"%";tvSave()}
-});
-document.addEventListener("keydown",function(e){
-  if(!document.body.classList.contains("tm-on"))return;
-  const t=e.target;if(t&&/^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName))return;
-  if(e.code==="Space"){e.preventDefault();tvGo()}
-  else if(e.key==="Escape"&&TP){TP="";tmvRender(true)}
-});
-if(location.hash!=="#timer")LASTH=location.hash;
-addEventListener("hashchange",function(){if(location.hash!=="#timer")LASTH=location.hash});
-tvInit();
+raf=requestAnimationFrame(loop);
+
+/* ---------- back to tracker (only when shown inside the tracker) ---------- */
+if(window.parent!==window){$('#b-back').onclick=()=>parent.postMessage('tracker-exit','*')}
+else{$('#b-back').style.display='none'}
+
+save();pick('focus');
