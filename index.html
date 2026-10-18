@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&family=Syne:wght@700;800&family=Space+Grotesk:wght@500;600;700&family=Lora:ital,wght@1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&family=Space+Grotesk:wght@500;600;700&family=Lora:ital,wght@1,500&display=swap" rel="stylesheet">
 <style>
 @property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
 :root{--bg:#000;--tx:#f4f6ff;--mut:#8b93b5;--mut2:#565d82;--blue:#00d4ff;--vio:#38e1ff;--pink:#ff5c8a;--grn:#34d399;--amb:#fbbf24;--mag:#a5f3fc;
@@ -295,7 +295,7 @@ tr.sb td::after{content:"";display:inline-block;vertical-align:middle;margin-lef
  .cg{gap:4px;padding:10px}
  .cd{min-height:68px;padding:6px;border-radius:12px}
  .cd b{font-size:14px}
- .cd em{display:none}
+ .cd em{font-size:10px;padding:1px 6px}
  .mk{min-width:17px;height:17px;font-size:10px;padding:0 4px}
  .w{display:none}
  .tabs a{padding:9px 15px}
@@ -352,7 +352,7 @@ body.tm-on #tmv{display:block}
 .tv-ring{position:relative;width:min(42.5vh,86vw,480px);height:min(42.5vh,86vw,480px)}
 .tv-ring svg{position:absolute;top:0;left:0;width:100%;height:100%}
 .tv-t{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.2vh}
-.tv-time{font:800 clamp(44px,7.6vh,88px)/1 Syne,"Space Grotesk",Inter,sans-serif;letter-spacing:-.01em;text-shadow:0 2px 24px rgba(0,0,0,.5);font-variant-numeric:tabular-nums}
+.tv-time{font:700 clamp(48px,8.4vh,96px)/1 Inter,"Helvetica Neue",Arial,sans-serif;letter-spacing:-.02em;text-shadow:0 2px 24px rgba(0,0,0,.5);font-variant-numeric:tabular-nums}
 .tv-c{opacity:.4}
 .tv-pill{display:inline-flex;align-items:center;gap:8px;max-width:80%;padding:6px 15px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(8,12,14,.45);font:500 12.5px "Space Grotesk",Inter,sans-serif;color:#eaf3f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tv-pill i{flex:0 0 auto;width:6px;height:6px;border-radius:50%;background:var(--ac);box-shadow:0 0 8px var(--ac)}
@@ -360,6 +360,8 @@ body.tm-on #tmv{display:block}
 .tv-dock{position:absolute;left:50%;bottom:3vh;transform:translateX(-50%);display:flex;align-items:center;gap:clamp(8px,2vw,24px);padding:9px 16px;border-radius:24px;background:rgba(10,16,18,.74);border:1px solid rgba(255,255,255,.06);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);max-width:96vw}
 .tv-d{display:flex;align-items:center;gap:9px;background:none;border:0;color:#e8eff1;font:600 13.5px "Space Grotesk",Inter,sans-serif;cursor:pointer;padding:9px 10px;border-radius:12px;transition:background .2s}
 .tv-d:hover{background:rgba(255,255,255,.08)}
+.tv-sq{width:18px;height:18px;border-radius:5px;border:2px solid rgba(255,255,255,.6);transition:background .2s,border-color .2s}
+.tv-stop:hover .tv-sq{background:var(--ac);border-color:var(--ac)}
 .tv-cb{width:18px;height:18px;border-radius:4px;border:2px solid rgba(255,255,255,.4);display:grid;place-items:center;margin-left:4px}
 .tv-cb.on{background:var(--ac);border-color:var(--ac)}
 .tv-cb.on::after{content:"";width:5px;height:9px;border:solid #04201c;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
@@ -377,7 +379,7 @@ body.tm-on #tmv{display:block}
 .tv-pop p{margin:8px 0 0;color:rgba(255,255,255,.6);font-size:13px;line-height:1.5}
 .tv-g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tv-s{padding:12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06)}
-.tv-s b{display:block;font:800 22px Syne,"Space Grotesk",sans-serif;color:var(--ac2)}
+.tv-s b{display:block;font:700 22px Inter,"Helvetica Neue",Arial,sans-serif;color:var(--ac2)}
 .tv-s span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55)}
 .tv-btn{width:100%;margin-top:8px;padding:11px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;font:600 13.5px "Space Grotesk",sans-serif;cursor:pointer;text-align:center;transition:background .2s,border-color .2s}
 .tv-btn:hover{background:rgba(255,255,255,.12);border-color:var(--ac)}
@@ -440,7 +442,7 @@ body.tm-on #tmv{display:block}
 </div>
 <div class="acts"><div class="bs"><button id="so">Sort by priority: Off</button><button id="sd">Sort by date: Off</button></div><div class="bs"><span class="ml">Move all missed to:</span><button data-mm="0">Today</button><button data-mm="1">Tomorrow</button><span class="dw"><span class="pkb">Pick date</span><input type="date" id="mmd"></span></div></div>
 <div id="app"></div>
-<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Cloud sync on (auto-refresh 15s). &middot; <b style='color:var(--vio)'>v15: calendar colours</b></p>
+<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Cloud sync on (auto-refresh 15s). &middot; <b style='color:var(--vio)'>v16: classic timer digits</b></p>
 </main>
 <div id="tmv"><div class="tv-img def" id="tvimg"></div><div class="tv-shade"></div><div class="tv-parts" id="tvparts"></div><div id="tvui"></div><input type="file" id="tvfile" accept="image/*" hidden></div>
 <script>
@@ -519,7 +521,7 @@ function calHTML(today){
     let tag="";
     if(st)tag+=`<em class="g1">${st}<span class="w"> study</span></em>`;
     if(rl.length)tag+=`<em class="${!pend?"g3":k<today?"g4":k===today?"g5":"g2"}">${rl.length}<span class="w"> rev</span></em>`;
-    cells+=`<button class="cd${k===today?" td":""}${k===SEL?" sl":""}" data-d="${k}"><b>${d}</b>${mkh}${tag}</button>`;
+    cells+=`<button class="cd${k===today?" td":""}${k===SEL?" sl":""}" data-d="${k}"><b>${d}</b>${tag}</button>`;
   }
   const L=(by[SEL]||[]).slice().sort((a,z)=>(a.ty<0?-1:0)-(z.ty<0?-1:0)||pv(z.id)-pv(a.id));
   const rows=L.map(x=>{
@@ -532,7 +534,7 @@ function calHTML(today){
   const ns=L.filter(x=>x.ty<0).length,nr=L.length-ns;
   const mt=new Date(y,m-1,1).toLocaleDateString("en-GB",{month:"long",year:"numeric"}).toUpperCase();
   const dt=add(SEL,0).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-  return `<div class="cal"><section class="sec"><div class="sh"><h2>${mt}</h2><div class="bs"><button class="nv" data-nav="-1">&lsaquo;</button><button class="nv" data-nav="0">Today</button><button class="nv" data-nav="1">&rsaquo;</button></div></div><div class="cg">${cells}</div><div class="lgd">${Object.keys(SC).map(j=>`<span style="--c:${SC[j]}"><i></i>${j[0]+j.slice(1).toLowerCase()}</span>`).join("")}<span>Drag a task onto any day to reschedule it</span></div></section><section class="sec"><div class="sh"><h2>${dt}</h2></div>${L.length?`<div class="sm">${ns} to study &middot; ${nr} revision${nr===1?"":"s"}</div><div class="dt">${rows}</div>`:'<div class="em0">Nothing due on this day.</div>'}</section></div>`;
+  return `<div class="cal"><section class="sec"><div class="sh"><h2>${mt}</h2><div class="bs"><button class="nv" data-nav="-1">&lsaquo;</button><button class="nv" data-nav="0">Today</button><button class="nv" data-nav="1">&rsaquo;</button></div></div><div class="cg">${cells}</div><div class="lgd"><span>Drag a task onto any day to reschedule it</span></div></section><section class="sec"><div class="sh"><h2>${dt}</h2></div>${L.length?`<div class="sm">${ns} to study &middot; ${nr} revision${nr===1?"":"s"}</div><div class="dt">${rows}</div>`:'<div class="em0">Nothing due on this day.</div>'}</section></div>`;
 }
 function row(id,n,t){
   const v=S[id]||"",today=iso(new Date());
@@ -891,7 +893,7 @@ function tmvRender(force){
   ui.innerHTML='<button class="tv-logo" data-tvnm="1" title="Click to rename">'+TV.name+'</button>'+
   '<div class="tv-bar">'+bt("stats",IC.trophy,"Your focus")+'<button data-tv="stats" title="Day streak"><span class="tv-fl">'+IC.flame+'<span>'+streak()+'</span></span></button><div class="tv-sep"></div>'+bt("palette",IC.palette,"Background and colours")+bt("settings",IC.gear,"Timer settings")+'<button data-tvx="1" title="Back to tracker">'+IC.back+'</button></div>'+
   '<div class="tv-c0"><div class="tv-tabs">'+tabs+'</div><div class="tv-ring"><svg viewBox="0 0 300 300"><defs><linearGradient id="tvg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+sw.a+'"/><stop offset="1" stop-color="'+sw.b+'"/></linearGradient></defs><circle cx="150" cy="150" r="130" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="9"/><circle id="tmr" cx="150" cy="150" r="130" fill="none" stroke="url(#tvg)" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+CIRC+'" stroke-dashoffset="'+(CIRC*(1-l/tot))+'" transform="rotate(-90 150 150)" style="filter:drop-shadow(0 0 7px '+sw.a+')"/></svg><div class="tv-t"><div class="tv-time" id="tmt">'+tm+'</div><div class="tv-pill"><i></i>'+pill+'</div></div></div><div class="tv-q">\u201c'+QU[TQ]+'\u201d</div></div>'+
-  '<div class="tv-dock"><button class="tv-d" data-tvmu="1" title="Ambient focus sound">'+IC.music+'<span class="tv-dl">Music</span><span class="tv-cb'+(TVMU?" on":"")+'"></span></button><button class="tv-start" data-tgo="1">'+(TM.run?IC.pause:IC.play)+lab+'</button><button class="tv-d" data-tvfs="1" title="Fullscreen">'+IC.pip+'</button><button class="tv-d" data-tv="tasks" title="Tasks due today">'+IC.tasks+'<span class="tv-dl">Tasks</span></button></div>'+
+  '<div class="tv-dock"><button class="tv-d tv-stop" data-trs="1" title="Stop and reset timer"><span class="tv-sq"></span></button><button class="tv-start" data-tgo="1">'+(TM.run?IC.pause:IC.play)+lab+'</button><button class="tv-d" data-tvfs="1" title="Fullscreen">'+IC.pip+'</button><button class="tv-d" data-tv="tasks" title="Tasks due today">'+IC.tasks+'<span class="tv-dl">Tasks</span></button></div>'+
   '<button class="tv-about" data-tv="about">ABOUT</button>'+pop;
 }
 function tvInit(){
