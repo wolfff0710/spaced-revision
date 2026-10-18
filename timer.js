@@ -203,4 +203,10 @@ raf=requestAnimationFrame(loop);
 if(window.parent!==window){$('#b-back').onclick=()=>parent.postMessage('tracker-exit','*')}
 else{$('#b-back').style.display='none'}
 
+addEventListener('keydown',e=>{
+  if(/INPUT|TEXTAREA/.test(e.target.tagName))return;
+  if(e.code==='Space'){e.preventDefault();$('#go').click()}
+  else if(e.key==='r')$('#rs').click();
+  else if(/^[123]$/.test(e.key))pick(['focus','short','long'][e.key-1]);
+});
 save();pick('focus');
