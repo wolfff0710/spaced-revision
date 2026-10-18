@@ -226,3 +226,8 @@ addEventListener('keydown',e=>{
   else if(/^[123]$/.test(e.key))pick(['focus','short','long'][e.key-1]);
 });
 save();pick('focus');
+
+try{const K=parent.getTimer();
+if(K&&K.s){S={...DEF,...K.s};S.d={...DEF.d,...S.d};S.auto={...DEF.auto,...S.auto};S.al={...DEF.al,...S.al};T=K.t||T;
+Object.entries(K.h||{}).forEach(([d,b])=>{const a=HS[d]||{s:0,n:0};HS[d]={s:Math.max(a.s,b.s),n:Math.max(a.n,b.n)}});renderSet()}
+else if(K)sync()}catch(e){}
