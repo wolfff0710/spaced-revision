@@ -3,7 +3,7 @@ const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){retu
 const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}};
 const PRE={fantasy:['Fantasy','radial-gradient(circle at 50% 40%,#33454f,#0a0e13 70%)'],pastel:['Pastel','linear-gradient(180deg,#5c6fd6,#e07aa8 55%,#f6b48a)'],lofi:['Lofi','linear-gradient(160deg,#171335,#3b2a6b 55%,#c26a8f)'],cyber:['Cyberpunk','linear-gradient(160deg,#0a0620,#3a0f6b 50%,#0aa5c4)']};
 const ACC=['#5b9bff','#a98bff','#2dd4bf','#a3e635','#ff6b81','#f2c46d'];
-const FX=['off','motes','stars','rain','bubbles'];
+const FX=['off','motes','drift','stars','rain','bubbles'];
 const DEF={bg:'fantasy',acc:'#2dd4bf',fx:'motes',dim:45,blur:0,d:{focus:45,short:10,long:20},auto:{b:false,f:false},al:{on:true,t:'digital',v:1}};let S=ld('k_s',{});S={...DEF,...S};S.d={...DEF.d,...S.d};S.auto={...DEF.auto,...S.auto};S.al={...DEF.al,...S.al};let P=ld('k_p',[]),T=ld('k_t',{focus:0,short:0,long:0,streak:0,last:''});
 let mode='focus',left=S.d.focus*60,run=false,end=0,iv;
 const R=186,C=2*Math.PI*R;$('#arc').style.strokeDasharray=C;
@@ -180,9 +180,12 @@ const cv=$('#fx'),cx=cv.getContext('2d');let W,H,ps=[],raf;
 function size(){W=cv.width=innerWidth;H=cv.height=innerHeight}
 addEventListener('resize',size);size();
 for(let i=0;i<140;i++)ps.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()+.4,v:Math.random()*.25+.08,dx:(Math.random()-.5)*.25,p:Math.random()*6.28});
+const dp=Array.from({length:70},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.6+.4,vx:(Math.random()-.5)*.00006,vy:-Math.random()*.00008-.00002,a:Math.random()*.25+.05}));
 function loop(t){
   cx.clearRect(0,0,W,H);
-  if(S.fx!=='off'){
+  if(S.fx==='drift'){
+    dp.forEach(p=>{p.x=(p.x+p.vx*16+1)%1;p.y=(p.y+p.vy*16+1)%1;cx.beginPath();cx.arc(p.x*W,p.y*H,p.r,0,7);cx.fillStyle='rgba(255,255,255,'+p.a+')';cx.fill()});
+  }else if(S.fx!=='off'){
     ps.forEach(p=>{
       cx.shadowBlur=0;
       if(S.fx==='motes'){p.y-=p.v;p.x+=p.dx+Math.sin(t/2500+p.p)*.15;cx.shadowBlur=5;cx.shadowColor=S.acc;cx.fillStyle=S.acc;cx.globalAlpha=.4;cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.28);cx.fill()}
