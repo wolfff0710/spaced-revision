@@ -66,7 +66,7 @@ function renderTk(){
 $('#tkl').onclick=e=>{const b=e.target.closest('button');if(!b)return;parent.markDone(b.dataset.id,+b.dataset.i);renderTk()};
 $('#b-tk').onclick=()=>openP('tk');
 
-function pick(m){sv('k_h',HS);clearInterval(iv);run=false;mode=m;left=S.d[m]*60;draw()}
+function pick(m){flush();sv('k_h',HS);clearInterval(iv);run=false;mode=m;left=S.d[m]*60;draw()}
 function done(){
   T[mode]++;
   if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.n++;d.s=Math.max(d.s,900);sv('k_h',HS)}
@@ -74,11 +74,11 @@ function done(){
 }
 function start(){
   run=true;end=Date.now()+left*1000;let lt=Date.now();
-  iv=setInterval(()=>{const nw=Date.now(),dt=(nw-lt)/1000;lt=nw;if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.s+=dt;if(Math.floor(d.s)%5===0)sv('k_h',HS)}left=Math.max(0,Math.round((end-Date.now())/1000));draw();if(!left){clearInterval(iv);run=false;done()}},250);draw();
+  iv=setInterval(()=>{const nw=Date.now(),dt=(nw-lt)/1000;lt=nw;if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.s+=dt;acc+=dt;if(acc>=60)flush();acc+=dt;if(acc>=60)flush();acc+=dt;if(acc>=60)flush();acc+=dt;if(acc>=60)flush();acc+=dt;if(acc>=60)flush();if(Math.floor(d.s)%5===0)sv('k_h',HS)}left=Math.max(0,Math.round((end-Date.now())/1000));draw();if(!left){clearInterval(iv);run=false;done()}},250);draw();
 }
 $('#go').onclick=()=>{
   try{ac=ac||new(window.AudioContext||window.webkitAudioContext)()}catch(e){}
-  if(run){const ps_=()=>{clearInterval(iv);run=false;sv('k_h',HS);draw()};if(mode==='focus')ask('Pause the timer?','A pause breaks your flow.','Pause',false,ps_);else ps_();return}
+  if(run){const ps_=()=>{flush();clearInterval(iv);run=false;sv('k_h',HS);draw()};if(mode==='focus')ask('Pause the timer?','A pause breaks your flow.','Pause',false,ps_);else ps_();return}
   start();
 };
 $('#rs').onclick=()=>{if(mode==='focus'&&(run||left<S.d.focus*60))ask('Stop the session?','Your focused minutes are saved to today’s total — but this won’t count as a session.','Stop',true,()=>pick(mode));else pick(mode)};
@@ -87,12 +87,13 @@ $$('.tab').forEach(t=>t.onclick=()=>pick(t.dataset.m));
 /* ---------- panel ---------- */
 const panel=$('#panel');
 function openP(w){
-  const all=['aes','set','str','ph'],cur=all.find(k=>!$('#p-'+k).hidden),base=w==='ph'?'aes':w;
+  const all=['aes','set','str','ph','tk'],cur=all.find(k=>!$('#p-'+k).hidden),base=w==='ph'?'aes':w;
   const same=panel.classList.contains('open')&&(cur===w||(cur==='ph'&&w==='aes'));
   panel.classList.toggle('open',!same);panel.style.width=w==='str'?'290px':'';
   all.forEach(k=>$('#p-'+k).hidden=k!==w);
-  ['aes','set','str'].forEach(k=>$('#b-'+k).classList.toggle('on',!same&&k===base));
+  ['aes','set','str','tk'].forEach(k=>$('#b-'+k).classList.toggle('on',!same&&k===base));
   if(w==='str')renderStr();
+  if(w==='tk')renderTk();
 }
 $('#b-aes').onclick=()=>openP('aes');$('#b-set').onclick=()=>openP('set');$('#b-str').onclick=()=>openP('str');
 $('#b-ph').onclick=()=>openP('ph');
