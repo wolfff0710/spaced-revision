@@ -184,8 +184,8 @@ renderSet();
 const cv=$('#fx'),cx=cv.getContext('2d');let W,H,ps=[],raf;
 function size(){W=cv.width=innerWidth;H=cv.height=innerHeight}
 addEventListener('resize',size);size();
-for(let i=0;i<140;i++)ps.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()+.4,v:Math.random()*.25+.08,dx:(Math.random()-.5)*.25,p:Math.random()*6.28});
-const dp=Array.from({length:70},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.6+.4,vx:(Math.random()-.5)*.00006,vy:-Math.random()*.00008-.00002,a:Math.random()*.25+.05}));
+for(let i=0;i<140;i++)ps.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+1,v:Math.random()*.4+.15,dx:(Math.random()-.5)*.4,p:Math.random()*6.28});
+const dp=Array.from({length:70},()=>({x:Math.random(),y:Math.random(),r:Math.random()*2.2+.9,vx:(Math.random()-.5)*.00018,vy:-Math.random()*.0002-.00008,a:Math.random()*.35+.3}));
 function loop(t){
   cx.clearRect(0,0,W,H);
   if(S.fx==='drift'){
@@ -193,10 +193,10 @@ function loop(t){
   }else if(S.fx!=='off'){
     ps.forEach(p=>{
       cx.shadowBlur=0;
-      if(S.fx==='motes'){p.y-=p.v;p.x+=p.dx+Math.sin(t/2500+p.p)*.15;cx.shadowBlur=5;cx.shadowColor=S.acc;cx.fillStyle=S.acc;cx.globalAlpha=.4;cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.28);cx.fill()}
+      if(S.fx==='motes'){p.y-=p.v;p.x+=p.dx+Math.sin(t/2500+p.p)*.15;cx.shadowBlur=12;cx.shadowColor=S.acc;cx.fillStyle=S.acc;cx.globalAlpha=.9;cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.28);cx.fill()}
       else if(S.fx==='stars'){cx.fillStyle='#fff';cx.globalAlpha=.1+.45*Math.abs(Math.sin(t/1600+p.p));cx.beginPath();cx.arc(p.x,p.y,p.r*.8,0,6.28);cx.fill()}
-      else if(S.fx==='rain'){p.y+=p.v*28;p.x-=1;cx.strokeStyle='#fff';cx.globalAlpha=.12;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(p.x+1,p.y-10);cx.stroke()}
-      else{p.y-=p.v;p.x+=p.dx*.5+Math.sin(t/2000+p.p)*.2;cx.strokeStyle='#fff';cx.globalAlpha=.14;cx.beginPath();cx.arc(p.x,p.y,p.r*4,0,6.28);cx.stroke()}
+      else if(S.fx==='rain'){p.y+=p.v*28;p.x-=1;cx.strokeStyle='#fff';cx.globalAlpha=.3;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(p.x+1,p.y-10);cx.stroke()}
+      else{p.y-=p.v;p.x+=p.dx*.5+Math.sin(t/2000+p.p)*.2;cx.strokeStyle='#fff';cx.globalAlpha=.4;cx.beginPath();cx.arc(p.x,p.y,p.r*4,0,6.28);cx.stroke()}
       if(p.y<-20)p.y=H+10;if(p.y>H+20)p.y=-10;if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;
     });cx.globalAlpha=1;cx.shadowBlur=0;
   }
