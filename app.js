@@ -9,10 +9,10 @@ PHYSICS:[["VOLUME 1",["Electric Charges and Fields","Electrostatic Potential and
 MATHS:[["PART 1",["Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability","Application of Derivatives"]],["PART 2",["Integrals","Application of Integrals","Differential Equations","Vector Algebra","Three Dimensional Geometry","Linear Programming","Probability"]]]
 };
 const OFF=[1,7,21],KEY="spaced_revision_v1";
-let S={},R={},P={},E={},W={},H={},A=true,pending=0,loaded=false;
+let S={},R={},P={},E={},W={},H={},K={},A=true,pending=0,loaded=false;
 let SM="";try{SM=({"1":"pri","pri":"pri","date":"date"})[localStorage.getItem(KEY+"_s")]||""}catch(e){}
 const setStatus=t=>{syncStatus.textContent=t};
-const apply=d=>{S=d.S||{};R=d.R||{};P=d.P||{};E=d.E||{};W=d.W||{};H=d.H||{};A=d.A!==false};
+const apply=d=>{K=d.K||{};S=d.S||{};R=d.R||{};P=d.P||{};E=d.E||{};W=d.W||{};H=d.H||{};A=d.A!==false};
 try{const L0=JSON.parse(localStorage.getItem(KEY+"_all")||"null");if(L0)apply(L0)}catch(e){}
 async function pull(quiet){
   if(!sb){setStatus("🟠 Offline · saved on this device");return}
@@ -30,10 +30,10 @@ async function pull(quiet){
   }else setStatus("🟢 Live Synced");
 }
 async function push(){
-  try{localStorage.setItem(KEY+"_all",JSON.stringify({S,R,P,E,W,H,A}))}catch(e){}
+  try{localStorage.setItem(KEY+"_all",JSON.stringify({S,R,P,E,W,H,A,K}))}catch(e){}
   if(!sb){setStatus("🟠 Saved on this device");return}
   pending++;setStatus("⏳ Saving...");
-  let error;try{({error}=await sb.from('revision_tracker').upsert({id:1,data:{S,R,P,E,W,H,A}}))}catch(e){error={message:"offline"}}
+  let error;try{({error}=await sb.from('revision_tracker').upsert({id:1,data:{S,R,P,E,W,H,A,K}}))}catch(e){error={message:"offline"}}
   pending--;
   setStatus(error?"🔴 Save failed: "+error.message:"🟢 Live Synced");
 }
@@ -309,5 +309,5 @@ document.getElementById("ver").textContent="v18: new timer page";
 window.getTasks=()=>{const t=iso(new Date());return[...queue(t).map(x=>({id:x.id,i:x.i,type:'rev',sub:subOf(x.id).slice(0,4),name:nameOf(x.id),lbl:(x.od>0?'Overdue '+x.od+'d':'Due today')+' · Rev '+(x.i+1)})),...started().filter(id=>S[id]===t).map(id=>({id,type:'study',sub:subOf(id).slice(0,4),name:nameOf(id),lbl:'To study'}))]};
 window.markDone=(id,i)=>{setR(id,i,{d:true,c:iso(new Date())});save();render()};
 window.addHours=(k,h)=>{H[k]=Math.round(((H[k]||0)+h)*100)/100;save()};
-
+window.setTimer=v=>{K=v;save()};
 window.getTimer=()=>loaded?K:null;
