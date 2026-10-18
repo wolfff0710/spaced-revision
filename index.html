@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&family=Syne:wght@700;800&family=Space+Grotesk:wght@500;600;700&family=Lora:ital,wght@1,500&display=swap" rel="stylesheet">
 <style>
 @property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
 :root{--bg:#000;--tx:#f4f6ff;--mut:#8b93b5;--mut2:#565d82;--blue:#00d4ff;--vio:#38e1ff;--pink:#ff5c8a;--grn:#34d399;--amb:#fbbf24;--mag:#a5f3fc;
@@ -313,8 +313,105 @@ select option{background:#0b0b14;color:#f4f6ff}
 .lr.p1 td:first-child{box-shadow:inset 4px 0 0 #8b5cf6}
 .chip:nth-child(2){--c:#a5f3fc}.chip:nth-child(4){--c:#22d3ee}
 @media(max-width:1100px){.lr.p1{box-shadow:inset 4px 0 0 #8b5cf6}}
+.g1{color:#e0d7ff;background:rgba(139,92,246,.28);border-color:rgba(167,139,250,.8)}
+.g5{color:#03121b;background:linear-gradient(90deg,#00d4ff,#8b5cf6);border-color:transparent;box-shadow:0 0 14px rgba(0,212,255,.7)}
+.cd.sl{background:rgba(139,92,246,.17);box-shadow:0 0 34px rgba(139,92,246,.42)}
+.cd.sl::after{background:conic-gradient(from var(--a),#00d4ff,#8b5cf6,#e879f9,#00d4ff)}
+.dr .r.d{background:linear-gradient(110deg,#00d4ff,#8b5cf6);background-size:240% 100%}
+.dr .r.s{color:#d9ccff;background:rgba(139,92,246,.18);border-color:rgba(167,139,250,.55)}
 @supports not ((mask-image:none) or (-webkit-mask-image:none)){.gridfx::after{display:none}}
 @supports not (background:color-mix(in srgb,red 50%,blue)){.tg{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.28)}.chip::before{background:radial-gradient(240px circle at var(--mx,80%) var(--my,0%),rgba(0,212,255,.25),transparent 62%)}.chip:hover{border-color:rgba(0,212,255,.5)}}
+/* ---------- focus timer page (distraction-free) ---------- */
+body.tm-on{overflow:hidden}
+body.tm-on main,body.tm-on .bg,body.tm-on .gridfx,body.tm-on .cur{display:none}
+#tmv{display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:200;background:#04080b;color:#fff;overflow:hidden;font-family:"Space Grotesk",Inter,system-ui,sans-serif;--ac:#2dd4bf;--ac2:#99f6e4;--acd:#1fb09d;--sh:.45}
+body.tm-on #tmv{display:block}
+.tv-img{position:absolute;top:0;right:0;bottom:0;left:0;background:#04080b center/cover no-repeat}
+.tv-img.def{background:radial-gradient(900px 620px at 50% 46%,rgba(24,80,92,.55),transparent 70%),radial-gradient(800px 500px at 15% 95%,rgba(10,40,64,.55),transparent 70%),radial-gradient(700px 500px at 90% 10%,rgba(8,50,60,.45),transparent 70%),#04080b}
+.tv-shade{position:absolute;top:0;right:0;bottom:0;left:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,calc(var(--sh)*.5)) 0%,rgba(0,0,0,var(--sh)) 70%,rgba(0,0,0,calc(var(--sh) + .25)) 100%)}
+.tv-parts{position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none;overflow:hidden}
+.tv-parts i{position:absolute;width:var(--w);height:var(--w);border-radius:50%;background:var(--ac2);box-shadow:0 0 8px 1px var(--ac);opacity:0;animation:tvf var(--d) ease-in-out var(--dl) infinite}
+@keyframes tvf{0%{opacity:0;transform:translateY(0)}25%{opacity:.95}75%{opacity:.6}100%{opacity:0;transform:translateY(-90px)}}
+#tvui{position:absolute;top:0;right:0;bottom:0;left:0}
+.tv-logo{position:absolute;left:32px;top:26px;font:700 22px "Space Grotesk",Inter,sans-serif;letter-spacing:.01em;cursor:pointer;background:none;border:0;color:#fff;padding:0}
+.tv-bar{position:absolute;left:22px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 8px;border-radius:24px;background:rgba(10,16,18,.72);border:1px solid rgba(255,255,255,.06);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.tv-bar button{width:44px;border:0;background:none;color:#e8eff1;border-radius:14px;cursor:pointer;display:grid;place-items:center;padding:10px 0;transition:background .2s,color .2s}
+.tv-bar button:hover,.tv-bar button.on{background:rgba(255,255,255,.1);color:#fff}
+.tv-bar svg,.tv-d svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tv-fl{display:flex;flex-direction:column;align-items:center;gap:1px;font:700 11px "Space Grotesk",sans-serif}
+.tv-fl svg{fill:#ff8a1f;stroke:#ffb347}
+.tv-sep{width:26px;height:1px;background:rgba(255,255,255,.1);margin:4px 0}
+.tv-c0{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3.5vh;padding-top:9vh;pointer-events:none}
+.tv-c0>*{pointer-events:auto}
+.tv-tabs{display:flex;gap:min(46px,6vw)}
+.tv-tabs button{position:relative;background:none;border:0;color:rgba(255,255,255,.55);font:600 15px "Space Grotesk",Inter,sans-serif;padding:10px 2px 12px;cursor:pointer;transition:color .2s;white-space:nowrap}
+.tv-tabs button:hover{color:#fff}
+.tv-tabs button.on{color:#fff}
+.tv-tabs button.on::after{content:"";position:absolute;left:-12px;right:-12px;bottom:0;height:2px;border-radius:2px;background:var(--ac);box-shadow:0 0 10px var(--ac)}
+.tv-tabs b{margin-left:7px;font:700 9.5px "Space Grotesk",sans-serif;color:var(--ac)}
+.tv-ring{position:relative;width:min(42.5vh,86vw,480px);height:min(42.5vh,86vw,480px)}
+.tv-ring svg{position:absolute;top:0;left:0;width:100%;height:100%}
+.tv-t{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.2vh}
+.tv-time{font:800 clamp(44px,7.6vh,88px)/1 Syne,"Space Grotesk",Inter,sans-serif;letter-spacing:-.01em;text-shadow:0 2px 24px rgba(0,0,0,.5);font-variant-numeric:tabular-nums}
+.tv-c{opacity:.4}
+.tv-pill{display:inline-flex;align-items:center;gap:8px;max-width:80%;padding:6px 15px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(8,12,14,.45);font:500 12.5px "Space Grotesk",Inter,sans-serif;color:#eaf3f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tv-pill i{flex:0 0 auto;width:6px;height:6px;border-radius:50%;background:var(--ac);box-shadow:0 0 8px var(--ac)}
+.tv-q{font:italic 500 clamp(16px,2.5vh,23px)/1.45 Lora,Georgia,"Times New Roman",serif;color:rgba(255,255,255,.88);text-align:center;max-width:82vw;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.tv-dock{position:absolute;left:50%;bottom:3vh;transform:translateX(-50%);display:flex;align-items:center;gap:clamp(8px,2vw,24px);padding:9px 16px;border-radius:24px;background:rgba(10,16,18,.74);border:1px solid rgba(255,255,255,.06);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);max-width:96vw}
+.tv-d{display:flex;align-items:center;gap:9px;background:none;border:0;color:#e8eff1;font:600 13.5px "Space Grotesk",Inter,sans-serif;cursor:pointer;padding:9px 10px;border-radius:12px;transition:background .2s}
+.tv-d:hover{background:rgba(255,255,255,.08)}
+.tv-cb{width:18px;height:18px;border-radius:4px;border:2px solid rgba(255,255,255,.4);display:grid;place-items:center;margin-left:4px}
+.tv-cb.on{background:var(--ac);border-color:var(--ac)}
+.tv-cb.on::after{content:"";width:5px;height:9px;border:solid #04201c;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.tv-start{display:flex;align-items:center;gap:10px;min-width:136px;justify-content:center;padding:13px 26px;border:0;border-radius:13px;background:var(--acd);color:#fff;font:700 16px "Space Grotesk",Inter,sans-serif;cursor:pointer;box-shadow:0 10px 30px -10px var(--ac);transition:transform .15s,filter .2s}
+.tv-start:hover{filter:brightness(1.12)}
+.tv-start:active{transform:scale(.96)}
+.tv-start svg{width:15px;height:15px;fill:#fff;stroke:none}
+.tv-about{position:absolute;left:32px;bottom:3.4vh;background:none;border:0;color:rgba(255,255,255,.5);font:600 10.5px "Space Grotesk",sans-serif;letter-spacing:.2em;cursor:pointer;padding:6px 0}
+.tv-about:hover{color:#fff}
+.tv-pop{position:absolute;z-index:5;width:min(330px,calc(100vw - 32px));max-height:72vh;overflow:auto;padding:18px;border-radius:20px;background:rgba(10,15,18,.94);border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 70px rgba(0,0,0,.7);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);animation:tvp .22s ease both}
+@keyframes tvp{from{opacity:0;transform:translateY(8px)}}
+.tv-pop.L{left:92px;top:50%;margin-top:-170px}
+.tv-pop.B{left:50%;bottom:calc(3vh + 78px);margin-left:calc(min(330px,calc(100vw - 32px))/-2)}
+.tv-pop h3{margin:0 0 12px;font:700 13px "Space Grotesk",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.tv-pop p{margin:8px 0 0;color:rgba(255,255,255,.6);font-size:13px;line-height:1.5}
+.tv-g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tv-s{padding:12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06)}
+.tv-s b{display:block;font:800 22px Syne,"Space Grotesk",sans-serif;color:var(--ac2)}
+.tv-s span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.tv-btn{width:100%;margin-top:8px;padding:11px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;font:600 13.5px "Space Grotesk",sans-serif;cursor:pointer;text-align:center;transition:background .2s,border-color .2s}
+.tv-btn:hover{background:rgba(255,255,255,.12);border-color:var(--ac)}
+.tv-btn.p{background:var(--acd);border-color:transparent}
+.tv-sw{display:flex;gap:10px;margin-top:12px}
+.tv-sw button{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;background:var(--c)}
+.tv-sw button.on{border-color:#fff;box-shadow:0 0 12px var(--c)}
+.tv-pop label{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;font-size:13.5px;color:rgba(255,255,255,.8)}
+.tv-pop input[type=number]{width:70px;padding:7px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.4);color:#fff;font:600 14px "Space Grotesk",sans-serif;outline:0}
+.tv-pop input[type=range]{width:100%;accent-color:var(--ac);margin-top:6px}
+.tv-pop input[type=checkbox]{width:19px;height:19px;accent-color:var(--ac)}
+.tv-row{display:flex;align-items:center;gap:10px;padding:10px;margin-top:8px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:border-color .2s,background .2s}
+.tv-row:hover{background:rgba(255,255,255,.09)}
+.tv-row.sel{border-color:var(--ac);background:rgba(255,255,255,.1)}
+.tv-tag{flex:0 0 auto;font:700 10px "Space Grotesk",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--c);border:1px solid var(--c);border-radius:8px;padding:3px 7px}
+.tv-rn{flex:1;font-weight:600;font-size:14px;min-width:0}
+.tv-rn small{display:block;font-weight:500;font-size:11.5px;color:rgba(255,255,255,.55)}
+.tv-ok{flex:0 0 auto;width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:#fff;font-size:15px;cursor:pointer}
+.tv-ok:hover{border-color:var(--ac);color:var(--ac)}
+@media(max-width:760px){
+ .tv-logo{left:18px;top:16px;font-size:19px}
+ .tv-bar{left:50%;top:58px;transform:translateX(-50%);flex-direction:row;padding:6px 8px;gap:2px}
+ .tv-bar button{padding:9px 0}
+ .tv-sep{width:1px;height:24px;margin:0 3px}
+ .tv-fl{flex-direction:row;gap:4px}
+ .tv-c0{gap:3.5vh;padding-top:70px}
+ .tv-tabs button{font-size:13.5px}
+ .tv-ring{width:min(70vw,38vh)!important;height:min(70vw,38vh)!important}
+ .tv-dock{gap:4px;padding:7px 10px}
+ .tv-dl{display:none}
+ .tv-start{min-width:110px;padding:12px 20px}
+ .tv-about{left:18px;bottom:calc(3vh + 78px);display:none}
+ .tv-pop.L,.tv-pop.B{left:16px;right:16px;width:auto;margin:0;top:auto;bottom:calc(3vh + 78px)}
+}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -343,8 +440,9 @@ select option{background:#0b0b14;color:#f4f6ff}
 </div>
 <div class="acts"><div class="bs"><button id="so">Sort by priority: Off</button><button id="sd">Sort by date: Off</button></div><div class="bs"><span class="ml">Move all missed to:</span><button data-mm="0">Today</button><button data-mm="1">Tomorrow</button><span class="dw"><span class="pkb">Pick date</span><input type="date" id="mmd"></span></div></div>
 <div id="app"></div>
-<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Cloud sync on (auto-refresh 15s). &middot; <b style='color:var(--vio)'>v13: medium = violet</b></p>
+<p class="leg">&check; mark revised &middot; &#8635; not revised, move to tomorrow &middot; green = revised &middot; pink = overdue &middot; glowing = due today &middot; blue = upcoming. Cloud sync on (auto-refresh 15s). &middot; <b style='color:var(--vio)'>v15: calendar colours</b></p>
 </main>
+<div id="tmv"><div class="tv-img def" id="tvimg"></div><div class="tv-shade"></div><div class="tv-parts" id="tvparts"></div><div id="tvui"></div><input type="file" id="tvfile" accept="image/*" hidden></div>
 <script>
 window.addEventListener("error",function(e){var a=document.getElementById("app");if(a&&!a.innerHTML.trim())a.innerHTML='<div class="sec"><div class="em0">\u26a0 Something failed to load: '+(e.message||"error")+'</div></div>'});
 const SUPABASE_URL="https://mhfqzujwzjxusckhibkr.supabase.co";
@@ -451,6 +549,8 @@ function render(){
   Object.entries(D).forEach(([s,bl])=>bl.forEach((b,bi)=>b[1].forEach(t=>{const id=s+"|"+bi+"|"+t;if(S[id]){n1++;OFF.forEach((o,i)=>{const k=eff(id,i);if(rv(id,i).d)n5++;else if(k===today)n2++;else if(k>today)n3++;else n4++})}})));
   const c=cur();
   const fin=()=>{document.querySelectorAll(".tabs a").forEach(a=>a.classList.toggle("on",a.dataset.t===c));so.style.display=sd.style.display=SJ.includes(c)?"":"none";so.textContent="Sort by priority: "+(SM==="pri"?"On":"Off");so.classList.toggle("on",SM==="pri");sd.textContent="Sort by date: "+(SM==="date"?"On":"Off");sd.classList.toggle("on",SM==="date");cnt(s1,n1);cnt(s2,n2);cnt(s3,n3);cnt(s4,n4);cnt(s5,n5)};
+  document.body.classList.toggle("tm-on",c==="TIMER");
+  if(c==="TIMER"){tmvRender();fin();return}
   if(c==="CALENDAR"){app.innerHTML=calHTML(today);fin();return}
   if(EXTRA.includes(c)){app.innerHTML=extraHTML(c,today);fin();return}
   const bl=D[c];let idx=0,tot=0,done=0,body="";
@@ -627,9 +727,9 @@ let TM={mode:"f",left:TS.f*60,run:false,end:0,cnt:0,fid:""};
 const tmLeft=()=>TM.run?Math.max(0,Math.ceil((TM.end-Date.now())/1000)):TM.left;
 const fmtT=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
 const tsSave=()=>{try{localStorage.setItem(KEY+"_t",JSON.stringify(TS))}catch(e){}};
-function beep(){try{const c=new(window.AudioContext||window.webkitAudioContext)();[0,.25,.5].forEach(t=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=880;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.25,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+t+.2);o.start(c.currentTime+t);o.stop(c.currentTime+t+.22)})}catch(e){}}
+function beep(){if(TS.snd===false)return;try{const c=new(window.AudioContext||window.webkitAudioContext)();[0,.25,.5].forEach(t=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=880;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.25,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+t+.2);o.start(c.currentTime+t);o.stop(c.currentTime+t+.22)})}catch(e){}}
 function tmDone(){
-  const was=TM.mode;TM.run=false;
+  const was=TM.mode;TM.run=false;tcInc(was);
   if(was==="f"){TM.cnt++;const dt=iso(new Date());H[dt]=Math.round(((H[dt]||0)+TS.f/60)*100)/100;save()}
   beep();
   try{if("Notification"in window&&Notification.permission==="granted")new Notification(was==="f"?"Focus session done — take a break":"Break over — back to focus")}catch(e){}
@@ -640,7 +740,7 @@ function tmDone(){
 function tmTick(){
   if(TM.run&&TM.end-Date.now()<=0)tmDone();
   const l=tmLeft(),tot=tmLen(TM.mode),tx=document.getElementById("tmt"),rg=document.getElementById("tmr");
-  if(tx)tx.textContent=fmtT(l);
+  if(tx)tx.innerHTML=fmtT(l).replace(":",'<span class="tv-c">:</span>');
   if(rg)rg.setAttribute("stroke-dashoffset",CIRC*(1-l/tot));
   document.title=TM.run?fmtT(l)+" · "+(TM.mode==="f"?"Focus":"Break"):"Spaced Revision Tracker";
 }
@@ -696,6 +796,149 @@ function enter(){
 addEventListener("hashchange",enter);
 dpill.textContent=new Date().toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});
 fxLoop();enter();
+// ===== focus timer page =====
+const SW=[{a:"#2dd4bf",b:"#c6fff1",d:"#1fb09d"},{a:"#22d3ee",b:"#cffafe",d:"#0aa5c4"},{a:"#a78bfa",b:"#ede9fe",d:"#7c5cf0"},{a:"#f472b6",b:"#fce7f3",d:"#e0529c"},{a:"#fbbf24",b:"#fef3c7",d:"#d99a0b"}];
+const QU=["Either you run the day or the day runs you.","Small steps every day add up to big results.","Discipline is choosing what you want most over what you want now.","The expert in anything was once a beginner.","Don\u2019t watch the clock; do what it does. Keep going.","Success is the sum of small efforts repeated day in and day out.","Focus on the process, not the outcome.","It always seems impossible until it\u2019s done.","You don\u2019t have to be great to start, but you have to start to be great.","One focused hour beats five distracted ones."];
+let TV={ac:0,sh:.45,name:"Krtk"};try{Object.assign(TV,JSON.parse(localStorage.getItem(KEY+"_tv")||"{}"))}catch(e){}
+const tvSave=()=>{try{localStorage.setItem(KEY+"_tv",JSON.stringify(TV))}catch(e){}};
+let TC={d:"",f:0,s:0,l:0};try{const t0=JSON.parse(localStorage.getItem(KEY+"_tc")||"null");if(t0)TC=t0}catch(e){}
+let TQ=Math.floor(Math.random()*QU.length),TP="",LASTH="",TVURL="",NZ=null,TVMU=false;
+const tcGet=m=>TC.d===iso(new Date())?TC[m]:0;
+function tcInc(m){const d=iso(new Date());if(TC.d!==d)TC={d:d,f:0,s:0,l:0};TC[m]++;try{localStorage.setItem(KEY+"_tc",JSON.stringify(TC))}catch(e){}if(m==="f")TQ=(TQ+1)%QU.length}
+const IC={
+ trophy:'<svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
+ flame:'<svg viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+ palette:'<svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".6"/><circle cx="17.5" cy="10.5" r=".6"/><circle cx="8.5" cy="7.5" r=".6"/><circle cx="6.5" cy="12.5" r=".6"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>',
+ gear:'<svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
+ back:'<svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>',
+ music:'<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+ pip:'<svg viewBox="0 0 24 24"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4"/><rect x="12" y="13" width="10" height="7" rx="2"/></svg>',
+ tasks:'<svg viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>',
+ play:'<svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg>',
+ pause:'<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>'
+};
+/* tiny key-value store (IndexedDB) so the uploaded background survives reloads */
+function tvDB(){return new Promise(function(res,rej){var r=indexedDB.open("revtracker",1);r.onupgradeneeded=function(){r.result.createObjectStore("kv")};r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}})}
+async function kvGet(k){try{const d=await tvDB();return await new Promise(function(res){const q=d.transaction("kv").objectStore("kv").get(k);q.onsuccess=function(){res(q.result||null)};q.onerror=function(){res(null)}})}catch(e){return null}}
+async function kvSet(k,v){try{const d=await tvDB();await new Promise(function(res){const t=d.transaction("kv","readwrite");if(v===null)t.objectStore("kv").delete(k);else t.objectStore("kv").put(v,k);t.oncomplete=res;t.onerror=res})}catch(e){}}
+async function tvLoadBg(){
+  const b=await kvGet("tvbg"),el=document.getElementById("tvimg");
+  if(TVURL){URL.revokeObjectURL(TVURL);TVURL=""}
+  if(b){TVURL=URL.createObjectURL(b);el.style.backgroundImage='url("'+TVURL+'")';el.classList.remove("def")}
+  else{el.style.backgroundImage="";el.classList.add("def")}
+  tmvRender(true);
+}
+async function tvSetBg(file){
+  try{
+    const url=URL.createObjectURL(file);
+    const im=await new Promise(function(res,rej){const i=new Image();i.onload=function(){res(i)};i.onerror=rej;i.src=url});
+    const k=Math.min(1,2200/Math.max(im.naturalWidth,im.naturalHeight)),cv=document.createElement("canvas");
+    cv.width=Math.round(im.naturalWidth*k);cv.height=Math.round(im.naturalHeight*k);
+    cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);
+    const blob=await new Promise(function(r){cv.toBlob(r,"image/jpeg",.88)});
+    URL.revokeObjectURL(url);
+    await kvSet("tvbg",blob||file);
+  }catch(e){await kvSet("tvbg",file)}
+  tvLoadBg();
+}
+function noiseOn(){
+  try{
+    const C=window.AudioContext||window.webkitAudioContext,ctx=new C(),len=ctx.sampleRate*3,buf=ctx.createBuffer(1,len,ctx.sampleRate),d=buf.getChannelData(0);
+    let last=0;for(let i=0;i<len;i++){const w=Math.random()*2-1;last=(last+.02*w)/1.02;d[i]=last*3.2}
+    const src=ctx.createBufferSource();src.buffer=buf;src.loop=true;const g=ctx.createGain();g.gain.value=.22;src.connect(g);g.connect(ctx.destination);src.start();NZ={ctx:ctx,src:src};
+  }catch(e){}
+}
+function noiseOff(){try{if(NZ){NZ.src.stop();NZ.ctx.close();NZ=null}}catch(e){}}
+function streak(){let n=0;const d=new Date();if(!(H[iso(d)]>0))d.setDate(d.getDate()-1);while(H[iso(d)]>0){n++;d.setDate(d.getDate()-1)}return n}
+function tvStats(today){
+  const r2=function(x){return Math.round(x*100)/100};let wk=0,tot=0;
+  for(let i=0;i<7;i++)wk+=H[iso(add(today,-i))]||0;
+  Object.keys(H).forEach(function(k){tot+=H[k]||0});
+  return '<h3>Your focus</h3><div class="tv-g"><div class="tv-s"><b>'+r2(H[today]||0)+'h</b><span>Today</span></div><div class="tv-s"><b>'+r2(wk)+'h</b><span>Last 7 days</span></div><div class="tv-s"><b>'+tcGet("f")+'</b><span>Sessions today</span></div><div class="tv-s"><b>'+streak()+'</b><span>Day streak</span></div></div><p>Total focused: '+r2(tot)+'h. Finished focus sessions are added to your study hours automatically.</p>';
+}
+function tvPalette(){
+  return '<h3>Background</h3><button class="tv-btn p" data-tvbg="1">Upload from your device</button>'+(TVURL?'<button class="tv-btn" data-tvrm="1">Remove image</button>':'')+'<label>Darkness<span id="tvshl">'+Math.round(TV.sh*100)+'%</span></label><input type="range" min="0" max="85" value="'+Math.round(TV.sh*100)+'" data-tvsh="1"><h3 style="margin-top:18px">Accent colour</h3><div class="tv-sw">'+SW.map(function(s,i){return '<button class="'+(i===TV.ac?"on":"")+'" style="--c:'+s.a+'" data-tvac="'+i+'"></button>'}).join("")+'</div>';
+}
+function tvSettings(){
+  const inp=function(k,n,mn,mx){return '<label>'+n+'<input type="number" min="'+mn+'" max="'+mx+'" data-tvs="'+k+'" value="'+TS[k]+'"></label>'};
+  return '<h3>Timer</h3>'+inp("f","Focus (min)",1,180)+inp("s","Short break (min)",1,60)+inp("l","Long break (min)",1,90)+inp("n","Focus sessions before a long break",2,10)+'<label>Auto-start next session<input type="checkbox" data-tvt="auto"'+(TS.auto?" checked":"")+'></label><label>Sound when a session ends<input type="checkbox" data-tvt="snd"'+(TS.snd!==false?" checked":"")+'></label><button class="tv-btn" data-trs="1">Reset timer</button><button class="tv-btn" data-tsk="1">Skip to next</button>';
+}
+function tvTasks(today){
+  const q=queue(today),st=started().filter(function(id){return S[id]===today});let h='<h3>Tasks &middot; due today</h3>';
+  q.forEach(function(x){const key=x.id+"|"+x.i;h+='<div class="tv-row'+(key===TM.fid?" sel":"")+'" data-tvfocus="'+key+'"><span class="tv-tag" style="--c:'+SC[subOf(x.id)]+'">'+subOf(x.id).slice(0,4)+'</span><span class="tv-rn">'+nameOf(x.id)+'<small>'+(x.od>0?"Overdue "+x.od+"d":"Due today")+' &middot; Rev '+(x.i+1)+'</small></span><button class="tv-ok" data-m="'+key+'" title="Mark revised">&check;</button></div>'});
+  st.forEach(function(id){h+='<div class="tv-row"><span class="tv-tag" style="--c:'+SC[subOf(id)]+'">'+subOf(id).slice(0,4)+'</span><span class="tv-rn">'+nameOf(id)+'<small>To study today</small></span></div>'});
+  h+=(q.length||st.length)?'<p>Tap a task to focus on it. Tick &check; when you have revised it.</p>':'<p>Nothing due &mdash; you are all caught up. 🎉</p>';
+  return h;
+}
+function tmvRender(force){
+  const ui=document.getElementById("tvui"),root=document.getElementById("tmv"),ae=document.activeElement;
+  if(!force&&ae&&ui.contains(ae)&&/^(INPUT|SELECT)$/.test(ae.tagName))return;
+  const today=iso(new Date()),sw=SW[TV.ac]||SW[0],l=tmLeft(),tot=tmLen(TM.mode);
+  root.style.setProperty("--ac",sw.a);root.style.setProperty("--ac2",sw.b);root.style.setProperty("--acd",sw.d);root.style.setProperty("--sh",TV.sh);
+  const q=queue(today);if(TM.fid&&!q.some(function(x){return x.id+"|"+x.i===TM.fid}))TM.fid="";
+  const fx=TM.fid?nameOf(TM.fid.slice(0,TM.fid.lastIndexOf("|"))):"";
+  const pill=TM.mode==="f"?(fx||"Focus session"):TM.mode==="s"?"Short break":"Long break";
+  const tm=fmtT(l).replace(":",'<span class="tv-c">:</span>');
+  const lab=TM.run?"Pause":(l<tot?"Resume":"Start");
+  const tabs=[["f","Focus"],["s","Short Break"],["l","Long Break"]].map(function(a){return '<button class="'+(TM.mode===a[0]?"on":"")+'" data-tm="'+a[0]+'">'+a[1]+'<b>'+tcGet(a[0])+'</b></button>'}).join("");
+  let pop="";
+  if(TP==="tasks")pop='<div class="tv-pop B">'+tvTasks(today)+'</div>';
+  else if(TP==="stats")pop='<div class="tv-pop L">'+tvStats(today)+'</div>';
+  else if(TP==="palette")pop='<div class="tv-pop L">'+tvPalette()+'</div>';
+  else if(TP==="settings")pop='<div class="tv-pop L">'+tvSettings()+'</div>';
+  else if(TP==="about")pop='<div class="tv-pop L"><h3>About</h3><p>A distraction-free focus timer for your revision. Finished focus sessions are added to your study hours in Stats.</p><p><b>Space</b> start / pause &middot; <b>Esc</b> close panels</p><p>Use the palette button to upload your own background from your device.</p></div>';
+  const bt=function(k,ic,t){return '<button data-tv="'+k+'" class="'+(TP===k?"on":"")+'" title="'+t+'">'+ic+'</button>'};
+  ui.innerHTML='<button class="tv-logo" data-tvnm="1" title="Click to rename">'+TV.name+'</button>'+
+  '<div class="tv-bar">'+bt("stats",IC.trophy,"Your focus")+'<button data-tv="stats" title="Day streak"><span class="tv-fl">'+IC.flame+'<span>'+streak()+'</span></span></button><div class="tv-sep"></div>'+bt("palette",IC.palette,"Background and colours")+bt("settings",IC.gear,"Timer settings")+'<button data-tvx="1" title="Back to tracker">'+IC.back+'</button></div>'+
+  '<div class="tv-c0"><div class="tv-tabs">'+tabs+'</div><div class="tv-ring"><svg viewBox="0 0 300 300"><defs><linearGradient id="tvg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+sw.a+'"/><stop offset="1" stop-color="'+sw.b+'"/></linearGradient></defs><circle cx="150" cy="150" r="130" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="9"/><circle id="tmr" cx="150" cy="150" r="130" fill="none" stroke="url(#tvg)" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+CIRC+'" stroke-dashoffset="'+(CIRC*(1-l/tot))+'" transform="rotate(-90 150 150)" style="filter:drop-shadow(0 0 7px '+sw.a+')"/></svg><div class="tv-t"><div class="tv-time" id="tmt">'+tm+'</div><div class="tv-pill"><i></i>'+pill+'</div></div></div><div class="tv-q">\u201c'+QU[TQ]+'\u201d</div></div>'+
+  '<div class="tv-dock"><button class="tv-d" data-tvmu="1" title="Ambient focus sound">'+IC.music+'<span class="tv-dl">Music</span><span class="tv-cb'+(TVMU?" on":"")+'"></span></button><button class="tv-start" data-tgo="1">'+(TM.run?IC.pause:IC.play)+lab+'</button><button class="tv-d" data-tvfs="1" title="Fullscreen">'+IC.pip+'</button><button class="tv-d" data-tv="tasks" title="Tasks due today">'+IC.tasks+'<span class="tv-dl">Tasks</span></button></div>'+
+  '<button class="tv-about" data-tv="about">ABOUT</button>'+pop;
+}
+function tvInit(){
+  const p=document.getElementById("tvparts");let h="";
+  for(let i=0;i<48;i++){h+='<i style="left:'+(Math.random()*100).toFixed(1)+'%;top:'+(Math.random()*100).toFixed(1)+'%;--w:'+(Math.random()*2.2+1.4).toFixed(1)+'px;--d:'+(7+Math.random()*9).toFixed(1)+'s;--dl:-'+(Math.random()*12).toFixed(1)+'s"></i>'}
+  p.innerHTML=h;tvLoadBg();
+}
+function tvGo(){
+  if(TM.run){TM.left=tmLeft();TM.run=false}
+  else{TM.end=Date.now()+TM.left*1000;TM.run=true;try{if("Notification"in window&&Notification.permission==="default")Notification.requestPermission()}catch(_){}}
+  render();
+}
+document.addEventListener("click",function(e){
+  if(!document.body.classList.contains("tm-on"))return;
+  const T=e.target;if(!T.closest||T.id==="tvfile"||T.closest("[data-m]"))return;
+  const el=T.closest("[data-tv],[data-tvx],[data-tvfs],[data-tvmu],[data-tvbg],[data-tvrm],[data-tvac],[data-tvfocus],[data-tvnm]");
+  if(!el){if(TP&&!T.closest(".tv-pop")){TP="";tmvRender(true)}return}
+  const d=el.dataset;
+  if(d.tv){TP=TP===d.tv?"":d.tv}
+  else if(d.tvx){location.hash=LASTH||"#today";return}
+  else if(d.tvfs){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(_){}return}
+  else if(d.tvmu){TVMU=!TVMU;TVMU?noiseOn():noiseOff()}
+  else if(d.tvbg){document.getElementById("tvfile").click();return}
+  else if(d.tvrm){kvSet("tvbg",null).then(tvLoadBg);return}
+  else if(d.tvac!==undefined){TV.ac=+d.tvac;tvSave()}
+  else if(d.tvfocus){TM.fid=TM.fid===d.tvfocus?"":d.tvfocus}
+  else if(d.tvnm){const n=prompt("Your name",TV.name);if(n&&n.trim()){TV.name=n.trim().slice(0,20);tvSave()}}
+  tmvRender(true);
+});
+document.addEventListener("change",function(e){
+  const t=e.target,d=t.dataset||{};
+  if(d.tvs){const k=d.tvs,mx=k==="n"?10:k==="s"?60:k==="l"?90:180,mn=k==="n"?2:1;TS[k]=Math.max(mn,Math.min(mx,Math.round(+t.value)||TS[k]));tsSave();if(!TM.run&&k===TM.mode)TM.left=tmLen(TM.mode);tmvRender(true)}
+  else if(d.tvt){TS[d.tvt]=t.checked;tsSave();tmvRender(true)}
+  else if(t.id==="tvfile"&&t.files&&t.files[0]){tvSetBg(t.files[0]);t.value=""}
+});
+document.addEventListener("input",function(e){
+  const t=e.target;if(t.dataset&&t.dataset.tvsh){TV.sh=t.value/100;document.getElementById("tmv").style.setProperty("--sh",TV.sh);const l=document.getElementById("tvshl");if(l)l.textContent=t.value+"%";tvSave()}
+});
+document.addEventListener("keydown",function(e){
+  if(!document.body.classList.contains("tm-on"))return;
+  const t=e.target;if(t&&/^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName))return;
+  if(e.code==="Space"){e.preventDefault();tvGo()}
+  else if(e.key==="Escape"&&TP){TP="";tmvRender(true)}
+});
+if(location.hash!=="#timer")LASTH=location.hash;
+addEventListener("hashchange",function(){if(location.hash!=="#timer")LASTH=location.hash});
+tvInit();
 addEventListener("hashchange",render);
 render();
 pull(false);
