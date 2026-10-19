@@ -8,11 +8,15 @@ CHEMISTRY:[[null,["Solutions","Chemical Kinetics","Electrochemistry","Co-ordinat
 PHYSICS:[["VOLUME 1",["Electric Charges and Fields","Electrostatic Potential and Capacitance","Current Electricity","Moving Charges and Magnetism","Magnetism and Matter","Electromagnetic Induction","Alternating Current","Electromagnetic Waves"]],["VOLUME 2",["Ray Optics and Optical Instruments","Wave Optics","Dual Nature of Radiation and Matter","Atoms","Nuclei","Semiconductor Electronics"]]],
 MATHS:[["PART 1",["Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability","Application of Derivatives"]],["PART 2",["Integrals","Application of Integrals","Differential Equations","Vector Algebra","Three Dimensional Geometry","Linear Programming","Probability"]]]
 };
+/* ---------- Class 11 portal data ---------- */
+D["XI CHEMISTRY"]=[["PART 1",["Some Basic Concepts of Chemistry","Structure of Atom","Classification of Elements and Periodicity","Chemical Bonding and Molecular Structure","Thermodynamics","Equilibrium"]],["PART 2",["Redox Reactions","Organic Chemistry: Basic Principles and Techniques","Hydrocarbons"]]];
+D["XI PHYSICS"]=[["PART 1",["Units and Measurements","Motion in a Straight Line","Motion in a Plane","Laws of Motion","Work, Energy and Power","System of Particles and Rotational Motion","Gravitation"]],["PART 2",["Mechanical Properties of Solids","Mechanical Properties of Fluids","Thermal Properties of Matter","Thermodynamics","Kinetic Theory","Oscillations","Waves"]]];
+D["XI MATHS"]=[["PART 1",["Sets","Relations and Functions","Trigonometric Functions","Complex Numbers and Quadratic Equations","Linear Inequalities","Permutations and Combinations","Binomial Theorem"]],["PART 2",["Sequences and Series","Straight Lines","Conic Sections","Introduction to Three Dimensional Geometry","Limits and Derivatives","Statistics","Probability"]]];
 const OFF=[1,7,21],KEY="spaced_revision_v1";
-let S={},R={},P={},E={},W={},H={},K={},A=true,pending=0,loaded=false,ready=false,dirty=false,seq=0;
+let S={},R={},P={},E={},W={},H={},K={},A=true,CL="12",pending=0,loaded=false,ready=false,dirty=false,seq=0;
 let SM="";try{SM=({"1":"pri","pri":"pri","date":"date"})[localStorage.getItem(KEY+"_s")]||""}catch(e){}
 const setStatus=t=>{syncStatus.textContent=t};
-const apply=d=>{K=d.K||{};S=d.S||{};R=d.R||{};P=d.P||{};E=d.E||{};W=d.W||{};H=d.H||{};A=d.A!==false};
+const apply=d=>{K=d.K||{};S=d.S||{};R=d.R||{};P=d.P||{};E=d.E||{};W=d.W||{};H=d.H||{};A=d.A!==false;CL=d.CL==="11"?"11":"12"};
 try{dirty=localStorage.getItem(KEY+"_d")==="1"}catch(e){}
 const setD=v=>{dirty=v;try{localStorage.setItem(KEY+"_d",v?"1":"0")}catch(e){}};
 try{const L0=JSON.parse(localStorage.getItem(KEY+"_all")||"null");if(L0){apply(L0);ready=true}}catch(e){}
@@ -50,7 +54,7 @@ if(sb)try{sb.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_OUT")setTimeout(()=>{se
 
 /* ---------- sync ---------- */
 const sg=o=>JSON.stringify(o,(k,v)=>v&&typeof v==="object"&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(x=>[x,v[x]])):v);
-const snap=()=>sg({S,R,P,E,W,H,A,K});
+const snap=()=>sg({S,R,P,E,W,H,A,K,CL});
 const busy=()=>{const a=document.activeElement;return !!a&&/INPUT|SELECT/.test(a.tagName)&&app.contains(a)};
 const rd=()=>{if(!busy())render()};
 async function pull(quiet){
@@ -76,10 +80,10 @@ async function pull(quiet){
 }
 async function push(){
   if(sb&&!ready){setStatus("⏳ Waiting for first sync");return}
-  try{localStorage.setItem(KEY+"_all",JSON.stringify({S,R,P,E,W,H,A,K}))}catch(e){}
+  try{localStorage.setItem(KEY+"_all",JSON.stringify({S,R,P,E,W,H,A,K,CL}))}catch(e){}
   if(!sb){setStatus("🟠 Saved on this device");return}
   const my=++seq;setD(true);pending++;setStatus("⏳ Saving...");
-  let error;try{({error}=await sb.from('revision_tracker').upsert({id:1,data:{S,R,P,E,W,H,A,K}}))}catch(e){error={message:"offline"}}
+  let error;try{({error}=await sb.from('revision_tracker').upsert({id:1,data:{S,R,P,E,W,H,A,K,CL}}))}catch(e){error={message:"offline"}}
   pending--;
   if(!error&&my===seq)setD(false);
   setStatus(error?"🔴 Save failed: "+error.message:"🟢 Live Synced");
@@ -100,10 +104,12 @@ const tmr=()=>iso(add(iso(new Date()),1));
 const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const add=(s,n)=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d+n)};
 const fmt=d=>d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
-const cur=()=>({"#physics":"PHYSICS","#maths":"MATHS","#calendar":"CALENDAR","#today":"TODAY","#curve":"CURVE","#planner":"PLANNER","#stats":"STATS","#timer":"TIMER"})[location.hash]||"CHEMISTRY";
+/* class portal: tabs Chemistry/Physics/Maths show Class 11 ("XI ...") when CL==="11" */
+const cur=()=>{const c=({"#physics":"PHYSICS","#maths":"MATHS","#calendar":"CALENDAR","#today":"TODAY","#curve":"CURVE","#planner":"PLANNER","#stats":"STATS","#timer":"TIMER"})[location.hash]||"CHEMISTRY";return CL==="11"&&["CHEMISTRY","PHYSICS","MATHS"].includes(c)?"XI "+c:c};
 let SEL=iso(new Date()),CM=SEL.slice(0,7);
-const SJ=["CHEMISTRY","PHYSICS","MATHS"];
-const SC={CHEMISTRY:"#fbbf24",PHYSICS:"#60a5fa",MATHS:"#a3e635"};
+const SJ12=["CHEMISTRY","PHYSICS","MATHS"];
+const SJ=[...SJ12,"XI CHEMISTRY","XI PHYSICS","XI MATHS"];
+const SC={CHEMISTRY:"#fbbf24",PHYSICS:"#60a5fa",MATHS:"#a3e635","XI CHEMISTRY":"#fbbf24","XI PHYSICS":"#60a5fa","XI MATHS":"#a3e635"};
 const moveMissed=t=>{const n=iso(new Date());Object.keys(S).forEach(id=>OFF.forEach((o,i)=>{if(!rv(id,i).d&&eff(id,i)<n)setR(id,i,{o:t,d:false})}))};
 const move=(id,ty,dt)=>{if(!S[id]||!dt)return;if(ty<0){S[id]=dt;(R[id]||[]).forEach(r=>{delete r.o})}else setR(id,ty,{o:dt,d:false})};
 function calHTML(today){
@@ -147,7 +153,7 @@ function render(){
   const today=iso(new Date());let n1=0,n2=0,n3=0,n4=0,n5=0;
   Object.entries(D).forEach(([s,bl])=>bl.forEach((b,bi)=>b[1].forEach(t=>{const id=s+"|"+bi+"|"+t;if(S[id]){n1++;OFF.forEach((o,i)=>{const k=eff(id,i);if(rv(id,i).d)n5++;else if(k===today)n2++;else if(k>today)n3++;else n4++})}})));
   const c=cur();
-  const fin=()=>{document.querySelectorAll(".tabs a").forEach(a=>a.classList.toggle("on",a.dataset.t===c));so.style.display=sd.style.display=SJ.includes(c)?"":"none";so.textContent="Sort by priority: "+(SM==="pri"?"On":"Off");so.classList.toggle("on",SM==="pri");sd.textContent="Sort by date: "+(SM==="date"?"On":"Off");sd.classList.toggle("on",SM==="date");cnt(s1,n1);cnt(s2,n2);cnt(s3,n3);cnt(s4,n4);cnt(s5,n5)};
+  const fin=()=>{document.querySelectorAll(".tabs a").forEach(a=>a.classList.toggle("on",a.dataset.t===c.replace("XI ","")));so.style.display=sd.style.display=SJ.includes(c)?"":"none";so.textContent="Sort by priority: "+(SM==="pri"?"On":"Off");so.classList.toggle("on",SM==="pri");sd.textContent="Sort by date: "+(SM==="date"?"On":"Off");sd.classList.toggle("on",SM==="date");if(clsB){clsB.textContent=CL==="11"?"Class 11 portal \u2713":"Open Class 11 portal";clsB.classList.toggle("on",CL==="11")}cnt(s1,n1);cnt(s2,n2);cnt(s3,n3);cnt(s4,n4);cnt(s5,n5)};
   document.body.classList.toggle("tm-on",c==="TIMER");
   if(c==="TIMER"){tmOpen();fin();return}
   if(c==="CALENDAR"){app.innerHTML=calHTML(today);fin();return}
@@ -185,6 +191,10 @@ document.addEventListener("click",e=>{
   save();render()});
 so.onclick=()=>{SM=SM==="pri"?"":"pri";try{localStorage.setItem(KEY+"_s",SM)}catch(e){}render()};
 sd.onclick=()=>{SM=SM==="date"?"":"date";try{localStorage.setItem(KEY+"_s",SM)}catch(e){}render()};
+/* ---------- Class 11 portal button (synced via CL) ---------- */
+var clsB=document.getElementById("cls");
+if(!clsB){clsB=document.createElement("button");clsB.id="cls";clsB.className="nv";const h=document.querySelector(".hr");if(h)h.insertBefore(clsB,h.firstChild)}
+clsB.onclick=()=>{CL=CL==="11"?"12":"11";if(!["","#chemistry","#physics","#maths"].includes(location.hash))location.hash="#chemistry";save();render()};
 const cl=(e,q)=>e.target.closest&&e.target.closest(q);
 document.addEventListener("dragstart",e=>{const r=cl(e,"[data-k]");if(!r)return;e.dataTransfer.setData("text/plain",r.dataset.k);e.dataTransfer.effectAllowed="move";r.classList.add("dg")});
 document.addEventListener("dragend",e=>{document.querySelectorAll(".dg,.ov").forEach(x=>x.classList.remove("dg","ov"))});
@@ -194,6 +204,7 @@ document.addEventListener("drop",e=>{const c=cl(e,".cd");if(!c)return;e.preventD
 const EXTRA=["TODAY","CURVE","PLANNER","STATS","TIMER"];
 let CT="";
 const subOf=id=>id.split("|")[0],nameOf=id=>id.split("|")[2];
+const is11=id=>subOf(id).startsWith("XI ");
 const wt=id=>(W[id]===undefined?4:W[id]);
 const dayN=(a,b)=>Math.round((add(b,0)-add(a,0))/864e5);
 const fmtS=d=>add(d,0).toLocaleDateString("en-GB",{day:"2-digit",month:"short"});
@@ -268,9 +279,9 @@ function retRows(rs){
 function todayTab(today){
   const q=queue(today),st=started().filter(id=>S[id]===today);
   const rows=q.map((x,j)=>{const key=x.id+"|"+x.i,r=ret(x.id,today);
-    return `<div class="dr" style="--c:${SC[subOf(x.id)]}"><span class="nb">${j+1}</span><span class="tg">${subOf(x.id).slice(0,4)}</span><span class="dn">${nameOf(x.id)}</span><span class="tg">${wt(x.id)} marks</span><span class="r ${x.od>0?"o":"d"}">${x.od>0?"Overdue "+x.od+"d":"Due today"} &middot; Rev ${x.i+1}</span><span class="tg" style="color:${col(r)}">${pct(r)}</span><span class="rc"><button class="b" data-m="${key}" title="Mark revised">&check;</button><button class="b m" data-r="${key}" title="Move to tomorrow">&#8635;</button></span></div>`}).join("");
-  const stu=st.map(id=>`<div class="dr" style="--c:${SC[subOf(id)]}"><span class="tg">${subOf(id).slice(0,4)}</span><span class="dn">${nameOf(id)}</span><span class="tg">${wt(id)} marks</span><span class="r s">To study</span></div>`).join("");
-  return `<section class="sec"><div class="sh"><h2>DUE TODAY</h2><div class="pg">${q.length} revision${q.length===1?"":"s"} &middot; ${st.length} to study</div></div><div class="sub2">Ranked by (overdue days + 1) &times; topic marks &times; priority. Set marks in Planner.</div><div class="dt">${rows||'<div class="em0">Nothing pending &mdash; you are all caught up. 🎉</div>'}${stu}</div></section>`;
+    return `<div class="dr" style="--c:${SC[subOf(x.id)]}"><span class="nb">${j+1}</span><span class="tg">${subOf(x.id).slice(0,4)}</span><span class="dn">${nameOf(x.id)}</span>${is11(x.id)?"":`<span class="tg">${wt(x.id)} marks</span>`}<span class="r ${x.od>0?"o":"d"}">${x.od>0?"Overdue "+x.od+"d":"Due today"} &middot; Rev ${x.i+1}</span><span class="tg" style="color:${col(r)}">${pct(r)}</span><span class="rc"><button class="b" data-m="${key}" title="Mark revised">&check;</button><button class="b m" data-r="${key}" title="Move to tomorrow">&#8635;</button></span></div>`}).join("");
+  const stu=st.map(id=>`<div class="dr" style="--c:${SC[subOf(id)]}"><span class="tg">${subOf(id).slice(0,4)}</span><span class="dn">${nameOf(id)}</span>${is11(id)?"":`<span class="tg">${wt(id)} marks</span>`}<span class="r s">To study</span></div>`).join("");
+  return `<section class="sec"><div class="sh"><h2>DUE TODAY</h2><div class="pg">${q.length} revision${q.length===1?"":"s"} &middot; ${st.length} to study</div></div><div class="sub2">Ranked by (overdue days + 1) &times; topic marks &times; priority. Set marks in Planner (Class 12 only).</div><div class="dt">${rows||'<div class="em0">Nothing pending &mdash; you are all caught up. 🎉</div>'}${stu}</div></section>`;
 }
 function curveTab(today){
   const ids=started();
@@ -282,14 +293,14 @@ function curveTab(today){
 }
 function plannerTab(today){
   const load=[];for(let n=0;n<7;n++){const day=iso(add(today,n));let c=0;started().forEach(id=>OFF.forEach((o,i)=>{if(rv(id,i).d)return;const k=eff(id,i);if(n===0?k<=day:k===day)c++}));load.push({l:n?fmtS(day):"Today",v:c})}
-  const cards=SJ.map(sj=>{
+  const cards=SJ12.map(sj=>{
     const ids=[];D[sj].forEach((b,bi)=>b[1].forEach(t=>ids.push(sj+"|"+bi+"|"+t)));
     const ex=E[sj],left=ex?dayN(today,ex):null,un=ids.filter(id=>!S[id]).length,o=offFor(today,ex);
     const badge=ex?(left>=0?`<span class="r ${left<=14?"o":left<=45?"d":"f"}">${left} day${left===1?"":"s"} left</span>`:`<span class="r p">Exam over</span>`):"";
     const d2=ex&&left>0?(left>7?left-7:left):0,pace=un&&d2?(un/d2).toFixed(1)+" topics/day":"&mdash;";
     const comp=o[2]!==21?" (compressed)":"";
     return `<section class="sec"><div class="sh"><h2>${sj}</h2>${badge}</div><div class="pc"><div class="row2"><label>Exam date</label><input type="date" data-ex="${sj}" value="${ex||""}"></div><div class="sm">Started ${ids.length-un}/${ids.length} &middot; not started ${un} &middot; pace to finish 1st pass a week before exam: <b>${pace}</b></div><div class="sm">If studied today: Rev 1 +${o[0]}d &middot; Rev 2 +${o[1]}d &middot; Rev 3 +${o[2]}d${comp}</div><div class="sm">Topic weightage (marks)</div><div class="wgr">${ids.map(id=>`<label>${nameOf(id)}<input type="number" min="1" max="20" data-w="${id}" value="${wt(id)}"></label>`).join("")}</div></div></section>`}).join("");
-  return `<section class="sec" style="margin-bottom:22px"><div class="sh"><h2>EXAM COUNTDOWN PLANNER</h2><button class="nv${A?" on":""}" data-ac="1">Auto-compress intervals: ${A?"On":"Off"}</button></div><div class="sub2">When an exam date is set, Rev 1/2/3 intervals shrink automatically so Rev 3 lands before exam day (default 1 / 7 / 21 days). Manually moved dates stay as you set them.</div><div class="gr">${barsSVG(load,"#38e1ff",v=>Math.round(v))}</div><div class="cap">Revisions due over the next 7 days</div></section><div class="pl">${cards}</div>`;
+  return `<section class="sec" style="margin-bottom:22px"><div class="sh"><h2>EXAM COUNTDOWN PLANNER</h2><button class="nv${A?" on":""}" data-ac="1">Auto-compress intervals: ${A?"On":"Off"}</button></div><div class="sub2">When an exam date is set, Rev 1/2/3 intervals shrink automatically so Rev 3 lands before exam day (default 1 / 7 / 21 days). Manually moved dates stay as you set them. Class 11 uses the default 1 / 7 / 21 days.</div><div class="gr">${barsSVG(load,"#38e1ff",v=>Math.round(v))}</div><div class="cap">Revisions due over the next 7 days</div></section><div class="pl">${cards}</div>`;
 }
 function statsTab(today){
   const ids=live(today),rets=ids.map(id=>({id,r:ret(id,today)})),ws=wkStart(today);
@@ -353,7 +364,7 @@ function tmOpen(){const f=document.getElementById("tmf");if(f&&!f.getAttribute("
 let LASTH="";if(location.hash!=="#timer")LASTH=location.hash;
 addEventListener("hashchange",function(){if(location.hash!=="#timer")LASTH=location.hash});
 addEventListener("message",function(e){if(e.data==="tracker-exit")location.hash=LASTH||"#today"});
-document.getElementById("ver").textContent="v21: All files debugged";
+document.getElementById("ver").textContent="v22: Class 11 portal";
 
 window.getTasks=()=>{const t=iso(new Date());return[...queue(t).map(x=>({id:x.id,i:x.i,type:'rev',sub:subOf(x.id).slice(0,4),name:nameOf(x.id),lbl:(x.od>0?'Overdue '+x.od+'d':'Due today')+' · Rev '+(x.i+1)})),...started().filter(id=>S[id]===t).map(id=>({id,type:'study',sub:subOf(id).slice(0,4),name:nameOf(id),lbl:'To study'}))]};
 window.markDone=(id,i)=>{setR(id,i,{d:true,c:iso(new Date())});save();render()};
