@@ -72,7 +72,7 @@ $('#b-tk').onclick=()=>openP('tk');
 function pick(m){flush();sv('k_h',HS);clearInterval(iv);run=false;mode=m;left=S.d[m]*60;draw()}
 function done(){
   T[mode]++;
-  if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.n++;d.s=Math.max(d.s,900);sv('k_h',HS)}
+  if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.n++;sv('k_h',HS)}
   sv('k_t',T);beep();const nx=mode==='focus'?'short':'focus';pick(nx);if(nx==='focus'?S.auto.f:S.auto.b)start();
 }
 let tk=0;
@@ -224,8 +224,9 @@ if(window.parent!==window){$('#b-back').onclick=()=>parent.postMessage('tracker-
 else{$('#b-back').style.display='none'}
 
 addEventListener('keydown',e=>{
-  if(/INPUT|TEXTAREA/.test(e.target.tagName))return;
-  if(e.code==='Space'){e.preventDefault();$('#go').click()}
+  const tg=e.target.tagName;
+  if(/INPUT|TEXTAREA|SELECT/.test(tg)||$('#dlg').classList.contains('open'))return;
+  if(e.code==='Space'){if(tg==='BUTTON')return;e.preventDefault();$('#go').click()}
   else if(e.key==='r')$('#rs').click();
   else if(/^[123]$/.test(e.key))pick(['focus','short','long'][e.key-1]);
 });
@@ -233,5 +234,5 @@ save();pick('focus');
 
 try{const K=parent.getTimer();
 if(K&&K.s){S={...DEF,...K.s};S.d={...DEF.d,...S.d};S.auto={...DEF.auto,...S.auto};S.al={...DEF.al,...S.al};T=K.t||T;
-Object.entries(K.h||{}).forEach(([d,b])=>{const a=HS[d]||{s:0,n:0};HS[d]={s:Math.max(a.s,b.s),n:Math.max(a.n,b.n)}});left=S.d[mode]*60;save();left=S.d[mode]*60;save();left=S.d[mode]*60;save();renderSet()}
+Object.entries(K.h||{}).forEach(([d,b])=>{const a=HS[d]||{s:0,n:0};HS[d]={s:Math.max(a.s,b.s),n:Math.max(a.n,b.n)}});left=S.d[mode]*60;save();renderSet()}
 else if(K)sync()}catch(e){}

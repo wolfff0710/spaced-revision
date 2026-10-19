@@ -20,7 +20,7 @@
 
 <section id="panel">
   <div id="p-aes">
-    <div class="ph"><h3>Aesthetics</h3><button class="x" data-close>✕</button></div>
+    <div class="ph"><h3>Aesthetics</h3><button class="x" data-close aria-label="Close">✕</button></div>
     <div class="lb">Background</div>
     <div class="grid" id="presets"></div>
     <button class="prow" id="b-ph"><span>🖼 Your photos</span><span><small id="pcount"></small>›</span></button>
@@ -30,31 +30,31 @@
     <div class="fxg" id="fxg"></div>
   </div>
   <div id="p-set" hidden>
-    <div class="ph"><h3>Settings</h3><button class="x" data-close>✕</button></div>
+    <div class="ph"><h3>Settings</h3><button class="x" data-close aria-label="Close">✕</button></div>
     <div class="lb">Session lengths</div>
     <div class="steps" id="steps"></div>
     <div style="text-align:center;margin:12px 0"><button class="pbtn" id="rst" style="flex:none">↻ Reset current counters</button></div>
     <div class="lb">Auto-start</div>
-    <div class="set">Auto-start breaks<button class="tg" id="tg-b"></button></div>
-    <div class="set">Auto-start focus<button class="tg" id="tg-f"></button></div>
+    <div class="set">Auto-start breaks<button class="tg" id="tg-b" aria-label="Auto-start breaks"></button></div>
+    <div class="set">Auto-start focus<button class="tg" id="tg-f" aria-label="Auto-start focus"></button></div>
     <hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
-    <div class="set">🔔 Alarm<button class="tg" id="tg-a"></button></div>
+    <div class="set">🔔 Alarm<button class="tg" id="tg-a" aria-label="Alarm"></button></div>
     <div class="fxg" id="al" style="grid-template-columns:repeat(3,1fr)"></div>
-    <div class="set" style="margin-top:14px;gap:12px">Volume<input type="range" id="vol" min="0" max="100" style="flex:1;accent-color:var(--acc)"><span id="volv" style="font-size:12px;color:var(--mute)">100%</span></div>
+    <div class="set" style="margin-top:14px;gap:12px">Volume<input type="range" id="vol" min="0" max="100" aria-label="Volume" style="flex:1;accent-color:var(--acc)"><span id="volv" style="font-size:12px;color:var(--mute)">100%</span></div>
   </div>
   <div id="p-ph" hidden>
-    <div class="ph"><div style="display:flex;gap:12px;align-items:center"><button class="x" id="back" aria-label="Back">←</button><h3>Your photos</h3></div><button class="x" data-close>✕</button></div>
+    <div class="ph"><div style="display:flex;gap:12px;align-items:center"><button class="x" id="back" aria-label="Back">←</button><h3>Your photos</h3></div><button class="x" data-close aria-label="Close">✕</button></div>
     <div class="grid g3" id="photos"></div>
     <input type="file" id="file" accept="image/*" multiple hidden>
-    <div class="row"><input type="url" id="url" placeholder="Or paste image link (https://…)"><button class="pbtn" id="addurl" style="flex:none">Add</button></div>
+    <div class="row"><input type="url" id="url" aria-label="Image link" placeholder="Or paste image link (https://…)"><button class="pbtn" id="addurl" style="flex:none">Add</button></div>
     <div id="msg"></div>
-    <div class="set" style="margin-top:14px;gap:12px">Dim<input type="range" id="dim" min="0" max="90" style="flex:1;accent-color:var(--acc)"><span id="dimv" style="font-size:12px;color:var(--mute);width:36px;text-align:right"></span></div>
-    <div class="set" style="gap:12px">Blur<input type="range" id="blur" min="0" max="20" style="flex:1;accent-color:var(--acc)"><span id="blurv" style="font-size:12px;color:var(--mute);width:36px;text-align:right"></span></div>
+    <div class="set" style="margin-top:14px;gap:12px">Dim<input type="range" id="dim" min="0" max="90" aria-label="Dim" style="flex:1;accent-color:var(--acc)"><span id="dimv" style="font-size:12px;color:var(--mute);width:36px;text-align:right"></span></div>
+    <div class="set" style="gap:12px">Blur<input type="range" id="blur" min="0" max="20" aria-label="Blur" style="flex:1;accent-color:var(--acc)"><span id="blurv" style="font-size:12px;color:var(--mute);width:36px;text-align:right"></span></div>
     <p class="note" style="text-align:left">JPEG, PNG or WebP — up to 20 MB, stays on your device</p>
   </div>
-  <div id="p-tk" hidden><div class="ph"><h3>Today's tasks</h3><button class="x" data-close>✕</button></div><div id="tkl"></div></div>
+  <div id="p-tk" hidden><div class="ph"><h3>Today's tasks</h3><button class="x" data-close aria-label="Close">✕</button></div><div id="tkl"></div></div>
   <div id="p-str" hidden>
-    <div class="ph"><div style="display:flex;gap:12px;align-items:center"><span style="font-size:38px">🔥</span><div><div id="s-n" style="font-size:28px;font-weight:700;line-height:1">0</div><div style="font-size:13px;color:var(--mute)">day streak</div></div></div><button class="x" data-close>✕</button></div>
+    <div class="ph"><div style="display:flex;gap:12px;align-items:center"><span style="font-size:38px">🔥</span><div><div id="s-n" style="font-size:28px;font-weight:700;line-height:1">0</div><div style="font-size:13px;color:var(--mute)">day streak</div></div></div><button class="x" data-close aria-label="Close">✕</button></div>
     <div class="wk" id="wk"></div>
     <div class="today"><span>FOCUSED TODAY</span><b id="s-t">0m</b></div>
     <div class="st4"><div><b id="s-b">0 days</b>BEST STREAK</div><div><b id="s-h">0m</b>TOTAL FOCUS</div><div><b id="s-d">0</b>DAYS FOCUSED</div><div><b id="s-s">0</b>SESSIONS</div></div>
@@ -73,7 +73,7 @@
     <div id="ctr"><div id="time">45<em>:</em>00</div><div id="pill">Focus session</div></div>
   </div>
 </main>
-<div id="dlg"><div class="dc"><h4 id="dt"></h4><p id="dx"></p><div class="dr"><button id="dn">Cancel</button><button id="dy"></button></div></div></div>
+<div id="dlg"><div class="dc" role="dialog" aria-modal="true" aria-labelledby="dt"><h4 id="dt"></h4><p id="dx"></p><div class="dr"><button id="dn">Cancel</button><button id="dy"></button></div></div></div>
 <div id="bar"><button id="go">▶ Start</button><button id="rs" title="Stop" aria-label="Stop"><span style="display:block;width:16px;height:16px;border-radius:5px;background:currentColor;margin:auto"></span></button></div>
 
 <script src="timer.js"></script>

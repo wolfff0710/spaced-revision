@@ -1,6 +1,6 @@
 window.addEventListener("error",function(e){var a=document.getElementById("app");if(a&&!a.innerHTML.trim())a.innerHTML='<div class="sec"><div class="em0">\u26a0 Something failed to load: '+(e.message||"error")+'</div></div>'});
 const SUPABASE_URL="https://mhfqzujwzjxusckhibkr.supabase.co";
-const SUPABASE_KEY="sb_publishable_Jbv4ZSsqv5CnyFSBggMRHw_pFsGvn8o";
+const SUPABASE_KEY="sb_publishable_7I2mLnN9Uubmq_ssLmg5qg_TdrWTWka";
 let sb=null;try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY)}catch(e){}
 
 const D={
@@ -9,61 +9,93 @@ PHYSICS:[["VOLUME 1",["Electric Charges and Fields","Electrostatic Potential and
 MATHS:[["PART 1",["Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability","Application of Derivatives"]],["PART 2",["Integrals","Application of Integrals","Differential Equations","Vector Algebra","Three Dimensional Geometry","Linear Programming","Probability"]]]
 };
 const OFF=[1,7,21],KEY="spaced_revision_v1";
-let S={},R={},P={},E={},W={},H={},K={},A=true,pending=0,loaded=false;
+let S={},R={},P={},E={},W={},H={},K={},A=true,pending=0,loaded=false,ready=false,dirty=false,seq=0;
 let SM="";try{SM=({"1":"pri","pri":"pri","date":"date"})[localStorage.getItem(KEY+"_s")]||""}catch(e){}
 const setStatus=t=>{syncStatus.textContent=t};
 const apply=d=>{K=d.K||{};S=d.S||{};R=d.R||{};P=d.P||{};E=d.E||{};W=d.W||{};H=d.H||{};A=d.A!==false};
-try{const L0=JSON.parse(localStorage.getItem(KEY+"_all")||"null");if(L0)apply(L0)}catch(e){}
+try{dirty=localStorage.getItem(KEY+"_d")==="1"}catch(e){}
+const setD=v=>{dirty=v;try{localStorage.setItem(KEY+"_d",v?"1":"0")}catch(e){}};
+try{const L0=JSON.parse(localStorage.getItem(KEY+"_all")||"null");if(L0){apply(L0);ready=true}}catch(e){}
+
+/* ---------- login (hidden password form) ---------- */
+let LP=null;
+function login(){
+  if(LP)return LP;
+  LP=new Promise(async res=>{
+    if(!sb)return res(false);
+    try{const{data}=await sb.auth.getSession();if(data.session)return res(true)}catch(e){return res(false)}
+    const f="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.17);background:#000;color:#f4f6ff;font:16px DM Sans,system-ui,sans-serif;width:100%";
+    const o=document.createElement("div");
+    o.style.cssText="position:fixed;top:0;right:0;bottom:0;left:0;z-index:999;display:grid;place-items:center;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)";
+    o.innerHTML='<div style="width:min(340px,90vw);padding:26px;border-radius:20px;background:#0b0f14;border:1px solid rgba(255,255,255,.17);display:flex;flex-direction:column;gap:12px;color:#f4f6ff"><h2 style="margin:0 0 4px;font:700 22px Sora,system-ui,sans-serif">Sign in</h2><input id="lge" type="email" placeholder="Email" autocomplete="username" style="'+f+'"><input id="lgp" type="password" placeholder="Password" autocomplete="current-password" style="'+f+'"><div id="lgm" style="color:#ff9db8;font-size:13px;min-height:16px"></div><button id="lgb" style="padding:13px;border:0;border-radius:12px;background:linear-gradient(110deg,#00d4ff,#8b5cf6);color:#03121b;font:700 16px DM Sans,system-ui,sans-serif;cursor:pointer">Sign in</button></div>';
+    document.body.appendChild(o);
+    const em=o.querySelector("#lge"),pw=o.querySelector("#lgp"),mg=o.querySelector("#lgm"),bt=o.querySelector("#lgb");
+    em.focus();
+    const go=async()=>{
+      if(!em.value||!pw.value){mg.textContent="Enter email and password.";return}
+      bt.disabled=true;mg.textContent="";
+      let error;try{({error}=await sb.auth.signInWithPassword({email:em.value.trim(),password:pw.value}))}catch(e){error={message:"Network error"}}
+      bt.disabled=false;
+      if(error){mg.textContent=error.message;return}
+      o.remove();res(true);
+    };
+    bt.onclick=go;
+    pw.onkeydown=e=>{if(e.key==="Enter")go()};
+    em.onkeydown=e=>{if(e.key==="Enter")pw.focus()};
+  });
+  LP.then(()=>{LP=null});
+  return LP;
+}
+if(sb)try{sb.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_OUT")setTimeout(()=>{setStatus("🔒 Sign in needed");if(!LP)login().then(ok=>{if(ok)pull(true)})},0)})}catch(e){}
+
+/* ---------- sync ---------- */
 const sg=o=>JSON.stringify(o,(k,v)=>v&&typeof v==="object"&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(x=>[x,v[x]])):v);
 const snap=()=>sg({S,R,P,E,W,H,A,K});
 const busy=()=>{const a=document.activeElement;return !!a&&/INPUT|SELECT/.test(a.tagName)&&app.contains(a)};
 const rd=()=>{if(!busy())render()};
-
-async function login(){
-  if(!sb)return false;
-  const{data}=await sb.auth.getSession();
-  if(data.session)return true;
-  const email=prompt("Email:"),password=prompt("Password:");
-  if(!email||!password)return false;
-  const{error}=await sb.auth.signInWithPassword({email,password});
-  if(error){alert(error.message);return false}
-  return true;
-}
 async function pull(quiet){
-  if(!sb){loaded=true;setStatus("🟠 Offline · saved on this device");return}
+  if(!sb){loaded=ready=true;setStatus("🟠 Offline · saved on this device");return}
+  let ss=null;try{ss=(await sb.auth.getSession()).data.session}catch(e){}
+  if(!ss){setStatus("🔒 Sign in needed");if(!LP)login().then(ok=>{if(ok)pull(true)});return}
   if(pending>0)return;
+  if(dirty&&ready){push();return}
   if(!quiet)setStatus("🔄 Syncing...");
   let data,error;try{({data,error}=await sb.from('revision_tracker').select('*').eq('id',1).maybeSingle())}catch(e){setStatus("🟠 Offline · saved on this device");return}
   if(error){setStatus("🔴 "+error.message);return}
   if(pending>0)return;
-  if(data&&data.data){const b=snap();apply(data.data);loaded=true;setStatus("🟢 Live Synced");if(b!==snap())rd()}
+  if(data&&data.data){const b=snap();apply(data.data);loaded=ready=true;setStatus("🟢 Live Synced");if(b!==snap())rd()}
   else if(!loaded){
-    try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
-    try{R=JSON.parse(localStorage.getItem(KEY+"_r")||"{}")}catch(e){}
-    try{P=JSON.parse(localStorage.getItem(KEY+"_p")||"{}")}catch(e){}
-    loaded=true;render();push();
+    let hasAll=false;try{hasAll=!!localStorage.getItem(KEY+"_all")}catch(e){}
+    if(!hasAll){
+      try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+      try{R=JSON.parse(localStorage.getItem(KEY+"_r")||"{}")}catch(e){}
+      try{P=JSON.parse(localStorage.getItem(KEY+"_p")||"{}")}catch(e){}
+    }
+    loaded=ready=true;render();push();
   }else setStatus("🟢 Live Synced");
 }
 async function push(){
+  if(sb&&!ready){setStatus("⏳ Waiting for first sync");return}
   try{localStorage.setItem(KEY+"_all",JSON.stringify({S,R,P,E,W,H,A,K}))}catch(e){}
   if(!sb){setStatus("🟠 Saved on this device");return}
-  pending++;setStatus("⏳ Saving...");
+  const my=++seq;setD(true);pending++;setStatus("⏳ Saving...");
   let error;try{({error}=await sb.from('revision_tracker').upsert({id:1,data:{S,R,P,E,W,H,A,K}}))}catch(e){error={message:"offline"}}
   pending--;
+  if(!error&&my===seq)setD(false);
   setStatus(error?"🔴 Save failed: "+error.message:"🟢 Live Synced");
 }
 const save=()=>{try{localStorage.setItem(KEY+"_s",SM)}catch(e){}push()};
 if(sb)try{sb.channel('db-changes').on('postgres_changes',{event:'*',schema:'public',table:'revision_tracker'},p=>{
-  if(pending>0||!p.new||!p.new.data)return;
+  if(pending>0||dirty||!p.new||!p.new.data)return;
   const b=snap();apply(p.new.data);setStatus("🟢 Live Synced");if(b!==snap())rd();
 }).subscribe()}catch(e){}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull(true)});
-setInterval(()=>{if(!document.hidden)pull(true)},15000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){dayCheck();pull(true)}});
+setInterval(()=>{if(!document.hidden){dayCheck();pull(true)}},15000);
 
 const pv=id=>(P[id]===undefined?1:P[id]);
 const rv=(id,i)=>(R[id]||[])[i]||{};
 const eff=(id,i)=>rv(id,i).o||iso(add(S[id],offs(id)[i]));
-const setR=(id,i,p)=>{R[id]=R[id]||[{},{},{}];Object.assign(R[id][i],p)};
+const setR=(id,i,p)=>{R[id]=R[id]||[{},{},{}];R[id][i]=R[id][i]||{};Object.assign(R[id][i],p)};
 const tmr=()=>iso(add(iso(new Date()),1));
 const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const add=(s,n)=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d+n)};
@@ -83,8 +115,6 @@ function calHTML(today){
   let cells=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(w=>`<div class="wk">${w}</div>`).join("")+'<i></i>'.repeat(lead);
   for(let d=1;d<=dim;d++){
     const k=y+"-"+String(m).padStart(2,"0")+"-"+String(d).padStart(2,"0"),L=by[k]||[],st=L.filter(x=>x.ty<0).length,rl=L.filter(x=>x.ty>=0),pend=rl.filter(x=>!x.dn).length;
-    const cnt={};L.forEach(x=>cnt[x.sj]=(cnt[x.sj]||0)+1);
-    const mkh=L.length?'<span class="mks">'+Object.keys(SC).filter(j=>cnt[j]).map(j=>`<span class="mk" style="--c:${SC[j]}" title="${j}: ${cnt[j]}">${cnt[j]}</span>`).join("")+'</span>':"";
     let tag="";
     if(st)tag+=`<em class="g1">${st}<span class="w"> study</span></em>`;
     if(rl.length)tag+=`<em class="${!pend?"g3":k<today?"g4":k===today?"g5":"g2"}">${rl.length}<span class="w"> rev</span></em>`;
@@ -278,15 +308,15 @@ function statsTab(today){
 function extraHTML(c,today){return c==="TODAY"?todayTab(today):c==="CURVE"?curveTab(today):c==="PLANNER"?plannerTab(today):statsTab(today)}
 document.addEventListener("change",e=>{
   const t=e.target,d=t.dataset||{};
-  if(d.ex!==undefined){t.value?E[d.ex]=t.value:delete E[d.ex];save()}
+  if(d.ex!==undefined){t.value?E[d.ex]=t.value:delete E[d.ex];save();render()}
   else if(d.w){W[d.w]=Math.max(1,Math.min(20,+t.value||4));save()}
   else if(d.sel!==undefined){CT=t.value;render()}
 });
 document.addEventListener("click",e=>{
   const el=e.target.closest&&e.target.closest("[data-tp],[data-lh],[data-ac]");if(!el)return;const d=el.dataset;
   if(d.tp){CT=d.tp;location.hash="#curve";render()}
-  else if(d.ac){A=!A;save()}
-  else if(d.lh){const dt=document.getElementById("hd").value,v=parseFloat(document.getElementById("hh").value);if(!dt)return;v>0?H[dt]=v:delete H[dt];save()}
+  else if(d.ac){A=!A;save();render()}
+  else if(d.lh){const dt=document.getElementById("hd").value,v=parseFloat(document.getElementById("hh").value);if(!dt)return;v>0?H[dt]=v:delete H[dt];save();render()}
 });
 
 // ===== ui fx =====
@@ -313,14 +343,17 @@ function enter(){
   clearTimeout(enter.t);enter.t=setTimeout(()=>app.classList.remove("enter"),1200);
 }
 addEventListener("hashchange",enter);
-dpill.textContent=new Date().toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});
+function setPill(){dpill.textContent=new Date().toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"})}
+let TD0=iso(new Date());
+function dayCheck(){const n=iso(new Date());if(n===TD0)return;TD0=n;SEL=n;CM=n.slice(0,7);setPill();rd()}
+setPill();
 fxLoop();enter();
 /* ---------- focus timer page (timer.html shown full-screen) ---------- */
 function tmOpen(){const f=document.getElementById("tmf");if(f&&!f.getAttribute("src"))f.setAttribute("src","timer.html")}
 let LASTH="";if(location.hash!=="#timer")LASTH=location.hash;
 addEventListener("hashchange",function(){if(location.hash!=="#timer")LASTH=location.hash});
 addEventListener("message",function(e){if(e.data==="tracker-exit")location.hash=LASTH||"#today"});
-document.getElementById("ver").textContent="v18: new timer page";
+document.getElementById("ver").textContent="v20: debugged";
 
 window.getTasks=()=>{const t=iso(new Date());return[...queue(t).map(x=>({id:x.id,i:x.i,type:'rev',sub:subOf(x.id).slice(0,4),name:nameOf(x.id),lbl:(x.od>0?'Overdue '+x.od+'d':'Due today')+' · Rev '+(x.i+1)})),...started().filter(id=>S[id]===t).map(id=>({id,type:'study',sub:subOf(id).slice(0,4),name:nameOf(id),lbl:'To study'}))]};
 window.markDone=(id,i)=>{setR(id,i,{d:true,c:iso(new Date())});save();render()};
