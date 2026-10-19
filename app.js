@@ -1,6 +1,6 @@
 window.addEventListener("error",function(e){var a=document.getElementById("app");if(a&&!a.innerHTML.trim())a.innerHTML='<div class="sec"><div class="em0">\u26a0 Something failed to load: '+(e.message||"error")+'</div></div>'});
 const SUPABASE_URL="https://mhfqzujwzjxusckhibkr.supabase.co";
-const SUPABASE_KEY="sb_publishable_7I2mLnN9Uubmq_ssLmg5qg_TdrWTWka";
+const SUPABASE_KEY="sb_publishable_Jbv4ZSsqv5CnyFSBggMRHw_pFsGvn8o";
 let sb=null;try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY)}catch(e){}
 
 const D={
