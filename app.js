@@ -295,9 +295,9 @@ button,.tabs a,#side a{-webkit-user-select:none;user-select:none}
 .r.d{animation:none;position:relative;box-shadow:0 0 12px rgba(0,212,255,.45)}
 .r.d::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;box-shadow:0 0 24px 2px rgba(0,212,255,.8);opacity:.3;animation:glowO 2.2s ease-in-out infinite;pointer-events:none}
 .tabs a.on{animation:none;position:relative;overflow:hidden}
-.tabs a.on::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);animation:sheenA 4.5s ease-in-out infinite;pointer-events:none}
+.tabs a.on::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.22),transparent);animation:sheenA 4.5s ease-in-out infinite;pointer-events:none}
 .pg i u{animation:none;position:relative;overflow:hidden}
-.pg i u::after{content:"";position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:sheenB 2.6s ease-in-out infinite}
+.pg i u::after{content:"";position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);animation:sheenB 2.6s ease-in-out infinite}
 .cd.sl::before{display:block;top:50%;left:50%;right:auto;bottom:auto;width:220%;height:auto;aspect-ratio:1;margin:-110% 0 0 -110%;background:conic-gradient(#00d4ff,#8b5cf6,#e879f9,#00d4ff);opacity:1;animation:rot 3.5s linear infinite;z-index:0}
 .cd.sl::after{top:2px;right:2px;bottom:2px;left:2px;border-radius:14px;padding:0;background:#120f26;-webkit-mask:none;mask:none;-webkit-mask-composite:source-over;mask-composite:add;animation:none;z-index:0}
 .cd b,.cd em{z-index:1}
@@ -341,7 +341,7 @@ h1{font-weight:700;letter-spacing:-.03em}
 .gridfx{overflow:hidden;-webkit-mask-image:radial-gradient(ellipse 90% 75% at 50% 25%,#000 10%,transparent 92%);mask-image:radial-gradient(ellipse 90% 75% at 50% 25%,#000 10%,transparent 92%)}
 .gridfx::before{-webkit-mask-image:none;mask-image:none;top:-56px;left:-56px;animation:gridT 26s linear infinite;will-change:transform;background-image:radial-gradient(circle at 50% 50%,rgba(255,255,255,.26) 0,rgba(130,240,255,.16) 1.2px,transparent 2.6px),linear-gradient(rgba(0,212,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.12) 1px,transparent 1px);background-size:56px 56px,56px 56px,56px 56px;background-position:-28px -28px,0 0,0 0}
 .gloss{position:fixed;top:0;right:0;bottom:0;left:0;z-index:-2;pointer-events:none;overflow:hidden}
-.gloss::before{content:"";position:absolute;top:-30%;bottom:-30%;left:-40%;width:40%;background:linear-gradient(100deg,transparent,rgba(120,235,255,.03) 40%,rgba(255,255,255,.07) 50%,rgba(120,235,255,.03) 60%,transparent);transform:skewX(-16deg);animation:glossSweep 14s ease-in-out infinite;will-change:transform}
+.gloss::before{content:"";position:absolute;top:-30%;bottom:-30%;left:-40%;width:40%;background:linear-gradient(100deg,transparent,rgba(120,235,255,.015) 40%,rgba(255,255,255,.035) 50%,rgba(120,235,255,.015) 60%,transparent);transform:skewX(-16deg);animation:glossSweep 18s ease-in-out infinite;will-change:transform}
 body.tm-on .gloss{display:none}
 /* glass shapes, original colours */
 .dpill,.sync-indicator{background:rgba(120,120,128,.24);border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
@@ -349,9 +349,9 @@ body.tm-on .gloss{display:none}
 .sec{border-radius:28px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,0) 20%),linear-gradient(180deg,rgba(20,27,33,.86),rgba(7,9,12,.82));box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 24px 60px -24px rgba(0,0,0,.9)}
 .sec::after{content:"";position:absolute;left:0;right:0;top:0;height:90px;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.07),transparent);pointer-events:none}
 .tabs,#side{background:rgba(8,12,16,.6);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(255,255,255,.04),0 16px 40px rgba(0,0,0,.55);backdrop-filter:blur(26px) saturate(180%)!important;-webkit-backdrop-filter:blur(26px) saturate(180%)!important}
-.tabs a.on,#side a.on{animation:none;color:#03121b;background:linear-gradient(180deg,#7ff1ff,#00d4ff 55%,#00b9e8);box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 0 24px rgba(0,212,255,.45)}
+.tabs a.on,#side a.on{animation:none;color:#03121b;background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 55%),linear-gradient(180deg,#3cc6e6,#0fa9cf 60%,#0990b4);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.12),0 0 16px rgba(0,212,255,.28),0 6px 14px -4px rgba(0,160,205,.4)}
 .bs button,.nv,.pkb{background:rgba(120,120,128,.26);border:0;border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,.22);color:#fff;font-weight:600}
-.bs button.on,.nv.on{background:linear-gradient(180deg,#7ff1ff,#00d4ff 55%,#00b9e8);color:#03121b;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 8px 22px -6px rgba(0,212,255,.6)}
+.bs button.on,.nv.on{background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 55%),linear-gradient(180deg,#3cc6e6,#0fa9cf 60%,#0990b4);color:#03121b;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.12),0 0 16px rgba(0,212,255,.28),0 6px 14px -4px rgba(0,160,205,.4)}
 .b{border-radius:50%!important;border:0;background:rgba(120,120,128,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
 .pc input,.pc select,.sh select,.hl input{background:rgba(120,120,128,.24);border:0;border-radius:12px}
 .dr{border-radius:20px}
@@ -360,11 +360,19 @@ body.tm-on .gloss{display:none}
 .r.d,.dr .r.d{animation:none;position:relative;color:#03121b;background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 55%),linear-gradient(110deg,#00d4ff,#38e1ff,#a5f3fc);background-size:100% 100%;border-color:rgba(255,255,255,.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 6px 16px -4px rgba(0,212,255,.7)}
 .dr .r.d{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 55%),linear-gradient(110deg,#00d4ff,#8b5cf6)}
 .r.d::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;box-shadow:0 0 22px 2px rgba(0,212,255,.8);opacity:.3;animation:glowO 2.2s ease-in-out infinite;pointer-events:none}
+/* darker background, touch spotlight, timer float-in */
+.bg i{opacity:.4}
+.bg::before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;z-index:2;background:rgba(0,0,0,.3);pointer-events:none}
+.tglow{position:fixed;left:0;top:0;width:340px;height:340px;margin:-170px 0 0 -170px;border-radius:50%;pointer-events:none;z-index:-1;opacity:0;transition:opacity .6s ease;background:radial-gradient(circle,rgba(0,212,255,.34),rgba(0,212,255,.14) 42%,transparent 70%);will-change:transform,opacity}
+.tglow.on{opacity:1;transition:opacity .12s}
+body.tm-on .tglow{display:none}
+@keyframes tmIn{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:none}}
+body.tm-on #tmv{animation:tmIn .5s cubic-bezier(.32,.72,0,1)}
 /* liquid-glass sliding tab thumb */
 .tabs{position:relative}
 .gt a{position:relative;z-index:1;transition:color .35s,transform .2s}
 .gthumb{position:absolute;left:0;top:0;z-index:0;pointer-events:none;transition:transform .55s cubic-bezier(.34,1.3,.64,1),width .55s cubic-bezier(.34,1.3,.64,1),height .3s,opacity .25s;will-change:transform,width}
-.gthumb i{display:block;width:100%;height:100%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0) 55%),linear-gradient(180deg,#7ff1ff,#00d4ff 55%,#00b9e8);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -1px 0 rgba(0,0,0,.1),0 0 24px rgba(0,212,255,.45),0 6px 16px -4px rgba(0,212,255,.5)}
+.gthumb i{display:block;width:100%;height:100%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 55%),linear-gradient(180deg,#3cc6e6,#0fa9cf 60%,#0990b4);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.12),0 0 16px rgba(0,212,255,.28),0 6px 14px -4px rgba(0,160,205,.4)}
 .gthumb i.jel{animation:jel .55s cubic-bezier(.34,1.3,.64,1)}
 @keyframes jel{0%{transform:scale(1)}30%{transform:scale(1.14,.86)}65%{transform:scale(.97,1.05)}100%{transform:scale(1)}}
 .tabs.gt a.on,#side.gt a.on{background:none;box-shadow:none;animation:none}
@@ -399,6 +407,17 @@ body.tm-on .gloss{display:none}
     place(false);
   };
   mk(document.querySelector(".tabs"));mk(document.getElementById("side"));
+})();
+/* ---------- touch spotlight: lights up only the touched part of the background ---------- */
+(()=>{
+  const g=document.createElement("div");g.className="tglow";document.body.appendChild(g);
+  let off=0,x=0,y=0,f=0;
+  const paint=()=>{f=0;g.style.transform="translate("+x+"px,"+y+"px)"};
+  const mv=e=>{if(e.pointerType==="mouse")return;x=e.clientX;y=e.clientY;clearTimeout(off);g.classList.add("on");if(!f)f=requestAnimationFrame(paint)};
+  addEventListener("pointerdown",mv,{passive:true});
+  addEventListener("pointermove",e=>{if(g.classList.contains("on"))mv(e)},{passive:true});
+  const up=()=>{off=setTimeout(()=>g.classList.remove("on"),90)};
+  addEventListener("pointerup",up,{passive:true});addEventListener("pointercancel",up,{passive:true});
 })();
 const cl=(e,q)=>e.target.closest&&e.target.closest(q);
 document.addEventListener("dragstart",e=>{const r=cl(e,"[data-k]");if(!r)return;e.dataTransfer.setData("text/plain",r.dataset.k);e.dataTransfer.effectAllowed="move";r.classList.add("dg")});
