@@ -175,3 +175,10 @@ button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 
 #ringw svg{display:block}
 #tabs{position:absolute;left:0;right:0;margin:auto;width:max-content;bottom:calc(50% + clamp(130px,19vw,195px) + 36px)}
+
+@media(pointer:coarse){
+#ringw.run svg{animation:none}
+#ringw.run::after{content:"";position:absolute;inset:3%;border-radius:50%;box-shadow:0 0 60px 6px color-mix(in srgb,var(--acc) 60%,transparent);animation:tglow 3s ease-in-out infinite;pointer-events:none;z-index:-1}
+@keyframes tglow{0%,100%{opacity:.3}50%{opacity:1}}
+#side,#panel,#bar,#tabs{backdrop-filter:none;background:rgba(14,18,22,.92)}
+}
