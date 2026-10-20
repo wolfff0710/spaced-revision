@@ -150,7 +150,7 @@ function row(id,n,t){
   });
   return h+"</tr>";
 }
-function render(){
+function renderNow(){
   const today=iso(new Date());let n1=0,n2=0,n3=0,n4=0,n5=0;
   Object.entries(D).forEach(([s,bl])=>bl.forEach((b,bi)=>b[1].forEach(t=>{const id=s+"|"+bi+"|"+t;if(S[id]){n1++;OFF.forEach((o,i)=>{const k=eff(id,i);if(rv(id,i).d)n5++;else if(k===today)n2++;else if(k>today)n3++;else n4++})}})));
   const c=cur();
@@ -173,6 +173,21 @@ function render(){
     body+=row(x.id,SM?++sn:x.n,x.t)});
   app.innerHTML=`<section class="sec"><div class="sh"><h2>${c}</h2><div class="pg">${done}/${tot} started<i><u style="width:${done/tot*100}%"></u></i></div></div><div class="wrap"><table><thead><tr><th>#</th><th>Lesson</th><th>Priority</th><th>Date to study</th><th>Rev 1</th><th>Rev 2</th><th>Rev 3</th></tr></thead><tbody>${body}</tbody></table></div></section>`;
   fin();
+}
+
+/* ---------- page transition: current page floats out, new page floats in ---------- */
+var LASTP=null,TRN=false;
+const RMQ=matchMedia("(prefers-reduced-motion:reduce)");
+function render(){
+  if(TRN)return;
+  const k=cur();
+  if(LASTP===null){LASTP=k;renderNow();return}
+  if(k===LASTP){renderNow();return}
+  const was=LASTP;
+  document.querySelectorAll(".tabs a,#side a").forEach(a=>a.classList.toggle("on",a.dataset.t===k.replace("XI ","")));
+  if(RMQ.matches||was==="TIMER"){LASTP=k;renderNow();enter();return}
+  TRN=true;app.classList.remove("enter");app.classList.add("leaving");
+  setTimeout(()=>{app.classList.remove("leaving");LASTP=cur();TRN=false;renderNow();enter()},210);
 }
 document.addEventListener("change",e=>{
   const t=e.target,v=t.value;
@@ -308,6 +323,8 @@ tr.lr:hover td{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.
 .tabs a:active,#side a:active{transform:scale(.95);transition-duration:.08s}
 .cd:active,.dr:active,.rb:active{transform:scale(.97);transition-duration:.08s}
 }
+@keyframes fOut{to{opacity:0;transform:translateY(-12px) scale(.985)}}
+#app.leaving{animation:fOut .21s cubic-bezier(.4,0,1,1) forwards;pointer-events:none;will-change:transform,opacity}
 @media (hover:none) and (max-width:1100px),(pointer:coarse) and (max-width:1100px){tbody tr.lr:hover{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border-color:var(--line)}}`;
   document.head.appendChild(st);
 })();
@@ -471,7 +488,6 @@ function enter(){
   app.classList.remove("enter");void app.offsetWidth;app.classList.add("enter");
   clearTimeout(enter.t);enter.t=setTimeout(()=>app.classList.remove("enter"),1200);
 }
-addEventListener("hashchange",enter);
 function setPill(){dpill.textContent=new Date().toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"})}
 let TD0=iso(new Date());
 function dayCheck(){const n=iso(new Date());if(n===TD0)return;TD0=n;SEL=n;CM=n.slice(0,7);setPill();rd()}
