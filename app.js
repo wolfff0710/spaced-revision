@@ -360,8 +360,45 @@ body.tm-on .gloss{display:none}
 .r.d,.dr .r.d{animation:none;position:relative;color:#03121b;background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 55%),linear-gradient(110deg,#00d4ff,#38e1ff,#a5f3fc);background-size:100% 100%;border-color:rgba(255,255,255,.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 6px 16px -4px rgba(0,212,255,.7)}
 .dr .r.d{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 55%),linear-gradient(110deg,#00d4ff,#8b5cf6)}
 .r.d::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;box-shadow:0 0 22px 2px rgba(0,212,255,.8);opacity:.3;animation:glowO 2.2s ease-in-out infinite;pointer-events:none}
+/* liquid-glass sliding tab thumb */
+.tabs{position:relative}
+.gt a{position:relative;z-index:1;transition:color .35s,transform .2s}
+.gthumb{position:absolute;left:0;top:0;z-index:0;pointer-events:none;transition:transform .55s cubic-bezier(.34,1.3,.64,1),width .55s cubic-bezier(.34,1.3,.64,1),height .3s,opacity .25s;will-change:transform,width}
+.gthumb i{display:block;width:100%;height:100%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0) 55%),linear-gradient(180deg,#7ff1ff,#00d4ff 55%,#00b9e8);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -1px 0 rgba(0,0,0,.1),0 0 24px rgba(0,212,255,.45),0 6px 16px -4px rgba(0,212,255,.5)}
+.gthumb i.jel{animation:jel .55s cubic-bezier(.34,1.3,.64,1)}
+@keyframes jel{0%{transform:scale(1)}30%{transform:scale(1.14,.86)}65%{transform:scale(.97,1.05)}100%{transform:scale(1)}}
+.tabs.gt a.on,#side.gt a.on{background:none;box-shadow:none;animation:none}
 #app.enter>*,#app.enter .cal>*,#app.enter .pl>*,#app.enter .dr,#app.enter .rb,#app.enter tr.lr{animation-timing-function:cubic-bezier(.32,.72,0,1)}`;
   document.head.appendChild(st);
+})();
+/* ---------- liquid-glass sliding thumb for tab bars ---------- */
+(()=>{
+  const mk=bar=>{
+    if(!bar)return;
+    const th=document.createElement("span");th.className="gthumb";th.innerHTML="<i></i>";
+    bar.insertBefore(th,bar.firstChild);bar.classList.add("gt");
+    let placed=false,k="";
+    const place=anim=>{
+      const a=bar.querySelector("a.on");
+      if(!a||a.offsetParent===null){th.style.opacity=0;return}
+      th.style.opacity=1;
+      const x=a.offsetLeft,y=a.offsetTop,w=a.offsetWidth,h=a.offsetHeight,key=[x,y,w,h].join();
+      if(key===k)return;k=key;
+      const fast=!placed||!anim;
+      if(fast)th.style.transition="none";
+      th.style.width=w+"px";th.style.height=h+"px";th.style.transform="translate("+x+"px,"+y+"px)";
+      if(fast){void th.offsetWidth;th.style.transition=""}
+      else{const i=th.firstChild;i.classList.remove("jel");void i.offsetWidth;i.classList.add("jel");if(bar.scrollWidth>bar.clientWidth)bar.scrollTo({left:x-(bar.clientWidth-w)/2,behavior:"smooth"})}
+      placed=true;
+    };
+    new MutationObserver(r=>{if(r.some(m=>!th.contains(m.target)))place(true)}).observe(bar,{attributes:true,subtree:true,attributeFilter:["class"]});
+    new MutationObserver(()=>place(true)).observe(document.body,{attributes:true,attributeFilter:["class"]});
+    if(window.ResizeObserver)new ResizeObserver(()=>place(false)).observe(bar);
+    addEventListener("resize",()=>place(false));
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>place(false));
+    place(false);
+  };
+  mk(document.querySelector(".tabs"));mk(document.getElementById("side"));
 })();
 const cl=(e,q)=>e.target.closest&&e.target.closest(q);
 document.addEventListener("dragstart",e=>{const r=cl(e,"[data-k]");if(!r)return;e.dataTransfer.setData("text/plain",r.dataset.k);e.dataTransfer.effectAllowed="move";r.classList.add("dg")});
