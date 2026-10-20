@@ -201,6 +201,9 @@ function size(){W=cv.width=innerWidth;H=cv.height=innerHeight}
 addEventListener('resize',size);size();
 for(let i=0;i<140;i++)ps.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+1,v:Math.random()*.4+.15,dx:(Math.random()-.5)*.4,p:Math.random()*6.28});
 const dp=Array.from({length:70},()=>({x:Math.random(),y:Math.random(),r:Math.random()*2.2+.9,vx:(Math.random()-.5)*.00018,vy:-Math.random()*.0002-.00008,a:Math.random()*.35+.3}));
+let sa='';const spr=document.createElement('canvas');spr.width=spr.height=32;
+function mk(){const g=spr.getContext('2d'),r=g.createRadialGradient(16,16,0,16,16,16);g.clearRect(0,0,32,32);r.addColorStop(0,S.acc);r.addColorStop(.3,S.acc+'99');r.addColorStop(1,S.acc+'00');g.fillStyle=r;g.fillRect(0,0,32,32)}
+
 function loop(t){
   cx.clearRect(0,0,W,H);
   if(S.fx==='drift'){
@@ -208,7 +211,7 @@ function loop(t){
   }else if(S.fx!=='off'){
     ps.forEach(p=>{
       cx.shadowBlur=0;
-      if(S.fx==='motes'){p.y-=p.v;p.x+=p.dx+Math.sin(t/2500+p.p)*.15;cx.shadowBlur=12;cx.shadowColor=S.acc;cx.fillStyle=S.acc;cx.globalAlpha=.9;cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.28);cx.fill()}
+      if(S.fx==='motes'){p.y-=p.v;p.x+=p.dx+Math.sin(t/2500+p.p)*.15;if(sa!==S.acc){sa=S.acc;mk()}cx.globalAlpha=.95;const z=p.r*7;cx.drawImage(spr,p.x-z/2,p.y-z/2,z,z)}
       else if(S.fx==='stars'){cx.fillStyle='#fff';cx.globalAlpha=.1+.45*Math.abs(Math.sin(t/1600+p.p));cx.beginPath();cx.arc(p.x,p.y,p.r*.8,0,6.28);cx.fill()}
       else if(S.fx==='rain'){p.y+=p.v*28;p.x-=1;cx.strokeStyle='#fff';cx.globalAlpha=.3;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(p.x+1,p.y-10);cx.stroke()}
       else{p.y-=p.v;p.x+=p.dx*.5+Math.sin(t/2000+p.p)*.2;cx.strokeStyle='#fff';cx.globalAlpha=.4;cx.beginPath();cx.arc(p.x,p.y,p.r*4,0,6.28);cx.stroke()}
