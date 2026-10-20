@@ -339,9 +339,9 @@ tr.lr:hover td{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.
 h1{font-weight:700;letter-spacing:-.03em}
 /* glossy grid */
 .gridfx{overflow:hidden;-webkit-mask-image:radial-gradient(ellipse 90% 75% at 50% 25%,#000 10%,transparent 92%);mask-image:radial-gradient(ellipse 90% 75% at 50% 25%,#000 10%,transparent 92%)}
-.gridfx::before{-webkit-mask-image:none;mask-image:none;top:-56px;left:-56px;animation:gridT 26s linear infinite;will-change:transform;background-image:radial-gradient(circle at 50% 50%,rgba(255,255,255,.6) 0,rgba(130,240,255,.4) 1.5px,transparent 3.2px),linear-gradient(rgba(0,212,255,.17) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.17) 1px,transparent 1px);background-size:56px 56px,56px 56px,56px 56px;background-position:-28px -28px,0 0,0 0}
+.gridfx::before{-webkit-mask-image:none;mask-image:none;top:-56px;left:-56px;animation:gridT 26s linear infinite;will-change:transform;background-image:radial-gradient(circle at 50% 50%,rgba(255,255,255,.26) 0,rgba(130,240,255,.16) 1.2px,transparent 2.6px),linear-gradient(rgba(0,212,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.12) 1px,transparent 1px);background-size:56px 56px,56px 56px,56px 56px;background-position:-28px -28px,0 0,0 0}
 .gloss{position:fixed;top:0;right:0;bottom:0;left:0;z-index:-2;pointer-events:none;overflow:hidden}
-.gloss::before{content:"";position:absolute;top:-30%;bottom:-30%;left:-45%;width:45%;background:linear-gradient(100deg,transparent,rgba(120,235,255,.07) 40%,rgba(255,255,255,.16) 50%,rgba(120,235,255,.07) 60%,transparent);transform:skewX(-16deg);animation:glossSweep 11s ease-in-out infinite;will-change:transform}
+.gloss::before{content:"";position:absolute;top:-30%;bottom:-30%;left:-40%;width:40%;background:linear-gradient(100deg,transparent,rgba(120,235,255,.03) 40%,rgba(255,255,255,.07) 50%,rgba(120,235,255,.03) 60%,transparent);transform:skewX(-16deg);animation:glossSweep 14s ease-in-out infinite;will-change:transform}
 body.tm-on .gloss{display:none}
 /* glass shapes, original colours */
 .dpill,.sync-indicator{background:rgba(120,120,128,.24);border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}

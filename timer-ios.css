@@ -28,7 +28,6 @@
 #dn{border-radius:999px;border:0;background:rgba(120,120,128,.3)}
 #dy{border-radius:999px;background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 68%,#fff),var(--acc))}
 #dy.danger{background:linear-gradient(180deg,#ff6b60,#ff453a);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 10px 28px -8px rgba(255,69,58,.6)}
-.ic:active,.tab:active,.pbtn:active,#go:active,#rs:active,#dn:active,#dy:active,.prow:active{transform:scale(.94);transition-duration:.08s}
 /* touch: no blur over the animated canvas, no sticky hover */
 @media(pointer:coarse){
 #side,#panel,#bar,#tabs,.dc{backdrop-filter:none;-webkit-backdrop-filter:none;background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,.06)),rgba(40,40,44,.86)}
@@ -40,3 +39,14 @@
 .ic:not(.on):hover{background:transparent}
 .tile:not(.sel):hover{box-shadow:none}
 }
+/* tap feedback: placed last so it beats the touch hover reset */
+*{-webkit-tap-highlight-color:transparent}
+button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.ic,.tab,.pbtn,#go,#rs,#dn,#dy,.prow,.tile,.stp button,.sw button,.tr{transition:transform .45s cubic-bezier(.34,1.56,.64,1),background .25s,color .25s,box-shadow .25s,border-color .25s,text-shadow .25s}
+.ic:active,.tab:active,.pbtn:active,.prow:active,.tile:active,.stp button:active,.sw button:active,.tr:active{transform:scale(.88);transition-duration:.1s}
+#go:active,#rs:active,#dn:active,#dy:active{transform:scale(.92);transition-duration:.1s}
+.tg::after{transition:left .3s cubic-bezier(.32,.72,0,1),width .2s}
+.tg:active::after{width:33px}
+.tg.on:active::after{left:16px}
+@keyframes tabPop{0%{transform:scale(.88)}100%{transform:scale(1)}}
+.tab.on{animation:tabPop .45s cubic-bezier(.34,1.56,.64,1)}
