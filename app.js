@@ -214,8 +214,38 @@ clsB.onclick=()=>{CL=CL==="11"?"12":"11";if(CL==="11"&&["#today","#curve","#plan
 #side:hover span,#side:focus-within span{opacity:1;transition:opacity .25s .1s}
 #side svg{flex:0 0 auto;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 body.cl11 #side,body.cl11 .tabs a[data-t="TODAY"],body.tm-on #side{display:none}
-@media(min-width:761px){body:not(.cl11) main{padding-left:calc(clamp(12px,2.5vw,40px) + 70px)}}
-@media(max-width:760px){#side{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);left:50%;transform:translateX(-50%);flex-direction:row;width:auto!important}#side span{display:none}}`;
+@media(min-width:1101px) and (hover:hover){body:not(.cl11) main{padding-left:calc(clamp(12px,2.5vw,40px) + 70px)}}
+/* tablets + touch: floating bottom dock with labels */
+@media(max-width:1100px),(hover:none){
+#side{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);left:50%;transform:translateX(-50%);flex-direction:row;width:auto!important;border-radius:999px}
+#side a{height:46px;padding:0 18px;border-radius:999px}
+#side span{opacity:1}
+body:not(.cl11) main{padding-bottom:120px}
+}
+@media(max-width:760px){#side span{display:none}#side a{padding:0 16px}}
+/* tablet polish */
+@media(min-width:761px) and (max-width:1100px){
+main{padding-top:26px}
+.stats{grid-template-columns:repeat(5,1fr);gap:12px}
+.chip{padding:16px 14px 14px;border-radius:18px}
+.chip span{font-size:10.5px;letter-spacing:.1em}
+.tabs a{padding:12px 20px}
+.bs button,.nv,.pkb{min-height:44px}
+tbody{grid-template-columns:1fr}
+tbody tr.lr{grid-template-columns:repeat(12,minmax(0,1fr));gap:18px 14px;align-items:center;padding:18px 22px;border-radius:22px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025))}
+td.n{grid-column:span 1}
+td.l{grid-column:span 5;font-size:17px;font-weight:700;line-height:1.3}
+td[data-l="Priority"]{grid-column:span 2}
+td[data-l="Date to study"]{grid-column:span 4}
+td[data-l^="Rev"]{grid-column:span 4}
+td .pr{width:100%;min-width:0;padding:10px 4px;font-size:11.5px}
+td .dw .r{padding:10px 12px;font-size:14px}
+td .rc{display:flex;gap:8px;width:100%}
+td .rc .r{flex:1;min-width:0;grid-column:auto;font-size:13.5px;letter-spacing:0;padding:9px 6px}
+td .rc .b{flex:0 0 42px;width:42px;height:42px;border-radius:13px}
+td .r.e{padding:9px 6px}
+}
+@media(hover:none){.chip:hover,.cd:hover,.rb:hover,.dr:hover{transform:none}}`;
   document.head.appendChild(st);
 })();
 const cl=(e,q)=>e.target.closest&&e.target.closest(q);
