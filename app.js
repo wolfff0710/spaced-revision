@@ -210,6 +210,8 @@ clsB.onclick=()=>{CL=CL==="11"?"12":"11";if(CL==="11"&&["#today","#curve","#plan
 #side a{display:flex;align-items:center;gap:14px;height:44px;padding:0 12px;border-radius:16px;color:var(--mut);text-decoration:none;font:600 13.5px DM Sans,system-ui,sans-serif;white-space:nowrap;transition:color .25s,background .25s}
 #side a:hover{color:var(--tx);background:rgba(255,255,255,.07)}
 #side a.on{color:#03121b;background:linear-gradient(110deg,var(--blue),var(--vio),var(--mag));box-shadow:0 0 24px rgba(0,212,255,.45)}
+#side span{opacity:0;transition:opacity .15s}
+#side:hover span,#side:focus-within span{opacity:1;transition:opacity .25s .1s}
 #side svg{flex:0 0 auto;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 body.cl11 #side,body.cl11 .tabs a[data-t="TODAY"],body.tm-on #side{display:none}
 @media(min-width:761px){body:not(.cl11) main{padding-left:calc(clamp(12px,2.5vw,40px) + 70px)}}
