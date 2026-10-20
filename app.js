@@ -105,7 +105,8 @@ const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+Stri
 const add=(s,n)=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d+n)};
 const fmt=d=>d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 /* class portal: tabs Chemistry/Physics/Maths show Class 11 ("XI ...") when CL==="11" */
-const cur=()=>{const c=({"#physics":"PHYSICS","#maths":"MATHS","#calendar":"CALENDAR","#today":"TODAY","#curve":"CURVE","#planner":"PLANNER","#stats":"STATS","#timer":"TIMER"})[location.hash]||"CHEMISTRY";return CL==="11"&&["CHEMISTRY","PHYSICS","MATHS"].includes(c)?"XI "+c:c};
+const HID11=["TODAY","CURVE","PLANNER","STATS"];
+const cur=()=>{let c=({"#physics":"PHYSICS","#maths":"MATHS","#calendar":"CALENDAR","#today":"TODAY","#curve":"CURVE","#planner":"PLANNER","#stats":"STATS","#timer":"TIMER"})[location.hash]||"CHEMISTRY";if(CL==="11"&&HID11.includes(c))c="CHEMISTRY";return CL==="11"&&["CHEMISTRY","PHYSICS","MATHS"].includes(c)?"XI "+c:c};
 let SEL=iso(new Date()),CM=SEL.slice(0,7);
 const SJ12=["CHEMISTRY","PHYSICS","MATHS"];
 const SJ=[...SJ12,"XI CHEMISTRY","XI PHYSICS","XI MATHS"];
@@ -153,7 +154,7 @@ function render(){
   const today=iso(new Date());let n1=0,n2=0,n3=0,n4=0,n5=0;
   Object.entries(D).forEach(([s,bl])=>bl.forEach((b,bi)=>b[1].forEach(t=>{const id=s+"|"+bi+"|"+t;if(S[id]){n1++;OFF.forEach((o,i)=>{const k=eff(id,i);if(rv(id,i).d)n5++;else if(k===today)n2++;else if(k>today)n3++;else n4++})}})));
   const c=cur();
-  const fin=()=>{document.querySelectorAll(".tabs a").forEach(a=>a.classList.toggle("on",a.dataset.t===c.replace("XI ","")));so.style.display=sd.style.display=SJ.includes(c)?"":"none";so.textContent="Sort by priority: "+(SM==="pri"?"On":"Off");so.classList.toggle("on",SM==="pri");sd.textContent="Sort by date: "+(SM==="date"?"On":"Off");sd.classList.toggle("on",SM==="date");if(clsB){clsB.textContent=CL==="11"?"Class 11 portal \u2713":"Open Class 11 portal";clsB.classList.toggle("on",CL==="11")}cnt(s1,n1);cnt(s2,n2);cnt(s3,n3);cnt(s4,n4);cnt(s5,n5)};
+  const fin=()=>{document.body.classList.toggle("cl11",CL==="11");document.querySelectorAll(".tabs a,#side a").forEach(a=>a.classList.toggle("on",a.dataset.t===c.replace("XI ","")));so.style.display=sd.style.display=SJ.includes(c)?"":"none";so.textContent="Sort by priority: "+(SM==="pri"?"On":"Off");so.classList.toggle("on",SM==="pri");sd.textContent="Sort by date: "+(SM==="date"?"On":"Off");sd.classList.toggle("on",SM==="date");if(clsB){clsB.textContent=CL==="11"?"Class 11 portal \u2713":"Open Class 11 portal";clsB.classList.toggle("on",CL==="11")}cnt(s1,n1);cnt(s2,n2);cnt(s3,n3);cnt(s4,n4);cnt(s5,n5)};
   document.body.classList.toggle("tm-on",c==="TIMER");
   if(c==="TIMER"){tmOpen();fin();return}
   if(c==="CALENDAR"){app.innerHTML=calHTML(today);fin();return}
@@ -194,7 +195,27 @@ sd.onclick=()=>{SM=SM==="date"?"":"date";try{localStorage.setItem(KEY+"_s",SM)}c
 /* ---------- Class 11 portal button (synced via CL) ---------- */
 var clsB=document.getElementById("cls");
 if(!clsB){clsB=document.createElement("button");clsB.id="cls";clsB.className="nv";const h=document.querySelector(".hr");if(h)h.insertBefore(clsB,h.firstChild)}
-clsB.onclick=()=>{CL=CL==="11"?"12":"11";if(!["","#chemistry","#physics","#maths"].includes(location.hash))location.hash="#chemistry";save();render()};
+clsB.onclick=()=>{CL=CL==="11"?"12":"11";if(CL==="11"&&["#today","#curve","#planner","#stats"].includes(location.hash))location.hash="#chemistry";save();render()};
+
+/* ---------- sidebar: Curve / Planner / Stats (Class 12 portal only) ---------- */
+(()=>{
+  document.querySelectorAll('.tabs a[data-t="CURVE"],.tabs a[data-t="PLANNER"],.tabs a[data-t="STATS"]').forEach(a=>a.remove());
+  const ic={CURVE:'<path d="M3 17c4 0 4-10 9-10s5 10 9 10"/>',PLANNER:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/>',STATS:'<path d="M5 21V10M12 21V4M19 21v-8"/>'};
+  const el=document.createElement("aside");el.id="side";
+  el.innerHTML=[["CURVE","Curve"],["PLANNER","Planner"],["STATS","Stats"]].map(([t,l])=>`<a href="#${t.toLowerCase()}" data-t="${t}" title="${l}"><svg viewBox="0 0 24 24">${ic[t]}</svg><span>${l}</span></a>`).join("");
+  document.body.appendChild(el);
+  const st=document.createElement("style");
+  st.textContent=`#side{position:fixed;left:14px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:4px;padding:6px;width:56px;overflow:hidden;border-radius:22px;background:rgba(6,8,10,.7);backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5);border:1px solid var(--line2);box-shadow:0 14px 44px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08);transition:width .3s cubic-bezier(.2,.8,.2,1)}
+#side:hover,#side:focus-within{width:150px}
+#side a{display:flex;align-items:center;gap:14px;height:44px;padding:0 12px;border-radius:16px;color:var(--mut);text-decoration:none;font:600 13.5px DM Sans,system-ui,sans-serif;white-space:nowrap;transition:color .25s,background .25s}
+#side a:hover{color:var(--tx);background:rgba(255,255,255,.07)}
+#side a.on{color:#03121b;background:linear-gradient(110deg,var(--blue),var(--vio),var(--mag));box-shadow:0 0 24px rgba(0,212,255,.45)}
+#side svg{flex:0 0 auto;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+body.cl11 #side,body.cl11 .tabs a[data-t="TODAY"],body.tm-on #side{display:none}
+@media(min-width:761px){body:not(.cl11) main{padding-left:calc(clamp(12px,2.5vw,40px) + 70px)}}
+@media(max-width:760px){#side{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);left:50%;transform:translateX(-50%);flex-direction:row;width:auto!important}#side span{display:none}}`;
+  document.head.appendChild(st);
+})();
 const cl=(e,q)=>e.target.closest&&e.target.closest(q);
 document.addEventListener("dragstart",e=>{const r=cl(e,"[data-k]");if(!r)return;e.dataTransfer.setData("text/plain",r.dataset.k);e.dataTransfer.effectAllowed="move";r.classList.add("dg")});
 document.addEventListener("dragend",e=>{document.querySelectorAll(".dg,.ov").forEach(x=>x.classList.remove("dg","ov"))});
