@@ -1,0 +1,42 @@
+/* iOS glossy theme for timer.html - load AFTER timer.css */
+*{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif!important}
+.logo{font-weight:700;letter-spacing:-.01em}
+#side,#panel,#bar,#tabs,.dc{background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,.06)),rgba(36,36,40,.55);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -1px 0 rgba(255,255,255,.04),0 18px 50px rgba(0,0,0,.5);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%)}
+#side{border-radius:30px}
+#panel{border-radius:30px}
+#bar{border-radius:999px;padding:8px;align-items:center;bottom:calc(env(safe-area-inset-bottom,0px) + 34px)}
+.dc{border-radius:32px}
+.ic{border-radius:50%}
+.ic.on{background:color-mix(in srgb,var(--acc) 32%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+#arc{stroke-linecap:round}
+#time{font-weight:300;letter-spacing:-.04em}
+#pill{background:rgba(120,120,128,.28);border:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.tab{font-weight:600}
+.tab.on{color:#fff;text-shadow:none;background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.15));box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 10px rgba(0,0,0,.3)}
+#go{height:52px;padding:0 44px;border-radius:999px;color:#04201c;background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 68%,#fff),var(--acc) 55%,color-mix(in srgb,var(--acc) 85%,#000));box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 10px 28px -6px color-mix(in srgb,var(--acc) 75%,transparent)}
+#rs{width:52px;height:52px;border-radius:50%;border:0;display:grid;place-items:center;background:rgba(120,120,128,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.pbtn{border-radius:999px;border:0;background:rgba(120,120,128,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
+.pbtn.sel{background:color-mix(in srgb,var(--acc) 40%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.tile{border-radius:18px}
+.prow,.stp,.st4 div{border:0;border-radius:18px;background:rgba(120,120,128,.22)}
+.today{border-radius:18px}
+.row input[type=text],.row input[type=url],.num{background:rgba(120,120,128,.24);border:0;border-radius:12px}
+.tg{width:51px;height:31px;background:rgba(120,120,128,.4);transition:background .3s}
+.tg::after{top:2px;left:2px;width:27px;height:27px;box-shadow:0 3px 8px rgba(0,0,0,.35);transition:left .3s cubic-bezier(.32,.72,0,1)}
+.tg.on{background:#30d158;box-shadow:none}
+.tg.on::after{left:22px}
+#dn{border-radius:999px;border:0;background:rgba(120,120,128,.3)}
+#dy{border-radius:999px;background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 68%,#fff),var(--acc))}
+#dy.danger{background:linear-gradient(180deg,#ff6b60,#ff453a);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 10px 28px -8px rgba(255,69,58,.6)}
+.ic:active,.tab:active,.pbtn:active,#go:active,#rs:active,#dn:active,#dy:active,.prow:active{transform:scale(.94);transition-duration:.08s}
+/* touch: no blur over the animated canvas, no sticky hover */
+@media(pointer:coarse){
+#side,#panel,#bar,#tabs,.dc{backdrop-filter:none;-webkit-backdrop-filter:none;background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,.06)),rgba(40,40,44,.86)}
+}
+@media(hover:none){
+.ic:hover,.tab:hover,.pbtn:hover,.tile:hover,.prow:hover,.st4 div:hover,#dn:hover,#dy:hover,#go:hover,#rs:hover,.sw button:hover,.tr:hover,.x:hover,.stp button:hover,.tg:hover{transform:none;filter:none}
+#rs:hover{background:rgba(120,120,128,.3);color:#fff}
+.pbtn:not(.sel):hover{background:rgba(120,120,128,.28)}
+.ic:not(.on):hover{background:transparent}
+.tile:not(.sel):hover{box-shadow:none}
+}
