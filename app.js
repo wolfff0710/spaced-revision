@@ -248,6 +248,69 @@ td .r.e{padding:9px 6px}
 @media(hover:none){.chip:hover,.cd:hover,.rb:hover,.dr:hover{transform:none}}`;
   document.head.appendChild(st);
 })();
+
+/* ---------- app mode: PWA, install button, touch performance ---------- */
+(()=>{
+  if("serviceWorker" in navigator&&/^https?:/.test(location.protocol))addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+  let dip=null;
+  addEventListener("beforeinstallprompt",e=>{
+    e.preventDefault();dip=e;
+    const b=document.createElement("button");b.className="nv";b.textContent="Install app";
+    b.onclick=async()=>{dip.prompt();try{await dip.userChoice}catch(_){}dip=null;b.remove()};
+    const h=document.querySelector(".hr");if(h)h.insertBefore(b,h.firstChild);
+  });
+  const st=document.createElement("style");
+  st.textContent=`@keyframes aurT{0%{transform:rotate(0) scale(1)}100%{transform:rotate(6deg) scale(1.12)}}
+@keyframes gridT{to{transform:translate(56px,56px)}}
+@keyframes glowO{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes sheenA{0%,55%{transform:translateX(0)}100%{transform:translateX(320%)}}
+@keyframes sheenB{from{transform:translateX(-100%)}to{transform:translateX(280%)}}
+@keyframes rot{to{transform:rotate(360deg)}}
+@media (display-mode:standalone){html,body{overscroll-behavior-y:none}}
+@media (hover:none),(pointer:coarse){
+html{scroll-behavior:auto}
+*{-webkit-tap-highlight-color:transparent}
+button,a,select,input,.cd,.dr,.rb{touch-action:manipulation}
+button,.tabs a,#side a{-webkit-user-select:none;user-select:none}
+/* same animations, GPU-only (transform/opacity) so they stay smooth */
+.bg::after{background-size:100% 100%;animation:aurT 22s ease-in-out infinite alternate;will-change:transform}
+.gridfx{overflow:hidden;-webkit-mask-image:radial-gradient(ellipse 90% 75% at 50% 25%,#000 10%,transparent 92%);mask-image:radial-gradient(ellipse 90% 75% at 50% 25%,#000 10%,transparent 92%)}
+.gridfx::before{-webkit-mask-image:none;mask-image:none;top:-56px;left:-56px;animation:gridT 26s linear infinite;will-change:transform}
+.gridfx::after,.cur,.sec::before,.chip::before,.cd::before{display:none}
+.r.d{animation:none;position:relative;box-shadow:0 0 12px rgba(0,212,255,.45)}
+.r.d::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;box-shadow:0 0 24px 2px rgba(0,212,255,.8);opacity:.3;animation:glowO 2.2s ease-in-out infinite;pointer-events:none}
+.tabs a.on{animation:none;position:relative;overflow:hidden}
+.tabs a.on::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);animation:sheenA 4.5s ease-in-out infinite;pointer-events:none}
+.pg i u{animation:none;position:relative;overflow:hidden}
+.pg i u::after{content:"";position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:sheenB 2.6s ease-in-out infinite}
+.cd.sl::before{display:block;top:50%;left:50%;right:auto;bottom:auto;width:220%;height:auto;aspect-ratio:1;margin:-110% 0 0 -110%;background:conic-gradient(#00d4ff,#8b5cf6,#e879f9,#00d4ff);opacity:1;animation:rot 3.5s linear infinite;z-index:0}
+.cd.sl::after{top:2px;right:2px;bottom:2px;left:2px;border-radius:14px;padding:0;background:#120f26;-webkit-mask:none;mask:none;-webkit-mask-composite:source-over;mask-composite:add;animation:none;z-index:0}
+.cd b,.cd em{z-index:1}
+/* blur is the costliest effect on tablets: solid glass instead */
+.chip,.dpill,.sync-indicator,.tabs,.bs button,.nv,.pkb,#side{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.tabs,#side{background:rgba(8,11,14,.94)}
+.chip,.dpill,.sync-indicator{background:rgba(22,28,34,.85)}
+.bs button,.nv,.pkb{background:rgba(34,40,48,.9)}
+/* no sticky hover on touch */
+.chip:hover,.cd:hover,.rb:hover,.dr:hover,.b:hover,.pr:hover,.bs button:hover,.nv:hover,.tabs a:hover,.dw:hover .pkb{transform:none;filter:none}
+.chip:hover{border-color:var(--line);box-shadow:none}
+.cd:not(.td):not(.sl):hover{border-color:rgba(255,255,255,.07)}
+.dr:hover{background:rgba(255,255,255,.035)}
+.rb:hover{border-color:rgba(255,255,255,.07);background:rgba(255,255,255,.035)}
+tr.lr:hover td{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.06)}
+.b:hover,.b.m:hover{border-color:var(--line2);color:var(--tx);box-shadow:none}
+.bs button:not(.on):hover,.nv:not(.on):hover,.dw:hover .pkb,.dw:hover .r{box-shadow:none}
+.tabs a:not(.on):hover,#side a:not(.on):hover{color:var(--mut);background:none}
+.dw .x{opacity:.8}
+/* press feedback */
+.b,.pr,.nv,.bs button,.tabs a,#side a,.cd,.dr,.rb{transition:transform .18s cubic-bezier(.2,.8,.2,1),background-color .15s,color .15s,border-color .15s,opacity .15s}
+.b:active,.pr:active,.nv:active,.bs button:active{transform:scale(.92);transition-duration:.08s}
+.tabs a:active,#side a:active{transform:scale(.95);transition-duration:.08s}
+.cd:active,.dr:active,.rb:active{transform:scale(.97);transition-duration:.08s}
+}
+@media (hover:none) and (max-width:1100px),(pointer:coarse) and (max-width:1100px){tbody tr.lr:hover{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border-color:var(--line)}}`;
+  document.head.appendChild(st);
+})();
 const cl=(e,q)=>e.target.closest&&e.target.closest(q);
 document.addEventListener("dragstart",e=>{const r=cl(e,"[data-k]");if(!r)return;e.dataTransfer.setData("text/plain",r.dataset.k);e.dataTransfer.effectAllowed="move";r.classList.add("dg")});
 document.addEventListener("dragend",e=>{document.querySelectorAll(".dg,.ov").forEach(x=>x.classList.remove("dg","ov"))});
@@ -390,6 +453,7 @@ function cnt(el,n){
   const t0=performance.now();
   (function f(t){const k=Math.min(1,(t-t0)/650),e=1-Math.pow(1-k,3);el.textContent=Math.round(from+(n-from)*e);if(k<1)requestAnimationFrame(f)})(t0);
 }
+const COARSE=matchMedia("(pointer:coarse)").matches;
 let px=innerWidth/2,py=innerHeight/3,qx=px,qy=py,fr=0;
 function fxLoop(){
   qx+=(px-qx)*.13;qy+=(py-qy)*.13;
@@ -398,6 +462,7 @@ function fxLoop(){
   fr=Math.abs(px-qx)+Math.abs(py-qy)>.5?requestAnimationFrame(fxLoop):0;
 }
 addEventListener("pointermove",e=>{
+  if(COARSE)return;
   px=e.clientX;py=e.clientY;if(!fr)fr=requestAnimationFrame(fxLoop);
   const t=e.target.closest&&e.target.closest(".sec,.chip,.cd");
   if(t){const r=t.getBoundingClientRect();t.style.setProperty("--mx",(e.clientX-r.left)+"px");t.style.setProperty("--my",(e.clientY-r.top)+"px")}
