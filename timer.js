@@ -1,8 +1,10 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
-let st=0;
-function sync(){if(st)return;st=setTimeout(()=>{st=0;try{parent.setTimer({s:S,t:T,h:HS})}catch(e){}},10000)}
-const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){return false}if(k!=='k_p')sync();return true};
+let st=0,boot=1;
+const push_=()=>{st=0;try{parent.setTimer({s:S,t:T,h:HS})}catch(e){}};
+function sync(){if(st)return;st=setTimeout(push_,60000)}
+function syncNow(){clearTimeout(st);push_()}
+const sv=(k,v)=>{if(k==='k_s'&&!boot)v.ts=Date.now();try{localStorage.setItem(k,JSON.stringify(v))}catch(e){return false}if(k!=='k_p')sync();return true};
 const PRE={fantasy:['Fantasy','radial-gradient(circle at 50% 40%,#33454f,#0a0e13 70%)'],pastel:['Pastel','linear-gradient(180deg,#5c6fd6,#e07aa8 55%,#f6b48a)'],lofi:['Lofi','linear-gradient(160deg,#171335,#3b2a6b 55%,#c26a8f)'],cyber:['Cyberpunk','linear-gradient(160deg,#0a0620,#3a0f6b 50%,#0aa5c4)']};
 const ACC=['#5b9bff','#a98bff','#2dd4bf','#a3e635','#ff6b81','#f2c46d'];
 const FX=['off','motes','drift','stars','rain','bubbles'];
@@ -45,7 +47,7 @@ const mm=s=>String(Math.floor(s/60)).padStart(2,'0'),ss=s=>String(s%60).padStart
 const LBL={focus:'Focus session',short:'Short Break session',long:'Long Break session'};
 let wl;
 function wake(){
-  if(run&&!wl&&navigator.wakeLock){wl=1;navigator.wakeLock.request('screen').then(l=>{wl=l;l.onrelease=()=>wl=null}).catch(()=>wl=null)}
+  if(run&&!wl&&navigator.wakeLock){wl=1;navigator.wakeLock.request('screen').then(l=>{if(!run){l.release();wl=null;return}wl=l;l.onrelease=()=>wl=null}).catch(()=>wl=null)}
   else if(!run&&wl&&wl.release)wl.release();
 }
 function draw(){
@@ -55,7 +57,7 @@ function draw(){
   $('#arc').style.strokeDashoffset=C*(1-left/(S.d[mode]*60));
   ['focus','short','long'].forEach(k=>$('#c-'+k).textContent=T[k]);
   $('#streak').textContent=streak().cur;if(panel.classList.contains('open')&&!$('#p-str').hidden)renderStr();
-  $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.m===mode));
+  $$('.tab').forEach(t=>{const on=t.dataset.m===mode;t.classList.toggle('on',on);t.setAttribute('aria-selected',on)});
   document.title=run?mm(left)+':'+ss(left)+' · Krtk':'Krtk';
   wake();
 }
@@ -73,19 +75,20 @@ function pick(m){flush();sv('k_h',HS);clearInterval(iv);run=false;mode=m;left=S.
 function done(){
   T[mode]++;
   if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.n++;sv('k_h',HS)}
-  sv('k_t',T);beep();const nx=mode==='focus'?'short':'focus';pick(nx);if(nx==='focus'?S.auto.f:S.auto.b)start();
+  sv('k_t',T);syncNow();beep();const nx=mode==='focus'?'short':'focus';pick(nx);if(nx==='focus'?S.auto.f:S.auto.b)start();
 }
 let tk=0;
 function start(){
   run=true;end=Date.now()+left*1000;let lt=Date.now();
-  iv=setInterval(()=>{const nw=Date.now(),dt=(nw-lt)/1000;lt=nw;if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.s+=dt;acc+=dt;if(acc>=60)flush();if(++tk%20===0)sv('k_h',HS)}left=Math.max(0,Math.round((end-Date.now())/1000));draw();if(!left){clearInterval(iv);run=false;done()}},250);draw();
+  iv=setInterval(()=>{const nw=Date.now(),dt=Math.min((nw-lt)/1000,Math.max(0,(end-lt)/1000));lt=nw;if(mode==='focus'){const d=HS[key()]=HS[key()]||{s:0,n:0};d.s+=dt;acc+=dt;if(acc>=60)flush();if(++tk%20===0)sv('k_h',HS)}left=Math.max(0,Math.round((end-Date.now())/1000));draw();if(!left){clearInterval(iv);run=false;done()}},250);draw();
 }
 $('#go').onclick=()=>{
   try{ac=ac||new(window.AudioContext||window.webkitAudioContext)()}catch(e){}
-  if(run){const ps_=()=>{flush();clearInterval(iv);run=false;sv('k_h',HS);draw()};if(mode==='focus')ask('Pause the timer?','A pause breaks your flow.','Pause',false,ps_);else ps_();return}
+  if(run){const ps_=()=>{flush();clearInterval(iv);run=false;sv('k_h',HS);draw();syncNow()};if(mode==='focus')ask('Pause the timer?','A pause breaks your flow.','Pause',false,ps_);else ps_();return}
   start();
 };
-$('#rs').onclick=()=>{if(mode==='focus'&&(run||left<S.d.focus*60))ask('Stop the session?','Your focused minutes are saved to today’s total — but this won’t count as a session.','Stop',true,()=>pick(mode));else pick(mode)};
+const stopS=()=>{pick(mode);syncNow()};
+$('#rs').onclick=()=>{if(mode==='focus'&&(run||left<S.d.focus*60))ask('Stop the session?','Your focused minutes are saved to today’s total — but this won’t count as a session.','Stop',true,stopS);else stopS()};
 $$('.tab').forEach(t=>t.onclick=()=>pick(t.dataset.m));
 
 /* ---------- panel ---------- */
@@ -234,16 +237,17 @@ addEventListener('keydown',e=>{
   else if(e.key==='r')$('#rs').click();
   else if(/^[123]$/.test(e.key))pick(['focus','short','long'][e.key-1]);
 });
-save();pick('focus');
+save();pick('focus');boot=0;
 
 function tryRestore(n){
   try{const K=parent.getTimer();
     if(K===null&&n>0){setTimeout(()=>tryRestore(n-1),1200);return}
     if(K&&K.s){
+      Object.entries(K.h||{}).forEach(([d,b])=>{const a=HS[d]||{s:0,n:0};HS[d]={s:Math.max(a.s,b.s),n:Math.max(a.n,b.n)}});
+      if((S.ts||0)>(K.s.ts||0)){sync();return}
       S={...DEF,...K.s};S.d={...DEF.d,...S.d};S.auto={...DEF.auto,...S.auto};S.al={...DEF.al,...S.al};
       T=K.t||T;
-      Object.entries(K.h||{}).forEach(([d,b])=>{const a=HS[d]||{s:0,n:0};HS[d]={s:Math.max(a.s,b.s),n:Math.max(a.n,b.n)}});
-      left=S.d[mode]*60;save();renderSet();
+      left=S.d[mode]*60;boot=1;save();boot=0;renderSet();
     }else if(K)sync();
   }catch(e){}
 }

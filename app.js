@@ -55,6 +55,24 @@ if(sb)try{sb.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_OUT")setTimeout(()=>{se
 /* ---------- sync ---------- */
 const sg=o=>JSON.stringify(o,(k,v)=>v&&typeof v==="object"&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(x=>[x,v[x]])):v);
 const snap=()=>sg({S,R,P,E,W,H,A,K,CL});
+/* 3-way merge so an offline device never overwrites newer cloud edits */
+const BK=KEY+"_base",blob=()=>({S,R,P,E,W,H,A,K,CL}),eq=(a,b)=>sg(a)===sg(b);
+const setBase=d=>{try{localStorage.setItem(BK,JSON.stringify(d))}catch(e){}};
+const getBase=()=>{try{return JSON.parse(localStorage.getItem(BK)||"{}")||{}}catch(e){return{}}};
+function merge3(b,l,c){
+  const o={};
+  ["S","R","P","E","W","H"].forEach(m=>{const B=b[m]||{},L=l[m]||{},C=c[m]||{},r={};
+    new Set([...Object.keys(B),...Object.keys(L),...Object.keys(C)]).forEach(k=>{const v=eq(L[k],B[k])?C[k]:L[k];if(v!==undefined)r[k]=v});o[m]=r});
+  ["A","K","CL"].forEach(m=>{o[m]=eq(l[m],b[m])?c[m]:l[m]});
+  return o;
+}
+async function reconcile(){
+  setStatus("🔄 Merging...");
+  let data,error;try{({data,error}=await sb.from('revision_tracker').select('*').eq('id',1).maybeSingle())}catch(e){setStatus("🟠 Offline · saved on this device");return}
+  if(error){setStatus("🔴 "+error.message);return}
+  if(data&&data.data){apply(merge3(getBase(),blob(),data.data));rd()}
+  push();
+}
 const busy=()=>{const a=document.activeElement;return !!a&&/INPUT|SELECT/.test(a.tagName)&&app.contains(a)};
 const rd=()=>{if(!busy())render()};
 async function pull(quiet){
@@ -62,12 +80,12 @@ async function pull(quiet){
   let ss=null;try{ss=(await sb.auth.getSession()).data.session}catch(e){}
   if(!ss){setStatus("🔒 Sign in needed");if(!LP)login().then(ok=>{if(ok)pull(true)});return}
   if(pending>0)return;
-  if(dirty&&ready){push();return}
+  if(dirty&&ready){await reconcile();return}
   if(!quiet)setStatus("🔄 Syncing...");
   let data,error;try{({data,error}=await sb.from('revision_tracker').select('*').eq('id',1).maybeSingle())}catch(e){setStatus("🟠 Offline · saved on this device");return}
   if(error){setStatus("🔴 "+error.message);return}
   if(pending>0)return;
-  if(data&&data.data){const b=snap();apply(data.data);loaded=ready=true;setStatus("🟢 Live Synced");if(b!==snap())rd()}
+  if(data&&data.data){const b=snap();apply(data.data);setBase(data.data);loaded=ready=true;setStatus("🟢 Live Synced");if(b!==snap())rd()}
   else if(!loaded){
     let hasAll=false;try{hasAll=!!localStorage.getItem(KEY+"_all")}catch(e){}
     if(!hasAll){
@@ -83,15 +101,15 @@ async function push(){
   try{localStorage.setItem(KEY+"_all",JSON.stringify({S,R,P,E,W,H,A,K,CL}))}catch(e){}
   if(!sb){setStatus("🟠 Saved on this device");return}
   const my=++seq;setD(true);pending++;setStatus("⏳ Saving...");
-  let error;try{({error}=await sb.from('revision_tracker').upsert({id:1,data:{S,R,P,E,W,H,A,K,CL}}))}catch(e){error={message:"offline"}}
+  const pl=JSON.parse(JSON.stringify(blob()));let error;try{({error}=await sb.from('revision_tracker').upsert({id:1,data:pl}))}catch(e){error={message:"offline"}}
   pending--;
-  if(!error&&my===seq)setD(false);
+  if(!error){setBase(pl);if(my===seq)setD(false)}
   setStatus(error?"🔴 Save failed: "+error.message:"🟢 Live Synced");
 }
 const save=()=>{try{localStorage.setItem(KEY+"_s",SM)}catch(e){}push()};
 if(sb)try{sb.channel('db-changes').on('postgres_changes',{event:'*',schema:'public',table:'revision_tracker'},p=>{
   if(pending>0||dirty||!p.new||!p.new.data)return;
-  const b=snap();apply(p.new.data);setStatus("🟢 Live Synced");if(b!==snap())rd();
+  const b=snap();apply(p.new.data);setBase(p.new.data);setStatus("🟢 Live Synced");if(b!==snap())rd();
 }).subscribe()}catch(e){}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){dayCheck();pull(true)}});
 setInterval(()=>{if(!document.hidden){dayCheck();pull(true)}},15000);
@@ -105,14 +123,16 @@ const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+Stri
 const add=(s,n)=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d+n)};
 const fmt=d=>d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 /* class portal: tabs Chemistry/Physics/Maths show Class 11 ("XI ...") when CL==="11" */
+const setOn=(a,on)=>{a.classList.toggle("on",on);a.setAttribute("aria-selected",on)};
 const HID11=["TODAY","CURVE","PLANNER","STATS"];
 const cur=()=>{let c=({"#physics":"PHYSICS","#maths":"MATHS","#calendar":"CALENDAR","#today":"TODAY","#curve":"CURVE","#planner":"PLANNER","#stats":"STATS","#timer":"TIMER"})[location.hash]||"CHEMISTRY";if(CL==="11"&&HID11.includes(c))c="CHEMISTRY";return CL==="11"&&["CHEMISTRY","PHYSICS","MATHS"].includes(c)?"XI "+c:c};
 let SEL=iso(new Date()),CM=SEL.slice(0,7);
 const SJ12=["CHEMISTRY","PHYSICS","MATHS"];
 const SJ=[...SJ12,"XI CHEMISTRY","XI PHYSICS","XI MATHS"];
 const SC={CHEMISTRY:"#fbbf24",PHYSICS:"#60a5fa",MATHS:"#a3e635","XI CHEMISTRY":"#fbbf24","XI PHYSICS":"#60a5fa","XI MATHS":"#a3e635"};
-const moveMissed=t=>{const n=iso(new Date());Object.keys(S).forEach(id=>OFF.forEach((o,i)=>{if(!rv(id,i).d&&eff(id,i)<n)setR(id,i,{o:t,d:false})}))};
-const move=(id,ty,dt)=>{if(!S[id]||!dt)return;if(ty<0){S[id]=dt;(R[id]||[]).forEach(r=>{delete r.o})}else setR(id,ty,{o:dt,d:false})};
+const stamp=(id,i)=>rv(id,i).od||(eff(id,i)<iso(new Date())?eff(id,i):undefined);
+const moveMissed=t=>{const n=iso(new Date());Object.keys(S).forEach(id=>OFF.forEach((o,i)=>{if(!rv(id,i).d&&eff(id,i)<n)setR(id,i,{o:t,d:false,od:rv(id,i).od||eff(id,i)})}))};
+const move=(id,ty,dt)=>{if(!S[id]||!dt)return;if(ty<0){S[id]=dt;(R[id]||[]).forEach(r=>{delete r.o;delete r.od})}else setR(id,ty,{o:dt,d:false,od:stamp(id,ty)})};
 function calHTML(today){
   const by={};
   Object.entries(D).forEach(([sj,bl])=>bl.forEach((b,bi)=>b[1].forEach(t=>{const id=sj+"|"+bi+"|"+t;if(!S[id])return;
@@ -134,7 +154,7 @@ function calHTML(today){
     else{const c=x.dn?"k":x.k===today?"d":x.k<today?"o":"f";
       st=`<span class="r ${c}">${x.dn?"&check; ":""}Rev ${x.ty+1}</span>`;
       btn=x.dn?`<button class="b" data-u="${key}" title="Undo">&#8630;</button>`:`<button class="b" data-m="${key}" title="Mark revised">&check;</button>`+(x.k<=today?`<button class="b m" data-r="${key}" title="Not revised: move to tomorrow">&#8635;</button>`:"");}
-    return `<div class="dr" draggable="true" data-k="${key}" style="--c:${SC[x.sj]}"><span class="gp" title="Drag onto a day to reschedule">&#8942;&#8942;</span><span class="tg">${x.sj}</span><span class="dn">${x.t}</span><button class="pr ${["lo","md","h"][pv(x.id)]}" data-p="${x.id}" title="Click to change priority">${["Low","Medium","High"][pv(x.id)]}</button>${st}<span class="rc">${btn}<span class="dw"><button class="b" type="button" tabindex="-1" title="Move to another date">&#128197;</button><input type="date" data-mv="${key}"></span></span></div>`}).join("");
+    return `<div class="dr" draggable="true" data-k="${key}" style="--c:${SC[x.sj]}"><span class="gp" title="Drag onto a day to reschedule">&#8942;&#8942;</span><span class="tg">${x.sj}</span><span class="dn">${x.t}</span><button class="pr ${["lo","md","h"][pv(x.id)]}" data-p="${x.id}" title="Click to change priority" aria-label="Priority: ${["Low","Medium","High"][pv(x.id)]}. Tap to change">${["Low","Medium","High"][pv(x.id)]}</button>${st}<span class="rc">${btn}<span class="dw"><button class="b" type="button" tabindex="-1" title="Move to another date">&#128197;</button><input type="date" data-mv="${key}"></span></span></div>`}).join("");
   const ns=L.filter(x=>x.ty<0).length,nr=L.length-ns;
   const mt=new Date(y,m-1,1).toLocaleDateString("en-GB",{month:"long",year:"numeric"}).toUpperCase();
   const dt=add(SEL,0).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
@@ -142,7 +162,7 @@ function calHTML(today){
 }
 function row(id,n,t){
   const v=S[id]||"",today=iso(new Date());
-  let h=`<tr class="lr p${pv(id)}${v?" on":""}"><td class="n"><span class="nb">${n}</span></td><td class="l">${t}</td><td data-l="Priority"><button class="pr ${["lo","md","h"][pv(id)]}" data-p="${id}" title="Click to change priority">${["Low","Medium","High"][pv(id)]}</button></td><td data-l="Date to study"><span class="dw"><span class="r ${v?"s":"ph"}">${v?fmt(add(v,0)):"Pick date"}</span><input type="date" data-id="${id}" value="${v}">${v?`<button class="x" data-c="${id}" title="Clear date">&times;</button>`:""}</span></td>`;
+  let h=`<tr class="lr p${pv(id)}${v?" on":""}"><td class="n"><span class="nb">${n}</span></td><td class="l">${t}</td><td data-l="Priority"><button class="pr ${["lo","md","h"][pv(id)]}" data-p="${id}" title="Click to change priority" aria-label="Priority: ${["Low","Medium","High"][pv(id)]}. Tap to change">${["Low","Medium","High"][pv(id)]}</button></td><td data-l="Date to study"><span class="dw"><span class="r ${v?"s":"ph"}">${v?fmt(add(v,0)):"Pick date"}</span><input type="date" data-id="${id}" value="${v}">${v?`<button class="x" data-c="${id}" title="Clear date">&times;</button>`:""}</span></td>`;
   OFF.forEach((o,i)=>{
     if(!v){h+=`<td data-l="Rev ${i+1}"><span class="r e">&mdash;</span></td>`;return}
     const k=eff(id,i),dn=rv(id,i).d,c=dn?"k":k===today?"d":k<today?"o":"f",key=id+"|"+i;
@@ -154,7 +174,7 @@ function renderNow(){
   const today=iso(new Date());let n1=0,n2=0,n3=0,n4=0,n5=0;
   Object.entries(D).forEach(([s,bl])=>bl.forEach((b,bi)=>b[1].forEach(t=>{const id=s+"|"+bi+"|"+t;if(S[id]){n1++;OFF.forEach((o,i)=>{const k=eff(id,i);if(rv(id,i).d)n5++;else if(k===today)n2++;else if(k>today)n3++;else n4++})}})));
   const c=cur();
-  const fin=()=>{document.body.classList.toggle("cl11",CL==="11");document.querySelectorAll(".tabs a,#side a").forEach(a=>a.classList.toggle("on",a.dataset.t===c.replace("XI ","")));so.style.display=sd.style.display=SJ.includes(c)?"":"none";so.textContent="Sort by priority: "+(SM==="pri"?"On":"Off");so.classList.toggle("on",SM==="pri");sd.textContent="Sort by date: "+(SM==="date"?"On":"Off");sd.classList.toggle("on",SM==="date");if(clsB){clsB.textContent=CL==="11"?"Class 11 portal \u2713":"Open Class 11 portal";clsB.classList.toggle("on",CL==="11")}cnt(s1,n1);cnt(s2,n2);cnt(s3,n3);cnt(s4,n4);cnt(s5,n5)};
+  const fin=()=>{document.body.classList.toggle("cl11",CL==="11");document.querySelectorAll(".tabs a,#side a").forEach(a=>setOn(a,a.dataset.t===c.replace("XI ","")));so.style.display=sd.style.display=SJ.includes(c)?"":"none";so.textContent="Sort by priority: "+(SM==="pri"?"On":"Off");so.classList.toggle("on",SM==="pri");sd.textContent="Sort by date: "+(SM==="date"?"On":"Off");sd.classList.toggle("on",SM==="date");if(clsB){clsB.textContent=CL==="11"?"Class 11 portal \u2713":"Open Class 11 portal";clsB.classList.toggle("on",CL==="11")}cnt(s1,n1);cnt(s2,n2);cnt(s3,n3);cnt(s4,n4);cnt(s5,n5)};
   document.body.classList.toggle("tm-on",c==="TIMER");
   if(c==="TIMER"){tmOpen();fin();return}
   if(c==="CALENDAR"){app.innerHTML=calHTML(today);fin();return}
@@ -184,7 +204,7 @@ function render(){
   if(LASTP===null){LASTP=k;renderNow();return}
   if(k===LASTP){renderNow();return}
   const was=LASTP;
-  document.querySelectorAll(".tabs a,#side a").forEach(a=>a.classList.toggle("on",a.dataset.t===k.replace("XI ","")));
+  document.querySelectorAll(".tabs a,#side a").forEach(a=>setOn(a,a.dataset.t===k.replace("XI ","")));
   if(RMQ.matches||was==="TIMER"){LASTP=k;renderNow();enter();return}
   TRN=true;app.classList.remove("enter");app.classList.add("leaving");
   setTimeout(()=>{app.classList.remove("leaving");LASTP=cur();TRN=false;renderNow();enter()},210);
@@ -203,7 +223,7 @@ document.addEventListener("click",e=>{
   else if(d.mm!==undefined){moveMissed(iso(add(iso(new Date()),+d.mm)))}
   else if(d.nav!==undefined){if(d.nav==="0"){SEL=iso(new Date());CM=SEL.slice(0,7)}else{const[y,m]=CM.split("-").map(Number),n=new Date(y,m-1+(+d.nav),1);CM=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")}render();return}
   else{const x=d.m||d.u||d.r;if(!x)return;const p=x.lastIndexOf("|"),id=x.slice(0,p),i=+x.slice(p+1);
-    if(d.m)setR(id,i,{d:true,c:iso(new Date())});else if(d.u)setR(id,i,{d:false});else setR(id,i,{o:tmr(),d:false})}
+    if(d.m)setR(id,i,{d:true,c:iso(new Date()),od:rv(id,i).od||eff(id,i)});else if(d.u)setR(id,i,{d:false});else setR(id,i,{o:tmr(),d:false,od:stamp(id,i)})}
   save();render()});
 so.onclick=()=>{SM=SM==="pri"?"":"pri";try{localStorage.setItem(KEY+"_s",SM)}catch(e){}render()};
 sd.onclick=()=>{SM=SM==="date"?"":"date";try{localStorage.setItem(KEY+"_s",SM)}catch(e){}render()};
@@ -216,8 +236,8 @@ clsB.onclick=()=>{CL=CL==="11"?"12":"11";if(CL==="11"&&["#today","#curve","#plan
 (()=>{
   document.querySelectorAll('.tabs a[data-t="CURVE"],.tabs a[data-t="PLANNER"],.tabs a[data-t="STATS"]').forEach(a=>a.remove());
   const ic={CURVE:'<path d="M3 17c4 0 4-10 9-10s5 10 9 10"/>',PLANNER:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/>',STATS:'<path d="M5 21V10M12 21V4M19 21v-8"/>'};
-  const el=document.createElement("aside");el.id="side";
-  el.innerHTML=[["CURVE","Curve"],["PLANNER","Planner"],["STATS","Stats"]].map(([t,l])=>`<a href="#${t.toLowerCase()}" data-t="${t}" title="${l}"><svg viewBox="0 0 24 24">${ic[t]}</svg><span>${l}</span></a>`).join("");
+  const el=document.createElement("aside");el.id="side";el.setAttribute("role","tablist");
+  el.innerHTML=[["CURVE","Curve"],["PLANNER","Planner"],["STATS","Stats"]].map(([t,l])=>`<a role="tab" href="#${t.toLowerCase()}" data-t="${t}" title="${l}"><svg viewBox="0 0 24 24">${ic[t]}</svg><span>${l}</span></a>`).join("");
   document.body.appendChild(el);
   const st=document.createElement("style");
   st.textContent=`#side{position:fixed;left:14px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:4px;padding:6px;width:56px;overflow:hidden;border-radius:22px;background:rgba(6,8,10,.7);backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5);border:1px solid var(--line2);box-shadow:0 14px 44px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08);transition:width .3s cubic-bezier(.2,.8,.2,1)}
@@ -530,7 +550,7 @@ function statsTab(today){
   const ids=live(today),rets=ids.map(id=>({id,r:ret(id,today)})),ws=wkStart(today);
   const avg=rets.length?rets.reduce((a,x)=>a+x.r,0)/rets.length:null;
   let done=0,ot=0,od=0,wd=0;
-  ids.forEach(id=>OFF.forEach((o,i)=>{const r=rv(id,i),k=eff(id,i);if(r.d){done++;if((r.c||k)<=k)ot++;if(r.c&&r.c>=ws)wd++}else if(k<today)od++}));
+  ids.forEach(id=>OFF.forEach((o,i)=>{const r=rv(id,i),k=eff(id,i),b=r.od||k;if(r.d){done++;if((r.c||b)<=b)ot++;if(r.c&&r.c>=ws)wd++}else if(b<today)od++}));
   const rate=done+od?Math.round(ot/(done+od)*100):null;
   const wk=[];for(let n=7;n>=0;n--){const s0=iso(add(ws,-7*n));let h=0;for(let j=0;j<7;j++)h+=H[iso(add(s0,j))]||0;wk.push({l:fmtS(s0),v:Math.round(h*100)/100})}
   const tr=[];for(let n=29;n>=0;n--){const day=iso(add(today,-n)),a=ids.filter(id=>S[id]<=day).map(id=>ret(id,day));tr.push({l:fmtS(day),v:a.length?a.reduce((x,y)=>x+y,0)/a.length:null})}
@@ -589,10 +609,10 @@ function tmOpen(){const f=document.getElementById("tmf");if(f&&!f.getAttribute("
 let LASTH="";if(location.hash!=="#timer")LASTH=location.hash;
 addEventListener("hashchange",function(){if(location.hash!=="#timer")LASTH=location.hash});
 addEventListener("message",function(e){if(e.data==="tracker-exit")location.hash=LASTH||"#today"});
-document.getElementById("ver").textContent="v22: Class 11 portal";
+document.getElementById("ver").textContent="v23: Class 11 portal";
 
 window.getTasks=()=>{const t=iso(new Date());return[...queue(t).map(x=>({id:x.id,i:x.i,type:'rev',sub:subOf(x.id).slice(0,4),name:nameOf(x.id),lbl:(x.od>0?'Overdue '+x.od+'d':'Due today')+' · Rev '+(x.i+1)})),...started().filter(id=>S[id]===t).map(id=>({id,type:'study',sub:subOf(id).slice(0,4),name:nameOf(id),lbl:'To study'}))]};
-window.markDone=(id,i)=>{setR(id,i,{d:true,c:iso(new Date())});save();render()};
+window.markDone=(id,i)=>{setR(id,i,{d:true,c:iso(new Date()),od:rv(id,i).od||eff(id,i)});save();render()};
 window.addHours=(k,h)=>{H[k]=Math.round(((H[k]||0)+h)*100)/100;save()};
 window.setTimer=v=>{K=v;save()};
 window.getTimer=()=>loaded?K:null;

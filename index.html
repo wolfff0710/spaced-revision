@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="utf-8">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#000000">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -8,11 +9,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Revision">
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Spaced Revision Tracker</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300d4ff'/%3E%3Cstop offset='1' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%2307080f'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='url%28%23g%29' stroke-width='6' stroke-dasharray='90 24' stroke-linecap='round'/%3E%3Cpath d='M23 33l7 7 12-14' fill='none' stroke='url%28%23g%29' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
 <div class="chip"><b id="s5" style="color:#34d399">0</b><span>Revised</span></div>
 </div>
 <div class="dock">
-<nav class="tabs"><a href="#today" data-t="TODAY">Today</a><a href="#chemistry" data-t="CHEMISTRY">Chemistry</a><a href="#physics" data-t="PHYSICS">Physics</a><a href="#maths" data-t="MATHS">Maths</a><a href="#calendar" data-t="CALENDAR">Calendar</a><a href="#curve" data-t="CURVE">Curve</a><a href="#planner" data-t="PLANNER">Planner</a><a href="#stats" data-t="STATS">Stats</a><a href="#timer" data-t="TIMER">Timer</a></nav>
+<nav class="tabs" role="tablist"><a role="tab" href="#today" data-t="TODAY">Today</a><a role="tab" href="#chemistry" data-t="CHEMISTRY">Chemistry</a><a role="tab" href="#physics" data-t="PHYSICS">Physics</a><a role="tab" href="#maths" data-t="MATHS">Maths</a><a role="tab" href="#calendar" data-t="CALENDAR">Calendar</a><a role="tab" href="#curve" data-t="CURVE">Curve</a><a role="tab" href="#planner" data-t="PLANNER">Planner</a><a role="tab" href="#stats" data-t="STATS">Stats</a><a role="tab" href="#timer" data-t="TIMER">Timer</a></nav>
 </div>
 <div class="acts"><div class="bs"><button id="so">Sort by priority: Off</button><button id="sd">Sort by date: Off</button></div><div class="bs"><span class="ml">Move all missed to:</span><button data-mm="0">Today</button><button data-mm="1">Tomorrow</button><span class="dw"><span class="pkb">Pick date</span><input type="date" id="mmd"></span></div></div>
 <div id="app"></div>
