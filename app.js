@@ -314,7 +314,7 @@ button,.tabs a,#side a{-webkit-user-select:none;user-select:none}
 .gridfx::after,.cur,.sec::before,.chip::before,.cd::before{display:none}
 .r.d{animation:none;position:relative;box-shadow:0 0 12px rgba(0,212,255,.45)}
 .r.d::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;box-shadow:0 0 24px 2px rgba(0,212,255,.8);opacity:.3;animation:glowO 2.2s ease-in-out infinite;pointer-events:none}
-.tabs a.on{animation:none;position:relative;overflow:hidden}
+
 .tabs a.on::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.22),transparent);animation:sheenA 4.5s ease-in-out infinite;pointer-events:none}
 .pg i u{animation:none;position:relative;overflow:hidden}
 .pg i u::after{content:"";position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);animation:sheenB 2.6s ease-in-out infinite}
@@ -357,8 +357,8 @@ h1{font-weight:700;letter-spacing:-.03em}
 /* glass shapes, original colours */
 .chip{border-radius:26px}
 .sec{border-radius:28px}
-.bs button,.nv,.pkb{background:rgba(120,120,128,.26);border:0;border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,.22);color:#fff;font-weight:600}
-.b{border-radius:50%!important;border:0;background:rgba(120,120,128,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.bs button,.nv,.pkb{background:rgba(120,120,128,.26);border:0;border-radius:14px;color:#fff;font-weight:600}
+.b{border-radius:50%!important;border:0;background:rgba(120,120,128,.28)}
 .pc input,.pc select,.sh select,.hl input{border-radius:12px}
 .dr{border-radius:20px}
 .cd{border-radius:18px}
@@ -373,7 +373,8 @@ body.tm-on #tmv{animation:tmIn .5s cubic-bezier(.32,.72,0,1)}
 .tabs{position:relative}
 .gt a{position:relative;z-index:1;transition:color .35s,transform .2s}
 .gthumb{position:absolute;left:0;top:0;z-index:0;pointer-events:none;transition:transform .55s cubic-bezier(.34,1.3,.64,1),width .55s cubic-bezier(.34,1.3,.64,1),height .3s,opacity .25s;will-change:transform,width}
-.gthumb i{display:block;width:100%;height:100%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 55%),linear-gradient(180deg,#3cc6e6,#0fa9cf 60%,#0990b4);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.12),0 0 16px rgba(0,212,255,.28),0 6px 14px -4px rgba(0,160,205,.4)}
+.gthumb i{display:block;width:100%;height:100%;border-radius:999px;background:rgba(255,255,255,.14);box-shadow:none}
+.tabs a.on,#side a.on{color:#fff;background:none;box-shadow:none}
 .gthumb i.jel{animation:jel .55s cubic-bezier(.34,1.3,.64,1)}
 @keyframes jel{0%{transform:scale(1)}30%{transform:scale(1.14,.86)}65%{transform:scale(.97,1.05)}100%{transform:scale(1)}}
 #app.enter>*,#app.enter .cal>*,#app.enter .pl>*,#app.enter .dr,#app.enter .rb,#app.enter tr.lr{animation-timing-function:cubic-bezier(.32,.72,0,1)}`;
