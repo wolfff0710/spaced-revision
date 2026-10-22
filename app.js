@@ -372,10 +372,42 @@ body.tm-on #tmv{animation:tmIn .5s cubic-bezier(.32,.72,0,1)}
 /* liquid-glass sliding tab thumb */
 .tabs{position:relative}
 .gt a{position:relative;z-index:1;transition:color .35s,transform .2s}
+.gthumb{position:absolute;left:0;top:0;z-index:0;pointer-events:none;transition:transform .55s cubic-bezier(.34,1.3,.64,1),width .55s cubic-bezier(.34,1.3,.64,1),height .3s,opacity .25s;will-change:transform,width}
+.gthumb i{display:block;width:100%;height:100%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 55%),linear-gradient(180deg,#3cc6e6,#0fa9cf 60%,#0990b4);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.12),0 0 16px rgba(0,212,255,.28),0 6px 14px -4px rgba(0,160,205,.4)}
+.gthumb i.jel{animation:jel .55s cubic-bezier(.34,1.3,.64,1)}
+@keyframes jel{0%{transform:scale(1)}30%{transform:scale(1.14,.86)}65%{transform:scale(.97,1.05)}100%{transform:scale(1)}}
 #app.enter>*,#app.enter .cal>*,#app.enter .pl>*,#app.enter .dr,#app.enter .rb,#app.enter tr.lr{animation-timing-function:cubic-bezier(.32,.72,0,1)}`;
   document.head.appendChild(st);
 })();
-
+/* ---------- liquid-glass sliding thumb for tab bars ---------- */
+(()=>{
+  const mk=bar=>{
+    if(!bar)return;
+    const th=document.createElement("span");th.className="gthumb";th.innerHTML="<i></i>";
+    bar.insertBefore(th,bar.firstChild);bar.classList.add("gt");
+    let placed=false,k="";
+    const place=anim=>{
+      const a=bar.querySelector("a.on");
+      if(!a||a.offsetParent===null){th.style.opacity=0;return}
+      th.style.opacity=1;
+      const x=a.offsetLeft,y=a.offsetTop,w=a.offsetWidth,h=a.offsetHeight,key=[x,y,w,h].join();
+      if(key===k)return;k=key;
+      const fast=!placed||!anim;
+      if(fast)th.style.transition="none";
+      th.style.width=w+"px";th.style.height=h+"px";th.style.transform="translate("+x+"px,"+y+"px)";
+      if(fast){void th.offsetWidth;th.style.transition=""}
+      else{const i=th.firstChild;i.classList.remove("jel");void i.offsetWidth;i.classList.add("jel");if(bar.scrollWidth>bar.clientWidth)bar.scrollTo({left:x-(bar.clientWidth-w)/2,behavior:"smooth"})}
+      placed=true;
+    };
+    new MutationObserver(r=>{if(r.some(m=>!th.contains(m.target)))place(true)}).observe(bar,{attributes:true,subtree:true,attributeFilter:["class"]});
+    new MutationObserver(()=>place(true)).observe(document.body,{attributes:true,attributeFilter:["class"]});
+    if(window.ResizeObserver)new ResizeObserver(()=>place(false)).observe(bar);
+    addEventListener("resize",()=>place(false));
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>place(false));
+    place(false);
+  };
+  mk(document.querySelector(".tabs"));mk(document.getElementById("side"));
+})();
 /* ---------- touch spotlight: lights up only the touched part of the background ---------- */
 (()=>{
   const g=document.createElement("div");g.className="tglow";document.body.appendChild(g);
