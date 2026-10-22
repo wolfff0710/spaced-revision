@@ -61,3 +61,7 @@ button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 #side.gt .ic.on{background:none;box-shadow:none}
 .tglow{position:fixed;left:0;top:0;width:360px;height:360px;margin:-180px 0 0 -180px;border-radius:50%;pointer-events:none;z-index:1;opacity:0;transition:opacity .6s ease;mix-blend-mode:screen;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 34%,transparent),color-mix(in srgb,var(--acc) 12%,transparent) 42%,transparent 70%);will-change:transform,opacity}
 .tglow.on{opacity:1;transition:opacity .12s}
+
+/* clean touch */
+*:focus,*:focus-visible{outline:none!important}
+button,.tile,.tr,.sw button{-webkit-touch-callout:none}
