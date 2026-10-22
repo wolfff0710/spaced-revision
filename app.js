@@ -207,7 +207,7 @@ function render(){
   document.querySelectorAll(".tabs a,#side a").forEach(a=>setOn(a,a.dataset.t===k.replace("XI ","")));
   if(RMQ.matches||was==="TIMER"){LASTP=k;renderNow();enter();return}
   TRN=true;app.classList.remove("enter");app.classList.add("leaving");
-  setTimeout(()=>{app.classList.remove("leaving");LASTP=cur();TRN=false;renderNow();enter()},210);
+  setTimeout(()=>{app.classList.remove("leaving");LASTP=cur();TRN=false;renderNow();enter()},160);
 }
 document.addEventListener("change",e=>{
   const t=e.target,v=t.value;
@@ -344,7 +344,7 @@ tr.lr:hover td{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.
 .cd:active,.dr:active,.rb:active{transform:scale(.97);transition-duration:.08s}
 }
 @keyframes fOut{to{opacity:0;transform:translateY(-12px) scale(.985)}}
-#app.leaving{animation:fOut .21s cubic-bezier(.4,0,1,1) forwards;pointer-events:none;will-change:transform,opacity}
+#app.leaving{animation:fOut .16s cubic-bezier(.4,0,1,1) forwards;pointer-events:none;will-change:transform,opacity}
 @media (hover:none) and (max-width:1100px),(pointer:coarse) and (max-width:1100px){tbody tr.lr:hover{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border-color:var(--line)}}`;
   document.head.appendChild(st);
 })();
@@ -597,3 +597,28 @@ window.markDone=(id,i)=>{setR(id,i,{d:true,c:iso(new Date()),od:rv(id,i).od||eff
 window.addHours=(k,h)=>{H[k]=Math.round(((H[k]||0)+h)*100)/100;save()};
 window.setTimer=v=>{K=v;save()};
 window.getTimer=()=>loaded?K:null;
+
+/* ---------- smooth + clean touch (delete this block to revert) ---------- */
+(()=>{
+  const st=document.createElement("style");
+  st.textContent=`
+*{-webkit-tap-highlight-color:transparent}
+*:focus,*:focus-visible{outline:none!important}
+a,button,[role=tab],.cd,.dr,.rb,.b,.pr,.nv,.chip,label,summary{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+input,select,textarea{-webkit-user-select:text;user-select:text}
+html{overscroll-behavior-y:none}
+.tabs,.wrap{-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.b,.pr,.nv,.bs button,.tabs a,#side a,.cd,.dr,.rb,.chip{transition:transform .5s cubic-bezier(.34,1.56,.64,1),background-color .25s,color .25s,border-color .25s,box-shadow .25s,opacity .25s;will-change:transform}
+.b:active,.pr:active,.nv:active,.bs button:active,.tabs a:active,#side a:active,.cd:active,.dr:active,.rb:active,.chip:active{transition-duration:.08s,.15s,.15s,.15s,.15s,.15s}
+#app.enter>*,#app.enter .cal>*,#app.enter .pl>*,#app.enter .dr,#app.enter .rb,#app.enter tr.lr{animation-duration:.45s}
+#app.enter tbody tr:nth-child(n+9){animation-delay:256ms}
+#app.enter .dr:nth-child(n+9),#app.enter .rb:nth-child(n+9){animation-delay:256ms}
+@media(hover:none),(pointer:coarse){
+.chip:hover,.cd:hover,.dr:hover,.rb:hover,.b:hover,.pr:hover,.nv:hover,.nv.go:hover,.bs button:hover{transform:none;filter:none}
+.chip,.sec,.bs button,.nv,.pkb,.tabs,.dock{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.chip,.sec{background:rgba(14,18,24,.6)}
+.tabs a.on,.pg i u,.nv.go{animation:none}
+}`;
+  document.head.appendChild(st);
+  document.addEventListener("touchstart",()=>{},{passive:true});
+})();
