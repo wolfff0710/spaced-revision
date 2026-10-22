@@ -358,7 +358,6 @@ h1{font-weight:700;letter-spacing:-.03em}
 .chip{border-radius:26px}
 .sec{border-radius:28px}
 .bs button,.nv,.pkb{background:rgba(120,120,128,.26);border:0;border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,.22);color:#fff;font-weight:600}
-.bs button.on,.nv.on{background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 55%),linear-gradient(180deg,#3cc6e6,#0fa9cf 60%,#0990b4);color:#03121b;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.12),0 0 16px rgba(0,212,255,.28),0 6px 14px -4px rgba(0,160,205,.4)}
 .b{border-radius:50%!important;border:0;background:rgba(120,120,128,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
 .pc input,.pc select,.sh select,.hl input{border-radius:12px}
 .dr{border-radius:20px}
