@@ -350,30 +350,18 @@ tr.lr:hover td{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.
 })();
 /* ---------- iOS glossy theme + glossy grid (delete this block to revert) ---------- */
 (()=>{
-  const gf=document.getElementById("gridfx");
-  if(gf&&!document.querySelector(".gloss")){const g=document.createElement("div");g.className="gloss";gf.after(g)}
   const st=document.createElement("style");
   st.textContent=`@keyframes glowO{0%,100%{opacity:.3}50%{opacity:1}}
-@keyframes glossSweep{0%,30%{transform:translateX(0) skewX(-16deg)}100%{transform:translateX(330%) skewX(-16deg)}}
 *{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif!important}
 h1{font-weight:700;letter-spacing:-.03em}
-/* glossy grid */
-.gridfx{overflow:hidden;-webkit-mask-image:radial-gradient(ellipse 90% 75% at 50% 25%,#000 10%,transparent 92%);mask-image:radial-gradient(ellipse 90% 75% at 50% 25%,#000 10%,transparent 92%)}
-.gridfx::before{-webkit-mask-image:none;mask-image:none;top:-56px;left:-56px;animation:gridT 26s linear infinite;will-change:transform;background-image:radial-gradient(circle at 50% 50%,rgba(255,255,255,.26) 0,rgba(130,240,255,.16) 1.2px,transparent 2.6px),linear-gradient(rgba(0,212,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.12) 1px,transparent 1px);background-size:56px 56px,56px 56px,56px 56px;background-position:-28px -28px,0 0,0 0}
-.gloss{position:fixed;top:0;right:0;bottom:0;left:0;z-index:-2;pointer-events:none;overflow:hidden}
-.gloss::before{content:"";position:absolute;top:-30%;bottom:-30%;left:-40%;width:40%;background:linear-gradient(100deg,transparent,rgba(120,235,255,.015) 40%,rgba(255,255,255,.035) 50%,rgba(120,235,255,.015) 60%,transparent);transform:skewX(-16deg);animation:glossSweep 18s ease-in-out infinite;will-change:transform}
-body.tm-on .gloss{display:none}
 /* glass shapes, original colours */
-.dpill,.sync-indicator{background:rgba(120,120,128,.24);border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
-.chip{border-radius:26px;background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.03)),rgba(10,14,18,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 16px 40px -20px rgba(0,0,0,.9)}
-.sec{border-radius:28px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,0) 20%),linear-gradient(180deg,rgba(20,27,33,.86),rgba(7,9,12,.82));box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 24px 60px -24px rgba(0,0,0,.9)}
-.sec::after{content:"";position:absolute;left:0;right:0;top:0;height:90px;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.07),transparent);pointer-events:none}
-.tabs,#side{background:rgba(8,12,16,.6);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(255,255,255,.04),0 16px 40px rgba(0,0,0,.55);backdrop-filter:blur(26px) saturate(180%)!important;-webkit-backdrop-filter:blur(26px) saturate(180%)!important}
+.chip{border-radius:26px}
+.sec{border-radius:28px}
 .tabs a.on,#side a.on{animation:none;color:#03121b;background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 55%),linear-gradient(180deg,#3cc6e6,#0fa9cf 60%,#0990b4);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.12),0 0 16px rgba(0,212,255,.28),0 6px 14px -4px rgba(0,160,205,.4)}
 .bs button,.nv,.pkb{background:rgba(120,120,128,.26);border:0;border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,.22);color:#fff;font-weight:600}
 .bs button.on,.nv.on{background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 55%),linear-gradient(180deg,#3cc6e6,#0fa9cf 60%,#0990b4);color:#03121b;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.12),0 0 16px rgba(0,212,255,.28),0 6px 14px -4px rgba(0,160,205,.4)}
 .b{border-radius:50%!important;border:0;background:rgba(120,120,128,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
-.pc input,.pc select,.sh select,.hl input{background:rgba(120,120,128,.24);border:0;border-radius:12px}
+.pc input,.pc select,.sh select,.hl input{border-radius:12px}
 .dr{border-radius:20px}
 .cd{border-radius:18px}
 .lr.on .nb{box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 0 18px rgba(0,212,255,.5)}
@@ -381,8 +369,6 @@ body.tm-on .gloss{display:none}
 .dr .r.d{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 55%),linear-gradient(110deg,#00d4ff,#8b5cf6)}
 .r.d::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;box-shadow:0 0 22px 2px rgba(0,212,255,.8);opacity:.3;animation:glowO 2.2s ease-in-out infinite;pointer-events:none}
 /* darker background, touch spotlight, timer float-in */
-.bg i{opacity:.4}
-.bg::before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;z-index:2;background:rgba(0,0,0,.3);pointer-events:none}
 .tglow{position:fixed;left:0;top:0;width:340px;height:340px;margin:-170px 0 0 -170px;border-radius:50%;pointer-events:none;z-index:-1;opacity:0;transition:opacity .6s ease;background:radial-gradient(circle,rgba(0,212,255,.34),rgba(0,212,255,.14) 42%,transparent 70%);will-change:transform,opacity}
 .tglow.on{opacity:1;transition:opacity .12s}
 body.tm-on .tglow{display:none}
@@ -609,7 +595,7 @@ function tmOpen(){const f=document.getElementById("tmf");if(f&&!f.getAttribute("
 let LASTH="";if(location.hash!=="#timer")LASTH=location.hash;
 addEventListener("hashchange",function(){if(location.hash!=="#timer")LASTH=location.hash});
 addEventListener("message",function(e){if(e.data==="tracker-exit")location.hash=LASTH||"#today"});
-document.getElementById("ver").textContent="v23: Class 11 portal";
+document.getElementById("ver").textContent="v24: Class 11 portal";
 
 window.getTasks=()=>{const t=iso(new Date());return[...queue(t).map(x=>({id:x.id,i:x.i,type:'rev',sub:subOf(x.id).slice(0,4),name:nameOf(x.id),lbl:(x.od>0?'Overdue '+x.od+'d':'Due today')+' · Rev '+(x.i+1)})),...started().filter(id=>S[id]===t).map(id=>({id,type:'study',sub:subOf(id).slice(0,4),name:nameOf(id),lbl:'To study'}))]};
 window.markDone=(id,i)=>{setR(id,i,{d:true,c:iso(new Date()),od:rv(id,i).od||eff(id,i)});save();render()};
