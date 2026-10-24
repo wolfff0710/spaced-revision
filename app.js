@@ -618,6 +618,9 @@ html{overscroll-behavior-y:none}
 .chip,.sec,.bs button,.nv,.pkb,.tabs,.dock{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 .chip,.sec{background:rgba(14,18,24,.6)}
 .tabs a.on,.pg i u,.nv.go{animation:none}
+.tabs a.on{overflow:hidden;isolation:isolate;transform:translateZ(0)}
+.tabs a.on::after{width:50%;left:0;animation:sheenC 4.5s ease-in-out infinite}
+@keyframes sheenC{0%,55%{transform:translateX(-110%)}100%{transform:translateX(230%)}}
 }`;
   document.head.appendChild(st);
   document.addEventListener("touchstart",()=>{},{passive:true});
